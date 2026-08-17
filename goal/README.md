@@ -2,7 +2,7 @@
 
 本目录把根目录 [`goal.md`](../goal.md) 中已经确认的产品意图转换为可执行的技术与操作指导。
 
-当前对齐版本：`goal.md` v0.4。实现状态以 [`plan.md`](plan.md) 的“当前阶段事实”和 [`implementation-log.md`](implementation-log.md) 的最新追加记录为准；旧日志只代表当时事实。
+当前对齐版本：`goal.md` v0.5。本地确定性三闭环和四服务运行基线已有完整证据；Live 公开职位来源、真实远端模型、未解析地点样例和可恢复重试等 7 项仍未勾选。实现状态以 [`plan.md`](plan.md) 的“当前阶段事实”和 [`implementation-log.md`](implementation-log.md) 的最新追加记录为准；旧日志只代表当时事实。
 
 ## 文档优先级
 

@@ -34,6 +34,8 @@
 | T-011 | Accepted | LangGraph 完全本地运行，不把 LangGraph Cloud 或 LangSmith 设为依赖 | OSS Python 包运行在 API/Worker 容器；PostgreSQL 保存 checkpoint，远端仅是可选模型推理 |
 | T-012 | Accepted | Demo 同时提供无密钥确定性模式和显式启用的 Live 模式 | 确保本地冷启动可复现，同时不把替身数据冒充真实联网结果 |
 | T-013 | Accepted | 验收证据明确分为真实操作入口、确定性 Demo、Live 只读集成和隐私证明 | 防止把静态页面、测试替身或框架安装误报为互联网能力完成；不改变三个业务闭环 |
+| T-014 | Accepted | Live 岗位来源优先使用公司公开 ATS/Job Board GET API，首个候选为 Lever Postings API | 当前 JobSpy 来源受 403/451 和锁定版本限制；直接公开 API 更稳定、可追溯、便于限频。仅授权 GET 只读，申请 POST 仍禁止 |
+| T-015 | Accepted | Architecture 中的目标节点与当前实际节点必须分开标记 | 防止把设计细化误报为已实现能力；完成状态仍只由 `goal.md` 验收勾选与实现日志证据决定 |
 
 ## 尚未锁定但已明确不阻塞 Demo
 

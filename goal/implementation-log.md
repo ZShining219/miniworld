@@ -153,6 +153,63 @@
 
 ---
 
+## 2026-08-18 — Goal v0.5 本地 Demo 验收与证据收口
+
+### 范围
+
+- 关联需求：`REQ-RUNTIME`、`REQ-JOB`、`REQ-PROFILE`、`REQ-WORK`、`REQ-PRIVACY`；
+- 用当前工作树重建四服务，复核后端、前端、容器、浏览器和泄漏证据；
+- 对照根 `goal.md` 10.1—10.6 逐项勾选，未通过项继续保持未勾选；
+- 复核 LangGraph、FastAPI 全栈模板、OpenAI Structured Outputs 与 Lever Postings API 公开资料。
+
+### 已完成
+
+- 使用 LangGraph OSS 的三个独立 Graph 在本地 API/Worker 容器中运行，PostgreSQL 保存 checkpoint，不依赖 LangGraph Cloud；
+- 四服务在 Apple Silicon/ARM64 上由经典 Docker builder 成功构建并启动；
+- 解决 Dockerfile 移除第二次 workspace 安装后的容器导入问题：明确设置 `PYTHONPATH=/app/backend`，并把预启动脚本改为 `python -m app...`；
+- `scripts/test-local.sh` 与 `scripts/test.sh` 恢复可执行 Git mode，README 中的脚本命令可直接运行；
+- 公开来源策略收敛为“公司 ATS/Job Board GET API 优先，JobSpy 最善努力”，不增加投递或其他外部写入。
+
+### 验证
+
+- `./scripts/test-local.sh`：后端 `13 passed`，Ruff/Mypy/Ty 通过，前端生产构建通过；Biome 无 error，保留 8 条 CSS 风格 warning；
+- `bun run test`：Playwright `2 passed`；
+- `docker-compose up -d --build`：当前源码镜像构建成功，`api`、`worker`、`frontend`、`db` 全部启动；
+- `./scripts/test.sh`：按 README 原样执行“重建 + 启动 + 完整容器验收”通过，包含三闭环、三类材料、岗位幂等和距离、Worker 真实定时触发、Alembic、PostgreSQL checkpoint、回环端口与四服务重启持久性；最终输出为 `jobs=3 facts=60 reports=12 checkpoints=300`；
+- 真实浏览器：Overview、Jobs、Profile、Work、Agent Runs、Settings 六页均可访问，页面不含精确演示坐标，console `0 error / 0 warning`；
+- secret/PII 扫描：Git 候选文件中无非占位符 secret-like 值，无被 Git 追踪的 `.env`/数据库/日志，前端 bundle 无 secret-like 值、精确演示位置和本机绝对路径，Docker 日志无精确演示位置或 secret-like 值；
+- `git diff --check`：通过。
+
+### Live 证据与未完成
+
+- 当前固定的 `python-jobspy==1.1.13` 实际 Site 枚举只有 `linkedin`、`indeed`、`zip_recruiter`；
+- Indeed Live 请求返回 403，LinkedIn China 返回 451；没有绕过限制，Live 职位验收仍未通过；
+- Lever 公开 Postings API 文档和公开板块可访问，但 `LeverJobAdapter` 尚未实现，不冒充为已集成；
+- OpenAI Responses Provider 已使用 Pydantic Structured Outputs，但没有用户 API Key 和数据类别授权，因此未做真实远端调用；
+- 地点无法解析的 UI 验收样例、checkpoint 恢复重试、非法模型 schema 负测试仍未完成；
+- 未创建 `demo-v0.1` tag，未执行公开 push。
+
+### 偏差与决策
+
+- 本次没有扩展任何产品功能；只修正启动复现性和文档事实；
+- 把 Architecture 中的目标节点与 v0.5 实际节点分开，防止将设计文档误读为全部实现；
+- 匹配评分、投递跟踪、自动投递、最终雷达/地图视觉和真实外部写入仍不在 Demo 范围内。
+
+### Git
+
+- 分支：`codex/bootstrap-langgraph`；
+- Goal v0.4 基线：`03f4106`；
+- 当前实现与 Goal v0.5 尚待创建隔离的本地提交；
+- 未 push。
+
+### 下一步
+
+- 先实现只读 `LeverJobAdapter`，使用公开演示/公司 Job Board 完成一次 Live 只读验收；
+- 然后补齐未解析地点样例和 checkpoint 安全重试；
+- 真实 OpenAI Provider 验证等待用户决定 Provider、模型与允许外发的材料类别。
+
+---
+
 ## 后续记录模板
 
 ```md
