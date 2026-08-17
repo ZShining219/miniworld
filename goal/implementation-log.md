@@ -51,6 +51,32 @@
 - 用户审阅 Goal v0.2；
 - 进入 Phase 0：Git 基线与 FastAPI 模板固定 commit 导入。
 
+## 2026-08-18 — Phase 0 Git 基线与上游导入
+
+### 已完成
+
+- 将默认分支从 `master` 重命名为 `main`；
+- 创建 goal/治理基线提交 `d0029b5`；
+- 添加本地 `origin`：`https://github.com/ZShining219/miniworld.git`；
+- 创建实现分支 `codex/bootstrap-langgraph`；
+- Git 协议 clone 因当前网络连接失败，改用 GitHub 官方 codeload 获取同一上游快照；
+- 通过 GitHub API 固定 FastAPI 模板 commit `162344da111e833b30892728372ab95331f06873`；
+- 导入 backend、frontend、工作区清单、Compose 骨架和测试脚本；
+- 排除上游 Git 历史、`.agents`、`.env`、云部署文件和无关资产；
+- 保留 MIT 许可证与第三方来源说明。
+
+### 未执行
+
+- 未向 GitHub `origin` push；
+- 未使用真实地址、个人材料或模型密钥；
+- 尚未裁剪多用户、邮件和云端模板能力。
+
+### 下一步
+
+- 提交纯上游导入；
+- 裁剪为本地单用户四容器结构；
+- 建立 LangGraph 与三个业务闭环。
+
 ---
 
 ## 后续记录模板
