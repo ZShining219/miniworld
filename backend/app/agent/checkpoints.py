@@ -6,6 +6,8 @@ from langgraph.checkpoint.memory import InMemorySaver
 
 from app.core.config import settings
 
+_memory_saver = InMemorySaver()
+
 
 @contextmanager
 def checkpoint_saver() -> Iterator[Any]:
@@ -25,4 +27,6 @@ def checkpoint_saver() -> Iterator[Any]:
             yield checkpointer
         return
 
-    yield InMemorySaver()
+    # Keep one process-local saver so a second API call can resume the same
+    # thread during tests and direct local development.
+    yield _memory_saver

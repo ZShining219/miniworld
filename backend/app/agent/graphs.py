@@ -7,7 +7,12 @@ from langgraph.graph import END, START, StateGraph
 from sqlmodel import Session, col, func, select
 from typing_extensions import TypedDict
 
-from app.agent.adapters import DemoJobAdapter, JobSpyAdapter
+from app.agent.adapters import (
+    DemoJobAdapter,
+    JobSourceAdapter,
+    JobSpyAdapter,
+    LeverJobAdapter,
+)
 from app.agent.policy import OutboundPolicy
 from app.agent.providers import (
     ExtractedFact,
@@ -108,7 +113,13 @@ def _select_job_context(state: JobState) -> dict[str, object]:
 
 def _fetch_jobs(state: JobState) -> dict[str, object]:
     landmark = state["landmark"]
-    adapter = JobSpyAdapter() if state["live"] else DemoJobAdapter()
+    adapter: JobSourceAdapter
+    if not state["live"]:
+        adapter = DemoJobAdapter()
+    elif settings.LIVE_JOB_SOURCE == "lever":
+        adapter = LeverJobAdapter()
+    else:
+        adapter = JobSpyAdapter()
     raw_jobs = adapter.search(state["query"], str(landmark["query_text"]))
     return {
         "source": adapter.name,
@@ -152,9 +163,13 @@ def _calculate_distances(state: JobState) -> dict[str, object]:
                 2,
             )
             item["distance_status"] = "calculated"
+            item["distance_reason"] = None
         else:
             item["distance_km"] = None
             item["distance_status"] = "location_unresolved"
+            item["distance_reason"] = (
+                "公开职位来源未提供可验证坐标；职位已保留，未伪造距离"
+            )
         enriched.append(item)
     return {"jobs": enriched}
 
@@ -182,6 +197,7 @@ def _persist_jobs(state: JobState) -> dict[str, object]:
                 "longitude": raw.get("longitude"),
                 "distance_km": raw.get("distance_km"),
                 "distance_status": str(raw["distance_status"]),
+                "distance_reason": raw.get("distance_reason"),
                 "job_type": raw.get("job_type"),
                 "summary": raw.get("summary"),
                 "fingerprint": str(raw["fingerprint"]),

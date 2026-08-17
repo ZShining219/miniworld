@@ -582,6 +582,7 @@ main {
 }
 .run-row.expanded {
   min-height: 78px;
+  grid-template-columns: 34px minmax(0, 1fr) auto 80px 42px auto;
 }
 .run-row.expanded div small {
   max-width: 72ch;
@@ -781,6 +782,10 @@ label select:focus {
   margin-top: 5px;
   color: var(--muted);
   font-size: 11px;
+}
+.job-main .distance-reason {
+  color: #e4c774;
+  white-space: normal;
 }
 .job-main small {
   max-width: 80ch;

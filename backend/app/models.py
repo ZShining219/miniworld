@@ -53,6 +53,7 @@ class JobPosting(SQLModel, table=True):
     longitude: float | None = None
     distance_km: float | None = Field(default=None, index=True)
     distance_status: str = Field(default="location_unresolved", max_length=40)
+    distance_reason: str | None = Field(default=None, sa_column=Column(Text))
     url: str = Field(max_length=1200)
     job_type: str | None = Field(default=None, max_length=80)
     summary: str | None = Field(default=None, sa_column=Column(Text))
@@ -78,6 +79,10 @@ class AgentRun(SQLModel, table=True):
     current_node: str | None = Field(default=None, max_length=100)
     message: str | None = Field(default=None, sa_column=Column(Text))
     result_json: dict[str, object] | None = Field(default=None, sa_column=Column(JSON))
+    retry_count: int = 0
+    error_history: list[dict[str, object]] = Field(
+        default_factory=list, sa_column=Column(JSON)
+    )
     started_at: datetime = Field(
         default_factory=utc_now,
         sa_column=Column(DateTime(timezone=True)),

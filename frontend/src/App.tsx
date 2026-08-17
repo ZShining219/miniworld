@@ -152,7 +152,7 @@ function App() {
           {view === "jobs" && <JobsPage notify={notify} />}
           {view === "profile" && <ProfilePage notify={notify} />}
           {view === "work" && <WorkPage notify={notify} />}
-          {view === "runs" && <RunsPage />}
+          {view === "runs" && <RunsPage notify={notify} />}
           {view === "settings" && <SettingsPage notify={notify} />}
         </section>
       </main>
@@ -427,6 +427,11 @@ function JobsPage({ notify }: { notify: Notify }) {
                     {job.company} · {job.location_text}
                   </span>
                   <small>{job.summary}</small>
+                  {job.distance_reason && (
+                    <small className="distance-reason">
+                      距离说明：{job.distance_reason}
+                    </small>
+                  )}
                 </div>
                 <div className="job-meta">
                   <span className={statusTone(job.distance_status)}>
@@ -842,9 +847,10 @@ function WorkPage({ notify }: { notify: Notify }) {
   )
 }
 
-function RunsPage() {
+function RunsPage({ notify }: { notify: Notify }) {
   const [runs, setRuns] = useState<AgentRun[]>([])
   const [loading, setLoading] = useState(true)
+  const [retrying, setRetrying] = useState<string | null>(null)
   const load = useCallback(async () => {
     setLoading(true)
     try {
@@ -856,6 +862,23 @@ function RunsPage() {
   useEffect(() => {
     void load()
   }, [load])
+  async function retry(run: AgentRun) {
+    setRetrying(run.id)
+    try {
+      const result = await api.retryRun(run.id)
+      notify(
+        result.status === "succeeded"
+          ? "已从 LangGraph checkpoint 恢复并完成"
+          : (result.message ?? result.status),
+        result.status === "succeeded" ? "good" : "bad",
+      )
+      await load()
+    } catch (error) {
+      notify(error instanceof Error ? error.message : "重试失败", "bad")
+    } finally {
+      setRetrying(null)
+    }
+  }
   return (
     <article className="panel run-ledger">
       <div className="panel-head">
@@ -874,7 +897,15 @@ function RunsPage() {
       {loading && !runs.length ? (
         <Loading />
       ) : (
-        runs.map((run) => <RunRow run={run} key={run.id} expanded />)
+        runs.map((run) => (
+          <RunRow
+            run={run}
+            key={run.id}
+            expanded
+            onRetry={run.status === "failed" ? retry : undefined}
+            retrying={retrying === run.id}
+          />
+        ))
       )}
     </article>
   )
@@ -1082,9 +1113,13 @@ function SettingsPage({ notify }: { notify: Notify }) {
 function RunRow({
   run,
   expanded = false,
+  onRetry,
+  retrying = false,
 }: {
   run: AgentRun
   expanded?: boolean
+  onRetry?: (run: AgentRun) => void
+  retrying?: boolean
 }) {
   const details = useMemo(
     () => (run.result_json ? JSON.stringify(run.result_json) : run.message),
@@ -1111,6 +1146,16 @@ function RunRow({
       <span className={statusTone(run.status)}>{run.status}</span>
       <time>{formatTime(run.started_at)}</time>
       <em>{run.execution_mode}</em>
+      {onRetry && (
+        <button
+          className="mini-button"
+          type="button"
+          disabled={retrying}
+          onClick={() => onRetry(run)}
+        >
+          <RefreshCw size={13} /> {retrying ? "恢复中" : "从检查点重试"}
+        </button>
+      )}
     </div>
   )
 }

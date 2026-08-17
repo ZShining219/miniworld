@@ -29,6 +29,9 @@ class Settings(BaseSettings):
     OPENAI_MODEL: str = "gpt-5.6"
 
     ALLOW_LIVE_JOB_SEARCH: bool = False
+    LIVE_JOB_SOURCE: Literal["lever", "jobspy"] = "lever"
+    LEVER_SITES: str = "binance"
+    LEVER_TIMEOUT_SECONDS: float = Field(default=15, ge=1, le=60)
     JOB_RESULTS_LIMIT: int = 12
     JOB_SCHEDULE_MINUTES: int = 720
     SCHEDULER_ENABLED: bool = True
@@ -49,6 +52,10 @@ class Settings(BaseSettings):
     @property
     def checkpoint_database_url(self) -> str:
         return self.DATABASE_URL.replace("postgresql+psycopg://", "postgresql://", 1)
+
+    @property
+    def lever_sites(self) -> tuple[str, ...]:
+        return tuple(site.strip() for site in self.LEVER_SITES.split(",") if site.strip())
 
 
 @lru_cache

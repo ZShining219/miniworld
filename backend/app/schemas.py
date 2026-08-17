@@ -74,6 +74,7 @@ class JobPublic(ApiModel):
     location_text: str
     distance_km: float | None
     distance_status: str
+    distance_reason: str | None
     url: str
     job_type: str | None
     summary: str | None
@@ -164,6 +165,8 @@ class AgentRunPublic(ApiModel):
     current_node: str | None
     message: str | None
     result_json: dict[str, object] | None
+    retry_count: int
+    error_history: list[dict[str, object]]
     started_at: datetime
     finished_at: datetime | None
 

@@ -7,6 +7,8 @@ export type AgentRun = {
   current_node: string | null
   message: string | null
   result_json: Record<string, unknown> | null
+  retry_count: number
+  error_history: Array<Record<string, unknown>>
   started_at: string
   finished_at: string | null
 }
@@ -35,6 +37,7 @@ export type Job = {
   location_text: string
   distance_km: number | null
   distance_status: string
+  distance_reason: string | null
   url: string
   job_type: string | null
   summary: string | null

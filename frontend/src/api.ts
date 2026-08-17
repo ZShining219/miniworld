@@ -92,6 +92,8 @@ export const api = {
       }),
     }),
   runs: () => request<AgentRun[]>("/agent-runs"),
+  retryRun: (id: string) =>
+    request<AgentRun>(`/agent-runs/${id}/retry`, { method: "POST" }),
   location: () => request<LocationStatus>("/location"),
   setLocation: (exactAddress: string, latitude: number, longitude: number) =>
     request<LocationStatus>("/location", {

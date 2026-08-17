@@ -51,7 +51,7 @@ job_payload='{"query":"internship","live":false}'
 job_run_one="$(json_post "/job-runs" "$job_payload")"
 assert_json "$job_run_one" '.graph_name == "job_discovery" and .execution_mode == "demo" and .status == "succeeded"' "first job graph run"
 jobs_after_one="$(curl -fsS "${API_BASE}/jobs")"
-assert_json "$jobs_after_one" 'length >= 3 and all(.[]; .distance_status == "calculated" and (.distance_km | type == "number"))' "job distance results"
+assert_json "$jobs_after_one" 'length >= 3 and all(.[]; .distance_status == "calculated" and .distance_reason == null and (.distance_km | type == "number"))' "job distance results"
 job_count_one="$(jq 'length' <<<"$jobs_after_one")"
 
 job_run_two="$(json_post "/job-runs" "$job_payload")"
@@ -111,6 +111,40 @@ assert_json "$daily" '.graph_name == "work_report" and .status == "succeeded"' "
 assert_json "$weekly" '.graph_name == "work_report" and .status == "succeeded"' "weekly report graph"
 reports="$(curl -fsS "${API_BASE}/reports")"
 assert_json "$reports" 'any(.[]; .report_type == "daily" and (.source_entry_ids | length > 0)) and any(.[]; .report_type == "weekly" and (.source_entry_ids | length > 0))' "traceable reports"
+
+# Produce a real node failure, fix its local precondition, and resume the same
+# persisted PostgreSQL checkpoint. A second retry must be rejected so the
+# successful business write cannot be duplicated.
+reports_before_retry="$(jq 'length' <<<"$reports")"
+existing_entries="$(curl -fsS "${API_BASE}/work-entries")"
+retry_year=2099
+while jq -e --arg work_date "${retry_year}-01-01" 'any(.[]; .work_date == $work_date)' >/dev/null <<<"$existing_entries"; do
+  retry_year=$((retry_year + 1))
+  if [[ "$retry_year" -gt 9999 ]]; then
+    echo "verification failed: no free fictional date for checkpoint proof" >&2
+    exit 1
+  fi
+done
+retry_date="${retry_year}-01-01"
+failed_report_payload="$(jq -cn --arg retry_date "$retry_date" '{report_type:"daily",period_start:$retry_date,period_end:$retry_date}')"
+failed_report="$(json_post "/reports" "$failed_report_payload")"
+assert_json "$failed_report" '.status == "failed" and .current_node == "stopped" and (.error_history | length == 1)' "visible failed checkpoint run"
+failed_report_id="$(jq -r '.id' <<<"$failed_report")"
+retry_entry_payload="$(jq -cn --arg retry_date "$retry_date" '{work_date:$retry_date,content:"用于 checkpoint 恢复验收的虚构记录",tags:["checkpoint-proof"]}')"
+retry_entry="$(json_post "/work-entries" "$retry_entry_payload")"
+assert_json "$retry_entry" '.id != null' "checkpoint retry precondition"
+recovered_report="$(curl -fsS -X POST "${API_BASE}/agent-runs/${failed_report_id}/retry")"
+assert_json "$recovered_report" '.status == "succeeded" and .retry_count == 1 and (.error_history | length == 1)' "PostgreSQL checkpoint recovery"
+retry_again_status="$(curl -sS -o /dev/null -w '%{http_code}' -X POST "${API_BASE}/agent-runs/${failed_report_id}/retry")"
+if [[ "$retry_again_status" != "409" ]]; then
+  echo "verification failed: completed checkpoint retry was not protected from duplication" >&2
+  exit 1
+fi
+reports="$(curl -fsS "${API_BASE}/reports")"
+if [[ "$(jq 'length' <<<"$reports")" -ne $((reports_before_retry + 1)) ]]; then
+  echo "verification failed: checkpoint retry created an unexpected report count" >&2
+  exit 1
+fi
 facts_after_work="$(curl -fsS "${API_BASE}/profile-facts" | jq 'length')"
 if [[ "$facts_before_work" != "$facts_after_work" ]]; then
   echo "verification failed: work reporting modified profile facts" >&2
@@ -151,7 +185,7 @@ if [[ "$checkpoint_count" -lt 1 ]]; then
   exit 1
 fi
 migration="$(docker-compose exec -T db psql -U miniworld -d miniworld -Atc "select version_num from alembic_version")"
-if [[ "$migration" != "20260818_0001" ]]; then
+if [[ "$migration" != "20260818_0002" ]]; then
   echo "verification failed: unexpected Alembic version ${migration}" >&2
   exit 1
 fi

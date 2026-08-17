@@ -6,7 +6,12 @@ from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile, 
 from sqlmodel import Session, col, func, select
 
 from app.agent.artifacts import convert_uploaded_bytes
-from app.agent.runner import run_job_discovery, run_profile_import, run_work_report
+from app.agent.runner import (
+    retry_agent_run,
+    run_job_discovery,
+    run_profile_import,
+    run_work_report,
+)
 from app.core.config import settings
 from app.core.db import get_session
 from app.models import (
@@ -380,6 +385,20 @@ def list_agent_runs(
             select(AgentRun).order_by(col(AgentRun.started_at).desc()).limit(limit)
         ).all()
     )
+
+
+@router.post(
+    "/agent-runs/{run_id}/retry",
+    response_model=AgentRunPublic,
+    tags=["agents"],
+)
+def retry_run(run_id: uuid.UUID) -> AgentRun:
+    try:
+        return retry_agent_run(run_id)
+    except LookupError as error:
+        raise HTTPException(status_code=404, detail=str(error)) from error
+    except ValueError as error:
+        raise HTTPException(status_code=409, detail=str(error)) from error
 
 
 @router.get("/approvals", response_model=list[ApprovalPublic], tags=["approvals"])

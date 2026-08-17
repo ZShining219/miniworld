@@ -1,7 +1,10 @@
 import hashlib
+import re
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from typing import Protocol
+
+import httpx
 
 from app.core.config import settings
 
@@ -92,6 +95,70 @@ class DemoJobAdapter:
                 published_at=datetime.now(UTC),
             ),
         ]
+
+
+class LeverJobAdapter:
+    """Read public company Job Boards through Lever's documented GET endpoint."""
+
+    name = "lever"
+    _site_pattern = re.compile(r"^[a-zA-Z0-9_-]+$")
+
+    def search(self, query: str, landmark_query: str) -> list[RawJob]:
+        del query  # Lever's public endpoint filters by board/location, not free text.
+        if not settings.ALLOW_LIVE_JOB_SEARCH:
+            raise RuntimeError("Live job search is disabled by configuration")
+        if not settings.lever_sites:
+            raise RuntimeError("LEVER_SITES is not configured")
+
+        jobs: list[RawJob] = []
+        with httpx.Client(
+            timeout=settings.LEVER_TIMEOUT_SECONDS,
+            follow_redirects=True,
+            headers={"User-Agent": "MiniWorld-Agent/0.1 (public job read)"},
+        ) as client:
+            for site in settings.lever_sites:
+                if not self._site_pattern.fullmatch(site):
+                    raise RuntimeError("LEVER_SITES contains an invalid site identifier")
+                response = client.get(
+                    f"https://api.lever.co/v0/postings/{site}",
+                    params={
+                        "mode": "json",
+                        "limit": settings.JOB_RESULTS_LIMIT,
+                        "location": landmark_query,
+                    },
+                )
+                response.raise_for_status()
+                payload = response.json()
+                if not isinstance(payload, list):
+                    raise RuntimeError("Lever returned an unexpected response schema")
+                for record in payload:
+                    if not isinstance(record, dict):
+                        continue
+                    categories = record.get("categories")
+                    categories = categories if isinstance(categories, dict) else {}
+                    created_at = record.get("createdAt")
+                    published_at = (
+                        datetime.fromtimestamp(float(created_at) / 1000, tz=UTC)
+                        if isinstance(created_at, (int, float))
+                        else None
+                    )
+                    jobs.append(
+                        RawJob(
+                            source=f"lever:{site}",
+                            external_id=str(record.get("id") or "") or None,
+                            title=str(record.get("text") or "未命名职位"),
+                            company=site,
+                            location_text=str(
+                                categories.get("location") or landmark_query
+                            ),
+                            url=str(record.get("hostedUrl") or ""),
+                            job_type=str(categories.get("commitment") or "") or None,
+                            summary=str(record.get("descriptionPlain") or "")[:2000]
+                            or None,
+                            published_at=published_at,
+                        )
+                    )
+        return jobs
 
 
 class JobSpyAdapter:
