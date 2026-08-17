@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "project_id": "miniworld",
+  "generated_at": "2026-08-18T02:38:35+08:00",
+  "summary_status": "goal_v0.2_implementation_ready",
+  "review_status": "pending_user_review",
+  "checkpoint_id": null,
+  "checkpoint_offsets": null,
+  "active_windows": {},
+  "active_locks": [],
+  "active_tasks": {},
+  "open_issues": {},
+  "key_logic": {
+    "D-001": "Three independent demo loops: job distance, profile/resume, and daily/weekly work reports.",
+    "D-002": "Exact address and home coordinates stay local; rotating nearby landmarks are used externally.",
+    "D-003": "Job discovery cannot directly modify the personal profile or resume.",
+    "D-004": "Scheduled public reads and limited local writes are allowed; external writes require confirmation.",
+    "D-005": "Root goal.md is authoritative; goal/ technical documents are subordinate and cannot change intent.",
+    "D-006": "Selected stack: pinned FastAPI template, LangGraph OSS, React/TypeScript, PostgreSQL, APScheduler worker, Docker Compose.",
+    "D-007": "Remote AI is injected through a local ModelProvider gateway with minimization, policy checks, schema validation, and audit.",
+    "D-008": "Upstream code is temporarily cloned, inspected, pinned, and selectively imported without upstream Git or agent instructions."
+  },
+  "pending_review": [
+    "User review of goal.md v0.2 and the goal/ implementation documentation"
+  ],
+  "assumptions": [
+    "The exact upstream FastAPI template commit will be pinned and recorded during Phase 0.",
+    "The first remote Provider adapter will support an OpenAI/GPT-style service, while the actual model remains configuration.",
+    "The first live job source will be selected during implementation based on lawful availability; a deterministic test adapter is mandatory.",
+    "The user will enter or correct exact home coordinates locally without using external geocoding for the exact address."
+  ],
+  "derived_from": {
+    "source": "last_summary.md plus live event pools, goal documents, and final scope audit",
+    "pools": {
+      "task_pool.ndjson": 13,
+      "issue_pool.ndjson": 0,
+      "logic_pool.ndjson": 8
+    }
+  }
+}

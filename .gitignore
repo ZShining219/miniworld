@@ -1,0 +1,46 @@
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Personal and runtime data
+data/
+uploads/
+exports/
+logs/
+*.log
+*.sqlite
+*.sqlite3
+*.db
+
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# JavaScript / frontend
+node_modules/
+dist/
+coverage/
+playwright-report/
+test-results/
+.vite/
+
+# Containers and tooling
+.docker-data/
+.cache/
+.idea/
+.vscode/
+.DS_Store
+*.swp
+*.swo
+
+# Temporary upstream imports
+upstream-tmp/

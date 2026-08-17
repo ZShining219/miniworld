@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "captured_at": "2026-08-18T02:41:39+08:00",
+  "project_root": "/Users/zfh/Documents/迷你世界",
+  "excludes": [
+    ".git/**",
+    ".ai/**",
+    "node_modules/**",
+    ".venv/**",
+    "__pycache__/**"
+  ],
+  "files": {
+    ".project_id": {
+      "size": 158,
+      "mtime_ns": 1784812394579804565
+    },
+    "goal.md": {
+      "size": 14572,
+      "mtime_ns": 1786991842892195202
+    },
+    "goal/architecture.md": {
+      "size": 10869,
+      "mtime_ns": 1786991842931776010
+    },
+    "goal/README.md": {
+      "size": 1955,
+      "mtime_ns": 1786991640784188330
+    },
+    "goal/implementation-log.md": {
+      "size": 2491,
+      "mtime_ns": 1786991904399970215
+    },
+    "goal/research.md": {
+      "size": 5883,
+      "mtime_ns": 1786991640820915635
+    },
+    "goal/plan.md": {
+      "size": 8536,
+      "mtime_ns": 1786991842970528518
+    },
+    "goal/decisions.md": {
+      "size": 3908,
+      "mtime_ns": 1786991843008948481
+    }
+  }
+}

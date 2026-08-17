@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "captured_at": "2026-07-23T21:14:18+08:00",
+  "project_root": "/Users/zfh/Documents/迷你世界",
+  "excludes": [
+    ".git/**",
+    ".ai/**",
+    "node_modules/**",
+    ".venv/**",
+    "__pycache__/**"
+  ],
+  "files": {
+    ".project_id": {
+      "size": 158,
+      "mtime_ns": 1784812394579804565
+    }
+  }
+}
