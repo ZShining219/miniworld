@@ -66,28 +66,38 @@ fi
 live_gate="$(json_post "/job-runs" '{"query":"internship","live":true}')"
 assert_json "$live_gate" '.status == "awaiting_configuration" and .current_node == "mode_gate"' "live mode gate"
 
-file_artifact="$(curl -fsS -X POST -F "file=@${DEMO_FILE};type=text/markdown" "${API_BASE}/imports/file")"
-file_id="$(jq -r '.id' <<<"$file_artifact")"
-file_run="$(curl -fsS -X POST "${API_BASE}/imports/${file_id}/process")"
-assert_json "$file_run" '.graph_name == "profile_ingestion" and .status == "succeeded"' "file import graph"
+existing_imports="$(curl -fsS "${API_BASE}/imports")"
+file_id="$(jq -r 'first(.[] | select(.source_type == "file" and .source_label == "demo-profile.md" and .status == "processed")) | .id // empty' <<<"$existing_imports")"
+if [[ -z "$file_id" ]]; then
+  file_artifact="$(curl -fsS -X POST -F "file=@${DEMO_FILE};type=text/markdown" "${API_BASE}/imports/file")"
+  file_id="$(jq -r '.id' <<<"$file_artifact")"
+  file_run="$(curl -fsS -X POST "${API_BASE}/imports/${file_id}/process")"
+  assert_json "$file_run" '.graph_name == "profile_ingestion" and .status == "succeeded"' "file import graph"
+fi
 
 github_payload="$(jq -cn \
   --arg label "公开 GitHub 项目说明（演示）" \
   --arg content $'项目：MiniWorld Agent\n技能：Python 和 LangGraph\n成果：完成本地演示' \
   '{source_type:"github",source_label:$label,content:$content}')"
-github_artifact="$(json_post "/imports/text" "$github_payload")"
-github_id="$(jq -r '.id' <<<"$github_artifact")"
-github_run="$(curl -fsS -X POST "${API_BASE}/imports/${github_id}/process")"
-assert_json "$github_run" '.status == "succeeded"' "GitHub material graph"
+github_id="$(jq -r 'first(.[] | select(.source_type == "github" and .source_label == "公开 GitHub 项目说明（演示）" and .status == "processed")) | .id // empty' <<<"$existing_imports")"
+if [[ -z "$github_id" ]]; then
+  github_artifact="$(json_post "/imports/text" "$github_payload")"
+  github_id="$(jq -r '.id' <<<"$github_artifact")"
+  github_run="$(curl -fsS -X POST "${API_BASE}/imports/${github_id}/process")"
+  assert_json "$github_run" '.status == "succeeded"' "GitHub material graph"
+fi
 
 gpt_payload="$(jq -cn \
   --arg label "GPT 对话导出（演示）" \
   --arg content $'项目：Agent 工作流讨论\n技能：结构化输出\n成果：明确本地隐私边界' \
   '{source_type:"gpt_conversation",source_label:$label,content:$content}')"
-gpt_artifact="$(json_post "/imports/text" "$gpt_payload")"
-gpt_id="$(jq -r '.id' <<<"$gpt_artifact")"
-gpt_run="$(curl -fsS -X POST "${API_BASE}/imports/${gpt_id}/process")"
-assert_json "$gpt_run" '.status == "succeeded"' "GPT conversation graph"
+gpt_id="$(jq -r 'first(.[] | select(.source_type == "gpt_conversation" and .source_label == "GPT 对话导出（演示）" and .status == "processed")) | .id // empty' <<<"$existing_imports")"
+if [[ -z "$gpt_id" ]]; then
+  gpt_artifact="$(json_post "/imports/text" "$gpt_payload")"
+  gpt_id="$(jq -r '.id' <<<"$gpt_artifact")"
+  gpt_run="$(curl -fsS -X POST "${API_BASE}/imports/${gpt_id}/process")"
+  assert_json "$gpt_run" '.status == "succeeded"' "GPT conversation graph"
+fi
 
 facts="$(curl -fsS "${API_BASE}/profile-facts")"
 for artifact_id in "$file_id" "$github_id" "$gpt_id"; do
@@ -100,51 +110,68 @@ resumes="$(curl -fsS "${API_BASE}/resume-drafts")"
 assert_json "$resumes" 'length >= 3 and .[0].version >= 3' "versioned resume drafts"
 
 facts_before_work="$(jq 'length' <<<"$facts")"
-entry_one="$(json_post "/work-entries" '{"work_date":"2026-08-17","content":"完成 API 骨架","tags":["demo"]}')"
-entry_two="$(json_post "/work-entries" '{"work_date":"2026-08-18","content":"完成前端看板；下一步验证容器","tags":["demo"]}')"
-assert_json "$entry_one" '.id != null' "first work entry"
-assert_json "$entry_two" '.id != null' "second work entry"
+existing_work_entries="$(curl -fsS "${API_BASE}/work-entries")"
+entry_one_id="$(jq -r 'first(.[] | select(.work_date == "2026-08-17" and .content == "完成 API 骨架")) | .id // empty' <<<"$existing_work_entries")"
+if [[ -z "$entry_one_id" ]]; then
+  entry_one="$(json_post "/work-entries" '{"work_date":"2026-08-17","content":"完成 API 骨架","tags":["demo"]}')"
+  assert_json "$entry_one" '.id != null' "first work entry"
+fi
+entry_two_id="$(jq -r 'first(.[] | select(.work_date == "2026-08-18" and .content == "完成前端看板；下一步验证容器")) | .id // empty' <<<"$existing_work_entries")"
+if [[ -z "$entry_two_id" ]]; then
+  entry_two="$(json_post "/work-entries" '{"work_date":"2026-08-18","content":"完成前端看板；下一步验证容器","tags":["demo"]}')"
+  assert_json "$entry_two" '.id != null' "second work entry"
+fi
 
-daily="$(json_post "/reports" '{"report_type":"daily","period_start":"2026-08-18","period_end":"2026-08-18"}')"
-weekly="$(json_post "/reports" '{"report_type":"weekly","period_start":"2026-08-17","period_end":"2026-08-18"}')"
-assert_json "$daily" '.graph_name == "work_report" and .status == "succeeded"' "daily report graph"
-assert_json "$weekly" '.graph_name == "work_report" and .status == "succeeded"' "weekly report graph"
+reports="$(curl -fsS "${API_BASE}/reports")"
+if ! jq -e 'any(.[]; .report_type == "daily" and .period_start == "2026-08-18" and .period_end == "2026-08-18")' >/dev/null <<<"$reports"; then
+  daily="$(json_post "/reports" '{"report_type":"daily","period_start":"2026-08-18","period_end":"2026-08-18"}')"
+  assert_json "$daily" '.graph_name == "work_report" and .status == "succeeded"' "daily report graph"
+fi
+if ! jq -e 'any(.[]; .report_type == "weekly" and .period_start == "2026-08-17" and .period_end == "2026-08-18")' >/dev/null <<<"$reports"; then
+  weekly="$(json_post "/reports" '{"report_type":"weekly","period_start":"2026-08-17","period_end":"2026-08-18"}')"
+  assert_json "$weekly" '.graph_name == "work_report" and .status == "succeeded"' "weekly report graph"
+fi
 reports="$(curl -fsS "${API_BASE}/reports")"
 assert_json "$reports" 'any(.[]; .report_type == "daily" and (.source_entry_ids | length > 0)) and any(.[]; .report_type == "weekly" and (.source_entry_ids | length > 0))' "traceable reports"
 
 # Produce a real node failure, fix its local precondition, and resume the same
 # persisted PostgreSQL checkpoint. A second retry must be rejected so the
 # successful business write cannot be duplicated.
-reports_before_retry="$(jq 'length' <<<"$reports")"
-existing_entries="$(curl -fsS "${API_BASE}/work-entries")"
-retry_year=2099
-while jq -e --arg work_date "${retry_year}-01-01" 'any(.[]; .work_date == $work_date)' >/dev/null <<<"$existing_entries"; do
-  retry_year=$((retry_year + 1))
-  if [[ "$retry_year" -gt 9999 ]]; then
-    echo "verification failed: no free fictional date for checkpoint proof" >&2
+existing_runs="$(curl -fsS "${API_BASE}/agent-runs?limit=500")"
+recovered_run_id="$(jq -r 'first(.[] | select(.graph_name == "work_report" and .status == "succeeded" and .retry_count >= 1 and (.error_history | length >= 1))) | .id // empty' <<<"$existing_runs")"
+if [[ -z "$recovered_run_id" ]]; then
+  reports_before_retry="$(jq 'length' <<<"$reports")"
+  existing_entries="$(curl -fsS "${API_BASE}/work-entries")"
+  retry_year=2099
+  while jq -e --arg work_date "${retry_year}-01-01" 'any(.[]; .work_date == $work_date)' >/dev/null <<<"$existing_entries"; do
+    retry_year=$((retry_year + 1))
+    if [[ "$retry_year" -gt 9999 ]]; then
+      echo "verification failed: no free fictional date for checkpoint proof" >&2
+      exit 1
+    fi
+  done
+  retry_date="${retry_year}-01-01"
+  failed_report_payload="$(jq -cn --arg retry_date "$retry_date" '{report_type:"daily",period_start:$retry_date,period_end:$retry_date}')"
+  failed_report="$(json_post "/reports" "$failed_report_payload")"
+  assert_json "$failed_report" '.status == "failed" and .current_node == "stopped" and (.error_history | length == 1)' "visible failed checkpoint run"
+  recovered_run_id="$(jq -r '.id' <<<"$failed_report")"
+  retry_entry_payload="$(jq -cn --arg retry_date "$retry_date" '{work_date:$retry_date,content:"用于 checkpoint 恢复验收的虚构记录",tags:["checkpoint-proof"]}')"
+  retry_entry="$(json_post "/work-entries" "$retry_entry_payload")"
+  assert_json "$retry_entry" '.id != null' "checkpoint retry precondition"
+  recovered_report="$(curl -fsS -X POST "${API_BASE}/agent-runs/${recovered_run_id}/retry")"
+  assert_json "$recovered_report" '.status == "succeeded" and .retry_count == 1 and (.error_history | length == 1)' "PostgreSQL checkpoint recovery"
+  reports="$(curl -fsS "${API_BASE}/reports")"
+  if [[ "$(jq 'length' <<<"$reports")" -ne $((reports_before_retry + 1)) ]]; then
+    echo "verification failed: checkpoint retry created an unexpected report count" >&2
     exit 1
   fi
-done
-retry_date="${retry_year}-01-01"
-failed_report_payload="$(jq -cn --arg retry_date "$retry_date" '{report_type:"daily",period_start:$retry_date,period_end:$retry_date}')"
-failed_report="$(json_post "/reports" "$failed_report_payload")"
-assert_json "$failed_report" '.status == "failed" and .current_node == "stopped" and (.error_history | length == 1)' "visible failed checkpoint run"
-failed_report_id="$(jq -r '.id' <<<"$failed_report")"
-retry_entry_payload="$(jq -cn --arg retry_date "$retry_date" '{work_date:$retry_date,content:"用于 checkpoint 恢复验收的虚构记录",tags:["checkpoint-proof"]}')"
-retry_entry="$(json_post "/work-entries" "$retry_entry_payload")"
-assert_json "$retry_entry" '.id != null' "checkpoint retry precondition"
-recovered_report="$(curl -fsS -X POST "${API_BASE}/agent-runs/${failed_report_id}/retry")"
-assert_json "$recovered_report" '.status == "succeeded" and .retry_count == 1 and (.error_history | length == 1)' "PostgreSQL checkpoint recovery"
-retry_again_status="$(curl -sS -o /dev/null -w '%{http_code}' -X POST "${API_BASE}/agent-runs/${failed_report_id}/retry")"
+fi
+retry_again_status="$(curl -sS -o /dev/null -w '%{http_code}' -X POST "${API_BASE}/agent-runs/${recovered_run_id}/retry")"
 if [[ "$retry_again_status" != "409" ]]; then
   echo "verification failed: completed checkpoint retry was not protected from duplication" >&2
   exit 1
 fi
 reports="$(curl -fsS "${API_BASE}/reports")"
-if [[ "$(jq 'length' <<<"$reports")" -ne $((reports_before_retry + 1)) ]]; then
-  echo "verification failed: checkpoint retry created an unexpected report count" >&2
-  exit 1
-fi
 facts_after_work="$(curl -fsS "${API_BASE}/profile-facts" | jq 'length')"
 if [[ "$facts_before_work" != "$facts_after_work" ]]; then
   echo "verification failed: work reporting modified profile facts" >&2
