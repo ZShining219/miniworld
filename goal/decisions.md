@@ -31,6 +31,8 @@
 | T-008 | Accepted | 远端模型通过统一 `ModelProvider` 接口注入 | 避免绑定单一厂商，并集中执行数据最小化、授权与审计 |
 | T-009 | Accepted | PostgreSQL 同时承载业务数据和 LangGraph checkpoint | 减少 Demo 服务数量；Redis/Celery 暂不引入 |
 | T-010 | Accepted | 独立 Worker 使用 APScheduler 触发 Graph | 调度配置保存在 PostgreSQL；不在前端或 API 请求进程中运行定时任务 |
+| T-011 | Accepted | LangGraph 完全本地运行，不把 LangGraph Cloud 或 LangSmith 设为依赖 | OSS Python 包运行在 API/Worker 容器；PostgreSQL 保存 checkpoint，远端仅是可选模型推理 |
+| T-012 | Accepted | Demo 同时提供无密钥确定性模式和显式启用的 Live 模式 | 确保本地冷启动可复现，同时不把替身数据冒充真实联网结果 |
 
 ## 尚未锁定但已明确不阻塞 Demo
 
@@ -40,6 +42,10 @@
 | O-002 | Proposed | 最终简历版式与导出格式 | 先实现版本化 JSON 草稿 |
 | O-003 | Proposed | 长期职位来源组合 | Demo 以一个合法可用来源加测试适配器验收 |
 | O-004 | Proposed | 具体远端模型厂商和模型名 | 首期实现 OpenAI/GPT 类 Provider，配置决定实际模型 |
+
+## 技术价值与产品边界说明
+
+本项目把 LangGraph、结构化模型输出、PostgreSQL checkpoint、FastAPI、React/TypeScript、Docker 和自动化测试作为可验证工程能力，而不是把“多 Agent 数量”当作先进程度。技术展示必须服从 `P-001`—`P-009`：不能为了作品复杂度增加自动投递、无限工具权限、未经授权的数据外发或三个闭环之间的隐式耦合。
 
 ## 变更模板
 

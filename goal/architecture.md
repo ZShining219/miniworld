@@ -9,6 +9,7 @@
 - 最小外发：远端模型只接收当前任务必需、已授权且通过策略检查的文本；
 - 可恢复：每次 Agent 运行有状态、checkpoint、幂等键和明确失败原因；
 - 可替换：职位来源和模型 Provider 均通过接口接入。
+- 可复现：默认 `demo` 模式使用确定性适配器；`live` 模式必须由用户显式配置并在运行记录中标注。
 
 ## 2. 本地容器拓扑
 
@@ -38,6 +39,13 @@ Docker Compose 服务：
 前端和 API 端口只映射到 `127.0.0.1`。数据库不映射到公网；开发时如需宿主机连接，也只绑定回环地址。
 
 ## 3. LangGraph 设计
+
+所有 Graph 接收不可变的 `execution_mode`：
+
+- `demo`：只允许固定数据 `JobSourceAdapter` 和确定性 `ModelProvider`，禁止意外网络访问；
+- `live`：只允许已启用的公开来源和已授权 Provider，仍必须经过同一出站策略；
+- API 不能通过单次任意参数绕过全局模式与来源/Provider 白名单；
+- `agent_runs`、模型审计和前端结果均保留模式字段。
 
 ### 3.1 `JobDiscoveryGraph`
 
@@ -167,7 +175,7 @@ class ArtifactConverter(Protocol):
 
 - `work_entries`：日期、正文、标签、更新时间；
 - `reports`：日报/周报、日期范围、结构化内容、版本；
-- `agent_runs`：Graph、checkpoint/thread ID、状态、阶段和错误；
+- `agent_runs`：Graph、运行模式、触发方式、checkpoint/thread ID、状态、当前节点和错误；
 - `model_call_audits`：Provider、模型、任务、数据类别、请求/响应哈希、token/耗时（可得时）；
 - `approval_requests`：行为、目标、数据类别、状态、决定时间。
 

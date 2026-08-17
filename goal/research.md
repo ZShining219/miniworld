@@ -3,6 +3,8 @@
 > 调研日期：2026-08-18  
 > 目标：寻找成熟、市场认可度高且不会改变项目意图的实现基座与组件
 
+> 运行结论：本机可以直接运行 LangGraph OSS。LangGraph 是 Python 编排库，不要求使用云服务；本项目将它安装在本地 API/Worker 环境，以 PostgreSQL 提供持久 checkpoint。
+
 ## 1. 选择结论
 
 | 能力 | 选择 | 使用方式 | 结论 |
@@ -34,6 +36,29 @@ Star 数量是 2026-08-18 的页面快照，仅用于判断社区规模，不作
 LangGraph 是编排库，不是完整应用基座。它提供长期状态、持久执行、checkpoint 和 human-in-the-loop，适合把三个业务闭环实现为隔离、可审计的状态图。
 
 本项目只使用 OSS Python 包和本地 PostgreSQL checkpoint，不依赖 LangGraph 云平台。模型调用通过项目自己的 `ModelProvider` 网关进入，LangGraph 节点不能直接读取任意文件、密钥或绕过出站策略。
+
+### 3.1 本机运行结论
+
+- 编排层：`langgraph` 在普通 Python 进程中执行，适配 Apple Silicon；
+- 状态层：测试可使用内存 checkpointer，Docker Demo 使用 PostgreSQL checkpointer；
+- 模型层：Graph 可以调用远端 GPT Provider、本机 Ollama Provider 或确定性测试 Provider，三者均不改变 Graph 的业务边界；
+- 调度层：APScheduler 只负责定时触发，Graph 自己保存运行状态；
+- 托管产品：LangSmith/Deployment 可用于未来观测或部署评估，但不进入本地 Demo 的启动依赖。
+
+因此，“本机运行 Agent”与“调用远端大模型”是两层独立问题：前者由本地 Python、数据库和 Worker 完成，后者只是受策略控制的可替换推理能力。
+
+### 3.2 工作市场与作品集价值
+
+采用 LangGraph 的价值来自可展示的工程问题，而不是库名本身：
+
+- 用显式 State/Node/Edge 表达三个业务流程；
+- 用 checkpoint 证明长任务可恢复，而不是只做同步聊天；
+- 用 interrupt/approval 表达 human-in-the-loop；
+- 用 Provider、Pydantic schema 和策略层约束不可信模型输出；
+- 用 FastAPI、PostgreSQL、React、Docker、Pytest、Playwright 形成完整交付链；
+- 用真实来源适配器和确定性替身同时证明外部集成与可测试性。
+
+这些能力比堆叠多个自由对话 Agent 更符合本项目的隐私约束，也更容易通过代码、测试和 Demo 解释。
 
 未采用方案：
 
