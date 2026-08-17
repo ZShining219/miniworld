@@ -1,0 +1,298 @@
+{
+  "schema_version": 1,
+  "captured_at": "2026-08-18T03:06:25+08:00",
+  "project_root": "/Users/zfh/Documents/迷你世界",
+  "excludes": [
+    ".git/**",
+    ".ai/**",
+    "node_modules/**",
+    ".venv/**",
+    "__pycache__/**"
+  ],
+  "files": {
+    "uv.lock": {
+      "size": 225761,
+      "mtime_ns": 1786992542113477413
+    },
+    ".project_id": {
+      "size": 158,
+      "mtime_ns": 1784812394579804565
+    },
+    "pyproject.toml": {
+      "size": 656,
+      "mtime_ns": 1786992542046095165
+    },
+    "goal.md": {
+      "size": 19453,
+      "mtime_ns": 1786993355470410987
+    },
+    "THIRD_PARTY_NOTICES.md": {
+      "size": 730,
+      "mtime_ns": 1786992568874785821
+    },
+    "bun.lock": {
+      "size": 148991,
+      "mtime_ns": 1786992542160751420
+    },
+    ".dockerignore": {
+      "size": 164,
+      "mtime_ns": 1786992542210405519
+    },
+    ".gitignore": {
+      "size": 486,
+      "mtime_ns": 1786992131564542579
+    },
+    "package.json": {
+      "size": 428,
+      "mtime_ns": 1786992541997613320
+    },
+    ".gitattributes": {
+      "size": 29,
+      "mtime_ns": 1786992542259850367
+    },
+    ".python-version": {
+      "size": 5,
+      "mtime_ns": 1786992542308329795
+    },
+    "AGENTS.md": {
+      "size": 1676,
+      "mtime_ns": 1786992131601521423
+    },
+    "compose.yml": {
+      "size": 2846,
+      "mtime_ns": 1786992542357827602
+    },
+    "frontend/tsconfig.node.json": {
+      "size": 213,
+      "mtime_ns": 1786955921000000000
+    },
+    "frontend/index.html": {
+      "size": 454,
+      "mtime_ns": 1786955921000000000
+    },
+    "frontend/Dockerfile.playwright": {
+      "size": 373,
+      "mtime_ns": 1786955921000000000
+    },
+    "frontend/README.md": {
+      "size": 4077,
+      "mtime_ns": 1786955921000000000
+    },
+    "frontend/.dockerignore": {
+      "size": 18,
+      "mtime_ns": 1786955921000000000
+    },
+    "frontend/package.json": {
+      "size": 2153,
+      "mtime_ns": 1786955921000000000
+    },
+    "frontend/tsconfig.build.json": {
+      "size": 67,
+      "mtime_ns": 1786955921000000000
+    },
+    "frontend/components.json": {
+      "size": 446,
+      "mtime_ns": 1786955921000000000
+    },
+    "frontend/tsconfig.json": {
+      "size": 724,
+      "mtime_ns": 1786955921000000000
+    },
+    "frontend/playwright.config.ts": {
+      "size": 2585,
+      "mtime_ns": 1786955921000000000
+    },
+    "frontend/vite.config.ts": {
+      "size": 584,
+      "mtime_ns": 1786955921000000000
+    },
+    "frontend/biome.json": {
+      "size": 1191,
+      "mtime_ns": 1786955921000000000
+    },
+    "frontend/openapi-ts.config.ts": {
+      "size": 562,
+      "mtime_ns": 1786955921000000000
+    },
+    "backend/alembic.ini": {
+      "size": 1596,
+      "mtime_ns": 1786955921000000000
+    },
+    "backend/Dockerfile": {
+      "size": 1771,
+      "mtime_ns": 1786955921000000000
+    },
+    "backend/pyproject.toml": {
+      "size": 1923,
+      "mtime_ns": 1786955921000000000
+    },
+    "backend/README.md": {
+      "size": 5095,
+      "mtime_ns": 1786955921000000000
+    },
+    "backend/.dockerignore": {
+      "size": 76,
+      "mtime_ns": 1786955921000000000
+    },
+    "scripts/generate-client.sh": {
+      "size": 268,
+      "mtime_ns": 1786992542456101380
+    },
+    "scripts/test-local.sh": {
+      "size": 462,
+      "mtime_ns": 1786992542555193328
+    },
+    "scripts/test.sh": {
+      "size": 371,
+      "mtime_ns": 1786992542506245814
+    },
+    "goal/architecture.md": {
+      "size": 11462,
+      "mtime_ns": 1786993368001674213
+    },
+    "goal/README.md": {
+      "size": 2175,
+      "mtime_ns": 1786993355538633618
+    },
+    "goal/implementation-log.md": {
+      "size": 5229,
+      "mtime_ns": 1786993314716714404
+    },
+    "goal/research.md": {
+      "size": 7557,
+      "mtime_ns": 1786993296462069582
+    },
+    "goal/plan.md": {
+      "size": 11000,
+      "mtime_ns": 1786993355504385383
+    },
+    "goal/decisions.md": {
+      "size": 4731,
+      "mtime_ns": 1786993281404116989
+    },
+    "third_party/licenses/fastapi-template-MIT.txt": {
+      "size": 1076,
+      "mtime_ns": 1786992542406590532
+    },
+    "backend/app/models.py": {
+      "size": 6649,
+      "mtime_ns": 1786992871837730613
+    },
+    "backend/app/backend_pre_start.py": {
+      "size": 921,
+      "mtime_ns": 1786955921000000000
+    },
+    "backend/app/__init__.py": {
+      "size": 0,
+      "mtime_ns": 1786955921000000000
+    },
+    "backend/app/schemas.py": {
+      "size": 1682,
+      "mtime_ns": 1786992871871721926
+    },
+    "backend/app/tests_pre_start.py": {
+      "size": 917,
+      "mtime_ns": 1786955921000000000
+    },
+    "backend/scripts/prestart.sh": {
+      "size": 183,
+      "mtime_ns": 1786955921000000000
+    },
+    "backend/scripts/lint.sh": {
+      "size": 97,
+      "mtime_ns": 1786955921000000000
+    },
+    "backend/scripts/tests-start.sh": {
+      "size": 93,
+      "mtime_ns": 1786955921000000000
+    },
+    "backend/scripts/test.sh": {
+      "size": 144,
+      "mtime_ns": 1786955921000000000
+    },
+    "backend/scripts/format.sh": {
+      "size": 74,
+      "mtime_ns": 1786955921000000000
+    },
+    "backend/app/core/db.py": {
+      "size": 573,
+      "mtime_ns": 1786992871803794718
+    },
+    "backend/app/core/config.py": {
+      "size": 1102,
+      "mtime_ns": 1786992871766331130
+    },
+    "backend/app/core/__init__.py": {
+      "size": 0,
+      "mtime_ns": 1786955921000000000
+    },
+    "backend/app/agent/policy.py": {
+      "size": 1763,
+      "mtime_ns": 1786992959806193785
+    },
+    "backend/app/agent/__init__.py": {
+      "size": 58,
+      "mtime_ns": 1786992959769354251
+    },
+    "backend/app/agent/providers.py": {
+      "size": 5372,
+      "mtime_ns": 1786992959840936571
+    },
+    "backend/app/agent/graphs.py": {
+      "size": 13791,
+      "mtime_ns": 1786993042610998775
+    },
+    "backend/app/agent/adapters.py": {
+      "size": 4861,
+      "mtime_ns": 1786992959876940213
+    },
+    "backend/app/api/deps.py": {
+      "size": 1711,
+      "mtime_ns": 1786955921000000000
+    },
+    "backend/app/api/__init__.py": {
+      "size": 0,
+      "mtime_ns": 1786955921000000000
+    },
+    "backend/app/alembic/script.py.mako": {
+      "size": 523,
+      "mtime_ns": 1786955921000000000
+    },
+    "backend/app/alembic/env.py": {
+      "size": 2311,
+      "mtime_ns": 1786955921000000000
+    },
+    "backend/app/alembic/README": {
+      "size": 39,
+      "mtime_ns": 1786955921000000000
+    },
+    "backend/app/alembic/versions/.keep": {
+      "size": 0,
+      "mtime_ns": 1786955921000000000
+    },
+    "backend/app/api/routes/__init__.py": {
+      "size": 0,
+      "mtime_ns": 1786955921000000000
+    },
+    "frontend/public/assets/images/fastapi-icon.svg": {
+      "size": 2609,
+      "mtime_ns": 1786955921000000000
+    },
+    "frontend/public/assets/images/fastapi-logo-light.svg": {
+      "size": 7162,
+      "mtime_ns": 1786955921000000000
+    },
+    "frontend/public/assets/images/favicon.png": {
+      "size": 5043,
+      "mtime_ns": 1786955921000000000
+    },
+    "frontend/public/assets/images/fastapi-logo.svg": {
+      "size": 7238,
+      "mtime_ns": 1786955921000000000
+    },
+    "frontend/public/assets/images/fastapi-icon-light.svg": {
+      "size": 2608,
+      "mtime_ns": 1786955921000000000
+    }
+  }
+}

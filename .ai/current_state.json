@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "project_id": "miniworld",
-  "generated_at": "2026-08-18T02:38:35+08:00",
-  "summary_status": "goal_v0.2_implementation_ready",
+  "generated_at": "2026-08-18T03:07:30+08:00",
+  "summary_status": "goal_v0.3_committed_demo_bootstrap_incomplete",
   "review_status": "pending_user_review",
   "checkpoint_id": null,
   "checkpoint_offsets": null,
@@ -17,24 +17,29 @@
     "D-004": "Scheduled public reads and limited local writes are allowed; external writes require confirmation.",
     "D-005": "Root goal.md is authoritative; goal/ technical documents are subordinate and cannot change intent.",
     "D-006": "Selected stack: pinned FastAPI template, LangGraph OSS, React/TypeScript, PostgreSQL, APScheduler worker, Docker Compose.",
-    "D-007": "Remote AI is injected through a local ModelProvider gateway with minimization, policy checks, schema validation, and audit.",
-    "D-008": "Upstream code is temporarily cloned, inspected, pinned, and selectively imported without upstream Git or agent instructions."
+    "D-007": "Remote AI enters only through a local policy-controlled ModelProvider gateway.",
+    "D-008": "Upstream code is pinned and selectively imported without upstream Git or agent instructions.",
+    "D-009": "Bootstrap uses explicit Git boundaries and no public push, real personal data, or secrets without confirmation.",
+    "D-010": "LangGraph runs locally with PostgreSQL checkpoints and no required LangGraph cloud service.",
+    "D-011": "A network-free deterministic demo mode is separate from explicitly enabled live integrations."
   },
   "pending_review": [
-    "User review of goal.md v0.2 and the goal/ implementation documentation"
+    "User review of committed goal.md v0.3 wording and subordinate goal documents",
+    "The local single-user backend reduction and LangGraph skeleton are untested and incomplete",
+    "Frontend, Worker, Compose convergence, migrations, dependency lock, and end-to-end tests remain incomplete"
   ],
   "assumptions": [
-    "The exact upstream FastAPI template commit will be pinned and recorded during Phase 0.",
-    "The first remote Provider adapter will support an OpenAI/GPT-style service, while the actual model remains configuration.",
-    "The first live job source will be selected during implementation based on lawful availability; a deterministic test adapter is mandatory.",
-    "The user will enter or correct exact home coordinates locally without using external geocoding for the exact address."
+    "The actual remote model remains configurable behind ModelProvider.",
+    "At least one lawful public job source must be validated in live mode before Demo freeze; deterministic data cannot substitute for this evidence.",
+    "The user will enter or correct exact home coordinates locally without external geocoding of the exact address.",
+    "No public Git push occurs before secret/PII review and user confirmation."
   ],
   "derived_from": {
-    "source": "last_summary.md plus live event pools, goal documents, and final scope audit",
+    "source": "last_summary.md plus live event pools, Goal v0.3 commit 6ceb3db, Git status, and scope audit",
     "pools": {
-      "task_pool.ndjson": 13,
+      "task_pool.ndjson": 27,
       "issue_pool.ndjson": 0,
-      "logic_pool.ndjson": 8
+      "logic_pool.ndjson": 11
     }
   }
 }
