@@ -1,16 +1,18 @@
-#! /usr/bin/env bash
+#!/usr/bin/env bash
 
-# Exit in case of error
-set -e
+set -euo pipefail
 
-docker-compose down -v --remove-orphans # Remove possibly previous broken stacks left hanging after an error
+UV_CACHE_DIR="${UV_CACHE_DIR:-.cache/uv}"
+export UV_CACHE_DIR
 
-if [ $(uname -s) = "Linux" ]; then
-    echo "Remove __pycache__ files"
-    sudo find . -type d -name __pycache__ -exec rm -r {} \+
-fi
+uv run --package app pytest backend/tests -q
+uv run --package app ruff check backend/app backend/tests
+uv run --package app mypy backend/app
+uv run --package app ty check backend/app
 
-docker-compose build
-docker-compose run --rm backend bash scripts/prestart.sh
-docker-compose up -d
-docker-compose exec -T backend bash scripts/tests-start.sh "$@"
+(
+  cd frontend
+  bun run build
+  bun run lint
+  bun run test
+)
