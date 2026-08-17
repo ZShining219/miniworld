@@ -1,15 +1,19 @@
 {
   "schema_version": 1,
   "project_id": "miniworld",
-  "generated_at": "2026-08-18T03:07:30+08:00",
-  "summary_status": "goal_v0.3_committed_demo_bootstrap_incomplete",
+  "generated_at": "2026-08-18T05:05:30+08:00",
+  "summary_status": "goal_v0.5_and_local_demo_verified_freeze_items_pending",
   "review_status": "pending_user_review",
   "checkpoint_id": null,
   "checkpoint_offsets": null,
   "active_windows": {},
   "active_locks": [],
-  "active_tasks": {},
-  "open_issues": {},
+  "active_tasks": {
+    "T-006": "Goal v0.5 and the local deterministic three-loop Demo are verified and committed; seven explicit Demo-freeze acceptance items remain for later work."
+  },
+  "open_issues": {
+    "ISS-003": "No successful lawful Live public job-source run yet; JobSpy returned 403/451 and a read-only Lever adapter is the next candidate."
+  },
   "key_logic": {
     "D-001": "Three independent demo loops: job distance, profile/resume, and daily/weekly work reports.",
     "D-002": "Exact address and home coordinates stay local; rotating nearby landmarks are used externally.",
@@ -21,25 +25,30 @@
     "D-008": "Upstream code is pinned and selectively imported without upstream Git or agent instructions.",
     "D-009": "Bootstrap uses explicit Git boundaries and no public push, real personal data, or secrets without confirmation.",
     "D-010": "LangGraph runs locally with PostgreSQL checkpoints and no required LangGraph cloud service.",
-    "D-011": "A network-free deterministic demo mode is separate from explicitly enabled live integrations."
+    "D-011": "A network-free deterministic demo mode is separate from explicitly enabled live integrations.",
+    "D-012": "Finish deterministic local runtime evidence before live integrations and final documentation.",
+    "D-013": "Keep real operation, deterministic demo, live public-read, and privacy evidence distinct.",
+    "D-014": "Prefer read-only company ATS/Job Board APIs, starting with Lever Postings, before best-effort JobSpy; application POST endpoints remain prohibited.",
+    "D-015": "Separate target architecture decomposition from actual implemented graph nodes and completion evidence."
   },
   "pending_review": [
-    "User review of committed goal.md v0.3 wording and subordinate goal documents",
-    "The local single-user backend reduction and LangGraph skeleton are untested and incomplete",
-    "Frontend, Worker, Compose convergence, migrations, dependency lock, and end-to-end tests remain incomplete"
+    "User review of goal.md v0.5 wording, 29 checked items, and seven explicitly unchecked freeze items",
+    "Choose permitted Lever company Job Boards and a read frequency before the next Live-source implementation",
+    "Decide whether and which OpenAI Provider/model/data categories may be used for an authorized Live model test",
+    "Approve any future public push only after reviewing the local commits and existing privacy scan"
   ],
   "assumptions": [
     "The actual remote model remains configurable behind ModelProvider.",
     "At least one lawful public job source must be validated in live mode before Demo freeze; deterministic data cannot substitute for this evidence.",
     "The user will enter or correct exact home coordinates locally without external geocoding of the exact address.",
-    "No public Git push occurs before secret/PII review and user confirmation."
+    "No public Git push occurs before user confirmation even though the current secret/PII scan passed."
   ],
   "derived_from": {
-    "source": "last_summary.md plus live event pools, Goal v0.3 commit 6ceb3db, Git status, and scope audit",
+    "source": "last_summary.md plus live event pools, commits c649ae0 and 2d6c1d2, final README test scripts, browser checks, privacy scans, and the 2026-08-18 scope audit",
     "pools": {
-      "task_pool.ndjson": 27,
-      "issue_pool.ndjson": 0,
-      "logic_pool.ndjson": 11
+      "task_pool.ndjson": 40,
+      "issue_pool.ndjson": 7,
+      "logic_pool.ndjson": 15
     }
   }
 }

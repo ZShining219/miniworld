@@ -1,25 +1,26 @@
 # Last Summary
 
 [Quick Link]
-- TASK: T-005 — Goal v0.3 committed locally as `6ceb3db`; no remote push
-- DECISION: D-010 — LangGraph OSS runs locally with PostgreSQL checkpoints and no required cloud runtime
-- DECISION: D-011 — deterministic `demo` mode is explicitly separate from configured `live` integrations
+- TASK: T-006 — Goal v0.5 and the local deterministic three-loop Demo are verified; seven freeze items remain
+- ISSUE: ISS-003 — a successful lawful Live public job source is still missing
+- DECISION: D-014 — prefer read-only company ATS/Job Board APIs, starting with Lever, before best-effort JobSpy
 
 [Current Focus]
-- `goal.md` v0.3 and the subordinate goal documents now define the local LangGraph runtime, user operation path, execution modes, data classification, requirement IDs, current phase facts, and Demo freeze gate.
-- The documentation checkpoint is isolated in local commit `6ceb3db` and excludes unfinished application changes.
-- The imported application is still being reduced to a local single-user system. Backend replacements are untested; frontend, Worker, migrations, dependencies, Compose convergence, and end-to-end validation remain unfinished.
+- Application commit `c649ae0` provides the local single-user FastAPI/React/PostgreSQL/Worker Demo with three independent LangGraph workflows; Goal v0.5 and user operations are committed as `2d6c1d2`.
+- `./scripts/test-local.sh` passes 13 backend tests, Ruff/Mypy/Ty, frontend build, Biome with eight CSS warnings, and two Playwright tests. `./scripts/test.sh` passes the rebuilt four-service container flow with `jobs=3 facts=60 reports=12 checkpoints=300`.
+- Goal v0.5 truthfully checks 29 evidence-backed items and leaves seven items unchecked. No real address, personal material, API key, external write, public push, or false Live-source claim was used.
 
 [Active Locks]
-- none
+- None. The Goal v0.5 finalization window released its `GLOBAL_REFACTOR` lock.
 
 [Open Issues]
-- none formally opened; incomplete implementation items remain pending review rather than being represented as defects.
+- ISS-003: Indeed returned 403 and LinkedIn China returned 451; a successful public-source run still requires a lawful read-only adapter such as Lever Postings.
 
 [Pending Review]
-- User review of Goal v0.3.
-- Existing uncommitted backend/frontend reduction must be reviewed and completed under a fresh `REQ-RUNTIME` claim.
-- Do not report the Demo as runnable until dependency, migration, API, Graph, frontend, Worker, container, privacy, and E2E evidence exists.
+- User review of Goal v0.5 and its seven explicitly unchecked freeze items.
+- Selection of permitted Lever company Job Boards/query frequency for the next Live-source step.
+- OpenAI Provider/model/data-category authorization before any real personal-material inference.
+- Public push remains unperformed and requires explicit confirmation.
 
 [Next Step]
-- Claim `REQ-RUNTIME` scope, finish the local single-user backend/runtime skeleton, add PostgreSQL checkpointer and deterministic demo-mode startup, then validate it before advancing to feature loops. Preserve the no-real-data, no-secret, no-public-push constraints.
+- Implement a read-only `LeverJobAdapter` using public Job Board data, then add an unresolved-location UI sample and a checkpoint-safe retry path. Keep matching scores, application tracking, radar visuals, real external writes, and public push out of scope.
