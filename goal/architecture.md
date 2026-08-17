@@ -13,14 +13,14 @@
 
 ### 1.1 实现状态读法
 
-本文同时保留“目标架构”和 v0.5 已实现子集。不能因为某个目标节点、数据表或 API 名称出现在文档中，就宣称已经实现。
+本文同时保留“目标架构”和 v0.6 已实现子集。不能因为某个目标节点、数据表或 API 名称出现在文档中，就宣称已经实现。
 
-| 范围 | v0.5 已实现 | 仍是目标或后续补强 |
+| 范围 | v0.6 已实现 | 仍是目标或后续补强 |
 | --- | --- | --- |
-| 岗位 Graph | 地标选择、Demo/JobSpy 适配、本地距离、幂等保存 | 公开 ATS 适配器、地点解析服务、可恢复重试 |
+| 岗位 Graph | 地标选择、Demo/JobSpy/Lever 适配、本地距离、未解析原因、幂等保存 | 地点解析服务与更多经允许的来源 |
 | 档案 Graph | 本地文件/手动文本导入、出站策略、结构化事实、版本简历 | 经用户授权的真实 Provider 验证、冲突工作台 |
 | 报告 Graph | 主动记录、日报/周报、来源 ID、审计哈希 | 向档案提升的 Approval 操作 |
-| 确认与恢复 | 本地 Approval 表/API 骨架、PostgreSQL checkpoint、失败状态 | LangGraph interrupt 恢复、安全重试 API、任何真实外部写入执行器 |
+| 确认与恢复 | 本地 Approval 表/API 骨架、PostgreSQL checkpoint、失败状态、同线程安全重试 API | LangGraph interrupt 审批恢复与任何真实外部写入执行器 |
 
 当前没有真实外部写入执行器，因此不会投递、发消息或上传资料。将来增加时必须先实现 interrupt/approval 与重新验收，不得直接复用当前的本地决策 API 作为已授权证明。
 
@@ -60,7 +60,7 @@ Docker Compose 服务：
 - API 不能通过单次任意参数绕过全局模式与来源/Provider 白名单；
 - `agent_runs`、模型审计和前端结果均保留模式字段。
 
-v0.5 代码中的实际节点是精简的可运行子集：
+v0.6 代码中的实际节点是精简的可运行子集：
 
 | Graph | 实际节点顺序 |
 | --- | --- |
@@ -68,7 +68,7 @@ v0.5 代码中的实际节点是精简的可运行子集：
 | `ProfileIngestionGraph` | `apply_outbound_policy` → `extract_structured_facts` → `persist_profile` |
 | `WorkReportGraph` | `load_work_entries` → `generate_report` → `persist_report` |
 
-下面的更细节点列表是目标分解；v0.5 中有的被合并到上述节点或 Runner，有的仍未实现。是否完成以根 `goal.md` 验收勾选和实现日志为准。
+下面的更细节点列表是目标分解；v0.6 中有的被合并到上述节点或 Runner，有的仍未实现。是否完成以根 `goal.md` 验收勾选和实现日志为准。
 
 ### 3.1 `JobDiscoveryGraph`
 
@@ -142,7 +142,7 @@ class ArtifactConverter(Protocol):
     async def convert_local(self, artifact: LocalArtifact) -> ConvertedText: ...
 ```
 
-v0.5 已有 `DemoJobAdapter` 与 `JobSpyAdapter`。由于当前 JobSpy 固定版本和目标站点的可用性限制，下一个 Live 适配器优先对接公司公开 ATS/Job Board API，候选为 Lever Postings API。这只是实现优先级，不增加投递功能；Lever 的 POST 申请端点明确不在当前授权范围内。
+v0.6 已有 `DemoJobAdapter`、`LeverJobAdapter` 与 `JobSpyAdapter`。Live 默认优先使用 Lever 公开 Postings GET API，并把公司 site 白名单和附近地标作为显式配置；JobSpy 保留为最善努力回退。Lever 的 POST 申请端点明确不存在于当前代码和授权范围内。
 
 实现要求：
 

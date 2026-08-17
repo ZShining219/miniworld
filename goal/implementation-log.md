@@ -210,6 +210,56 @@
 
 ---
 
+## 2026-08-18 — Goal v0.6 Live 公开读取与恢复证据
+
+### 范围
+
+- 关联需求：`REQ-JOB`、`REQ-PROFILE`、`REQ-PRIVACY`、`REQ-RUNTIME`；
+- 关闭所有不需要用户秘密、真实个人材料或外部写入授权的 Demo 冻结缺口；
+- 不增加匹配评分、投递跟踪、雷达地图、真实申请或跨模块写入。
+
+### 已完成
+
+- 新增 `LeverJobAdapter`，仅调用公开 `GET /v0/postings/{site}`，site 使用显式白名单，location 只接收附近地标；代码中没有 Lever 申请 POST；
+- 对来源没有可验证坐标的职位保存 `location_unresolved` 和明确 `distance_reason`，前端展示原因，不伪造距离；
+- 为 Agent 运行增加失败历史、重试次数和 `POST /agent-runs/{id}/retry`；失败 Graph 使用原 `checkpoint_thread_id` 和 `graph.invoke(None, config)` 恢复，成功后再次重试返回 409；
+- 让内存 checkpointer 在同一进程内持久，以便本地开发和测试也能真实跨 API 调用恢复；Docker 仍使用 PostgreSQL checkpointer；
+- 对 Pydantic `ValidationError` 保存不含模型原始输出的安全错误，非法 schema 不写事实或简历；
+- 验证 OpenAI 模式无 Key 时状态为 `awaiting_configuration`，事实和简历不增长；
+- 新增 Alembic `20260818_0002`，为职位增加距离原因，为 Agent 运行增加重试审计字段。
+
+### 验证
+
+- `./scripts/test-local.sh`：后端 `17 passed`，Ruff、Mypy、Ty、前端生产构建通过；Biome 无 error、8 条既有 CSS warning；Playwright `3 passed`；
+- `UV_CACHE_DIR=.cache/uv uv run --package app python scripts/verify-live-lever.py`：使用一次性临时 SQLite、虚构香港位置和公开地标 `Hong Kong`，Lever Live GET 返回 3 条公开职位；输出确认 `exact_location_exposed=false`、`external_write_performed=false`；
+- `./scripts/test.sh`：按 README 原样完成重建与验收；四服务、Alembic `20260818_0002`、三闭环、Worker 定时、回环端口和重启持久性通过；额外制造“无工作记录”节点失败，新增虚构记录后从同一 PostgreSQL checkpoint 恢复，第二次重试被 409 阻断；最近输出 `jobs=3 facts=110 reports=25 checkpoints=548`；
+- `git diff --check`、后端静态检查和 Live 验收脚本 Ruff 检查均通过。
+
+### 未完成
+
+- 未进行真实 OpenAI/其他远端模型调用：用户尚未确认 Provider、模型和允许外发的数据类别；
+- 未配置用户真实附近地标，未使用真实住址、坐标、个人材料或 API Key；
+- 未创建 `demo-v0.1` tag，未执行公开 push。
+
+### 偏差与决策
+
+- Lever 默认公司 site `binance` 只用于公开集成证明，不代表替用户选择长期求职公司；长期白名单仍由用户配置；
+- 公开来源不提供坐标时保留职位并显式标记，不引入外部地理编码服务，也不改变“直线距离只在本地计算”的约束；
+- checkpoint 恢复复用原运行记录以保持原始 Graph state 的 `run_id` 一致，并保留失败历史；成功终态不可再次重试。
+
+### Git
+
+- 分支：`codex/bootstrap-langgraph`；
+- 本轮实现、文档和治理提交待创建；
+- 未 push。
+
+### 下一步
+
+- 等待用户决定 Provider、模型与允许外发的数据类别，再用明确选择的最小材料完成唯一剩余的真实远端模型验收；
+- 完成最终隐私扫描后，由用户决定本地 tag 和公开 push。
+
+---
+
 ## 后续记录模板
 
 ```md

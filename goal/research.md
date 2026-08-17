@@ -12,7 +12,7 @@
 | 全栈工程基座 | [FastAPI Full Stack Template](https://github.com/fastapi/full-stack-fastapi-template) | 固定 commit 后选择性导入并裁剪 | 采用 |
 | Agent 编排 | [LangGraph](https://github.com/langchain-ai/langgraph) | Python 依赖，三个独立 Graph | 采用 |
 | 职位采集 | [JobSpy](https://github.com/speedyapply/JobSpy) | 首个 `JobSourceAdapter`，必须有限流和失败治理 | 采用为候选适配器 |
-| 公司 ATS 公开职位 | [Lever Postings API](https://github.com/lever/postings-api) | 只读 GET 适配器，按公司 site/location/commitment 读取 | 作为下一个 Live 适配器候选 |
+| 公司 ATS 公开职位 | [Lever Postings API](https://github.com/lever/postings-api) | 只读 GET 适配器，按公司 site/location 读取 | 已采用并完成 Live 证据 |
 | 多模态文件转文本 | [Microsoft MarkItDown](https://github.com/microsoft/markitdown) | 本地依赖，只调用最窄的本地转换接口 | 采用 |
 | 简历结构标准 | [JSON Resume](https://github.com/jsonresume/jsonresume.org/tree/master/packages/schema) | 作为内部简历草稿 schema 的参考 | 采用为参考 |
 | 简历产品参考 | [Reactive Resume](https://github.com/AmruthPillai/Reactive-Resume) | 只参考交互、预览和导出思路 | 不作为基座 |
@@ -99,10 +99,14 @@ JobSpy 上游目标是为多个招聘站点提供统一 Python 接口。但本�
 
 Live 接入优先级因此调整为：
 
-1. 优先公司公开 ATS/Job Board GET API，第一候选为 Lever Postings API；
+1. 优先公司公开 ATS/Job Board GET API，首个已实现来源为 Lever Postings API；
 2. JobSpy 保留为最善努力的可替换适配器；
 3. 任何来源都必须限频、标注来源和失败，不绕过登录、验证码或区域/合规限制；
 4. Lever 的申请 POST API 不属于当前 Demo，即使技术上可用也禁止调用。
+
+### 4.1 v0.6 实际验证
+
+`LeverJobAdapter` 已按上述方案实现。一次性验证脚本使用虚构香港位置、公开地标 `Hong Kong`、临时数据库和 `binance` 公开 Job Board，取得 3 条公开职位。请求只包含 `mode`、结果上限和附近地标；响应未包含可靠坐标，因此系统保留职位并标记 `location_unresolved`，没有把地点文本猜成坐标。`binance` 只是可复现的公开技术样例，不代表用户长期目标公司；正式白名单和频率仍是本地配置。
 
 ## 5. MarkItDown 与材料导入
 
