@@ -1,19 +1,17 @@
 {
   "schema_version": 1,
   "project_id": "miniworld",
-  "generated_at": "2026-08-18T05:05:30+08:00",
-  "summary_status": "goal_v0.5_and_local_demo_verified_freeze_items_pending",
+  "generated_at": "2026-08-18T05:35:22+08:00",
+  "summary_status": "goal_v0.6_verified_one_authorized_remote_model_item_pending",
   "review_status": "pending_user_review",
   "checkpoint_id": null,
   "checkpoint_offsets": null,
   "active_windows": {},
   "active_locks": [],
   "active_tasks": {
-    "T-006": "Goal v0.5 and the local deterministic three-loop Demo are verified and committed; seven explicit Demo-freeze acceptance items remain for later work."
+    "T-006": "Overall Demo freeze awaits one user-authorized real remote-model structured call; every no-decision engineering gap was completed by T-007."
   },
-  "open_issues": {
-    "ISS-003": "No successful lawful Live public job-source run yet; JobSpy returned 403/451 and a read-only Lever adapter is the next candidate."
-  },
+  "open_issues": {},
   "key_logic": {
     "D-001": "Three independent demo loops: job distance, profile/resume, and daily/weekly work reports.",
     "D-002": "Exact address and home coordinates stay local; rotating nearby landmarks are used externally.",
@@ -28,27 +26,29 @@
     "D-011": "A network-free deterministic demo mode is separate from explicitly enabled live integrations.",
     "D-012": "Finish deterministic local runtime evidence before live integrations and final documentation.",
     "D-013": "Keep real operation, deterministic demo, live public-read, and privacy evidence distinct.",
-    "D-014": "Prefer read-only company ATS/Job Board APIs, starting with Lever Postings, before best-effort JobSpy; application POST endpoints remain prohibited.",
-    "D-015": "Separate target architecture decomposition from actual implemented graph nodes and completion evidence."
+    "D-014": "Prefer read-only company ATS/Job Board APIs, beginning with Lever, before best-effort JobSpy; application POST endpoints remain prohibited.",
+    "D-015": "Separate target architecture decomposition from actual implemented graph nodes and completion evidence.",
+    "D-016": "Finish all no-decision freeze gaps and defer only real model authorization, long-term preferences, tag, and public push.",
+    "D-017": "Resume failed Graphs on the same checkpoint thread, retain safe error history, and reject retry after success."
   },
   "pending_review": [
-    "User review of goal.md v0.5 wording, 29 checked items, and seven explicitly unchecked freeze items",
-    "Choose permitted Lever company Job Boards and a read frequency before the next Live-source implementation",
-    "Decide whether and which OpenAI Provider/model/data categories may be used for an authorized Live model test",
-    "Approve any future public push only after reviewing the local commits and existing privacy scan"
+    "User review of goal.md v0.6 and its single unchecked real remote-model acceptance item",
+    "Choose long-term nearby landmarks, Lever company sites, and read frequency; proof defaults do not encode a user preference",
+    "Choose Provider, model, and permitted data category before any real remote-model call",
+    "Approve any future tag or public push only after final review"
   ],
   "assumptions": [
     "The actual remote model remains configurable behind ModelProvider.",
-    "At least one lawful public job source must be validated in live mode before Demo freeze; deterministic data cannot substitute for this evidence.",
     "The user will enter or correct exact home coordinates locally without external geocoding of the exact address.",
-    "No public Git push occurs before user confirmation even though the current secret/PII scan passed."
+    "No public Git push or real personal-material model call occurs before explicit confirmation.",
+    "The Lever verification company and Hong Kong landmark are public/fictitious proof inputs, not long-term job preferences."
   ],
   "derived_from": {
-    "source": "last_summary.md plus live event pools, commits c649ae0 and 2d6c1d2, final README test scripts, browser checks, privacy scans, and the 2026-08-18 scope audit",
+    "source": "Goal v0.6, commits 56d5b25 and 1002418, test-local/container/Lever proofs, privacy scans, and scope audit at 2026-08-18T05:33:34+08:00",
     "pools": {
-      "task_pool.ndjson": 40,
-      "issue_pool.ndjson": 7,
-      "logic_pool.ndjson": 15
+      "task_pool.ndjson": 47,
+      "issue_pool.ndjson": 10,
+      "logic_pool.ndjson": 17
     }
   }
 }

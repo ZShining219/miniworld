@@ -1,26 +1,24 @@
 # Last Summary
 
 [Quick Link]
-- TASK: T-006 — Goal v0.5 and the local deterministic three-loop Demo are verified; seven freeze items remain
-- ISSUE: ISS-003 — a successful lawful Live public job source is still missing
-- DECISION: D-014 — prefer read-only company ATS/Job Board APIs, starting with Lever, before best-effort JobSpy
+- TASK: T-007 — all no-decision Demo-freeze gaps completed in commits `56d5b25` and `1002418`
+- DECISION: D-017 — failed Graphs resume the same checkpoint thread and cannot retry after success
+- ISSUE: ISS-003 — resolved by the Lever public GET end-to-end proof
 
 [Current Focus]
-- Application commit `c649ae0` provides the local single-user FastAPI/React/PostgreSQL/Worker Demo with three independent LangGraph workflows; Goal v0.5 and user operations are committed as `2d6c1d2`.
-- `./scripts/test-local.sh` passes 13 backend tests, Ruff/Mypy/Ty, frontend build, Biome with eight CSS warnings, and two Playwright tests. `./scripts/test.sh` passes the rebuilt four-service container flow with `jobs=3 facts=60 reports=12 checkpoints=300`.
-- Goal v0.5 truthfully checks 29 evidence-backed items and leaves seven items unchecked. No real address, personal material, API key, external write, public push, or false Live-source claim was used.
+- Goal v0.6 now has one unchecked item: a real remote-model structured call after the user authorizes a Provider, model, and data category.
+- Local LangGraph OSS, three isolated Graphs, Lever Live public reads, explicit unresolved distances, Provider/schema failure safety, PostgreSQL checkpoint recovery, and the four-service dashboard are verified.
 
 [Active Locks]
-- None. The Goal v0.5 finalization window released its `GLOBAL_REFACTOR` lock.
+- None.
 
 [Open Issues]
-- ISS-003: Indeed returned 403 and LinkedIn China returned 451; a successful public-source run still requires a lawful read-only adapter such as Lever Postings.
+- None. Remote-model authorization, a release tag, and public push are pending user decisions rather than implementation defects.
 
 [Pending Review]
-- User review of Goal v0.5 and its seven explicitly unchecked freeze items.
-- Selection of permitted Lever company Job Boards/query frequency for the next Live-source step.
-- OpenAI Provider/model/data-category authorization before any real personal-material inference.
-- Public push remains unperformed and requires explicit confirmation.
+- User review of Goal v0.6 and the single unchecked real remote-model acceptance item.
+- User choice of long-term nearby landmarks, Lever company-site whitelist, and query frequency; `binance`/`Hong Kong` were fictional/public verification inputs only.
+- User approval is still required before a real personal-material model call, `demo-v0.1` tag, or public push.
 
 [Next Step]
-- Implement a read-only `LeverJobAdapter` using public Job Board data, then add an unresolved-location UI sample and a checkpoint-safe retry path. Keep matching scores, application tracking, radar visuals, real external writes, and public push out of scope.
+- Ask the user to choose Provider, model, and permitted data category. If authorized, run one minimized structured-output proof with non-sensitive or explicitly selected material, repeat privacy checks, then ask separately about tag and public push.
