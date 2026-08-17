@@ -33,6 +33,7 @@
 | T-010 | Accepted | 独立 Worker 使用 APScheduler 触发 Graph | 调度配置保存在 PostgreSQL；不在前端或 API 请求进程中运行定时任务 |
 | T-011 | Accepted | LangGraph 完全本地运行，不把 LangGraph Cloud 或 LangSmith 设为依赖 | OSS Python 包运行在 API/Worker 容器；PostgreSQL 保存 checkpoint，远端仅是可选模型推理 |
 | T-012 | Accepted | Demo 同时提供无密钥确定性模式和显式启用的 Live 模式 | 确保本地冷启动可复现，同时不把替身数据冒充真实联网结果 |
+| T-013 | Accepted | 验收证据明确分为真实操作入口、确定性 Demo、Live 只读集成和隐私证明 | 防止把静态页面、测试替身或框架安装误报为互联网能力完成；不改变三个业务闭环 |
 
 ## 尚未锁定但已明确不阻塞 Demo
 
