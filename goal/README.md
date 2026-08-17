@@ -2,7 +2,7 @@
 
 本目录把根目录 [`goal.md`](../goal.md) 中已经确认的产品意图转换为可执行的技术与操作指导。
 
-当前对齐版本：`goal.md` v0.6。本地三闭环、四服务、Lever 公开只读来源、未解析地点、Provider 失败门和 PostgreSQL checkpoint 恢复已有证据；只剩“经用户授权的真实远端模型调用”未勾选。实现状态以 [`plan.md`](plan.md) 的“当前阶段事实”和 [`implementation-log.md`](implementation-log.md) 的最新追加记录为准；旧日志只代表当时事实。
+当前对齐版本：`goal.md` v0.7。本地三闭环、四服务、Lever 公开只读来源、未解析地点、Provider 失败门和 PostgreSQL checkpoint 恢复均有证据，Demo 必选验收项全部通过。真实远端模型是用户授权后的可选验证，不阻塞本地 Demo。实现状态以 [`plan.md`](plan.md) 的“当前阶段事实”和 [`implementation-log.md`](implementation-log.md) 的最新追加记录为准；旧日志只代表当时事实。
 
 ## 文档优先级
 
@@ -24,6 +24,7 @@
 - [`plan.md`](plan.md)：分阶段实施计划、验收门和 Git 操作；
 - [`decisions.md`](decisions.md)：用户意图和技术路线的可追溯决策；
 - [`implementation-log.md`](implementation-log.md)：只追加的实现、验证、偏差和后续动作记录。
+- [`intent-audit.md`](intent-audit.md)：把用户对话逐条映射到 Goal、实现证据和延期边界。
 
 ## 使用方式
 

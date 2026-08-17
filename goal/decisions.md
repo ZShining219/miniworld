@@ -37,6 +37,7 @@
 | T-014 | Accepted | Live 岗位来源优先使用公司公开 ATS/Job Board GET API，首个实现为 Lever Postings API | 当前 JobSpy 来源受 403/451 和锁定版本限制；直接公开 API 更稳定、可追溯、便于限频。仅授权 GET 只读，申请 POST 仍禁止 |
 | T-015 | Accepted | Architecture 中的目标节点与当前实际节点必须分开标记 | 防止把设计细化误报为已实现能力；完成状态仍只由 `goal.md` 验收勾选与实现日志证据决定 |
 | T-016 | Accepted | 失败 Graph 只允许复用同一持久化 thread/checkpoint 恢复；成功后拒绝再次重试 | 保留真实执行语义和失败历史，并用业务幂等与 409 状态防止重复写入 |
+| T-017 | Accepted | 真实远端模型调用保留为可选验证，不作为本地 Demo 冻结门 | 用户要求是本地优先并允许受控远端 AI，同时要求先完成 Demo、把模型选择等决策留后；技术路线不能自行增加强制产品门 |
 
 ## 尚未锁定但已明确不阻塞 Demo
 

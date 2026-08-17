@@ -3,13 +3,13 @@
 > 更新时间：2026-08-18
 >
 > 分支：`codex/bootstrap-langgraph`
-> 目标基线：`goal.md` v0.6
+> 目标基线：`goal.md` v0.7
 
 ## 已完成并有证据
 
 | 范围 | 状态 | 证据 |
 | --- | --- | --- |
-| Goal 与意图对齐 | 完成当前轮 | `goal.md` v0.6；v0.5 commit `2d6c1d2`；只剩真实远端模型授权验收未勾选 |
+| Goal 与意图对齐 | 完成当前轮 | `goal.md` v0.7；新增逐条意图审计；Demo 必选验收全部通过 |
 | 上游基座固定 | 完成 | FastAPI 模板 commit `162344da111e833b30892728372ab95331f06873`；本地 commit `0ff0ea0` |
 | 单用户本地架构 | 完成 | `frontend`、`api`、`worker`、`db` 四服务；宿主端口仅回环绑定 |
 | LangGraph 本地运行 | 完成 | 三个独立 Graph；PostgreSQL checkpoint；不依赖 LangGraph Cloud |
@@ -24,14 +24,15 @@
 
 ## 已验证的最近结果
 
-- `./scripts/test.sh` / `./scripts/verify-demo.sh`：重建、三闭环、Worker 定时、真实 checkpoint 恢复、端口与重启均通过；最近记录 `jobs=3 facts=110 reports=25 checkpoints=548`；
+- `./scripts/test.sh` / `./scripts/verify-demo.sh`：重建、三闭环、Worker 定时、真实 checkpoint 恢复、端口与重启均通过；最近记录 `jobs=3 facts=110 reports=25 checkpoints=620`；
+- `scripts/verify-demo.sh` 已做幂等收口；连续运行前后业务计数均为 `jobs/facts/resumes/work/reports=3/110/33/24/25`，只允许运行/checkpoint 账本因真实调度继续增长；
 - `scripts/verify-live-lever.py`：真实 Lever 公开 GET 通过，`source=lever`、`execution_mode=live`、`job_count=3`、`exact_location_exposed=false`、`external_write_performed=false`；
 - 后端：17 项测试通过，包含 Lever 请求边界、Provider 配置门、非法 schema 和内存 checkpoint 恢复；Ruff、Mypy、Ty 通过；
 - 前端：生产构建通过；Biome 无错误、保留 8 条 CSS 风格 warning；Playwright 3 项通过；
 - 真实浏览器：六个页面可访问；实际容器数据可见；控制台无 error/warning；请求仅访问本机 API；
 - Docker：经典 builder 下可构建，不再要求 BuildKit cache mount；源码增量构建不再临时下载 Hatchling。
 
-- 泄漏扫描：Git 候选文件、前端 bundle、公开 API 和 Docker 日志未发现非占位符 secret-like 值、精确演示位置或本机绝对路径；
+- 泄漏扫描：Git 候选文件、前端 bundle、公开 API 和 Docker 日志未发现非占位符 secret-like 值、精确演示位置或本机绝对路径；README 的 `replace-locally`、测试用 `sk-example-*` 和 bundle 中的字段名 `exact_address` 已人工确认为占位符/输入契约，不是敏感值；
 - 真实浏览器：六个页面已在最新容器上复核，console 无 error/warning，设置页不回显精确坐标。
 
 ## 尚未完成
@@ -39,7 +40,7 @@
 | 项目 | 原因 | 下一步 |
 | --- | --- | --- |
 | 真实附近地标 | 用户尚未提供，且不应写入 Git | 用户醒后只在本机 Settings 配置 |
-| OpenAI 真实结构化调用 | 未提供 API Key 和数据类别授权 | 用户决定 Provider、模型和允许外发材料后本地配置 |
+| OpenAI 真实结构化调用 | 可选；未提供 API Key 和数据类别授权 | 用户日后可决定 Provider、模型和允许外发材料；不阻塞 Demo |
 | 最终雷达/地图视觉 | 明确不阻塞 Demo | 后续产品阶段再决定 |
 | 公开 Git push | 必须确认 | 完成最终 secret/PII 扫描后由用户决定 |
 
@@ -56,3 +57,8 @@
 - 未提交或外发真实地址、坐标、个人材料、API Key、对话、数据库、日志或生成简历；
 - 未执行职位投递、外部消息、文件上传、账号授权或平台修改；
 - `demo` 与 `live` 结果在配置、运行记录和界面中分开标记。
+
+## 下一步
+
+- 用户可以直接按 README 拉起和审阅本地 Demo，无需先配置远端模型；
+- 后续如需要，再分别决定真实地标/公司白名单、可选远端 Provider 验证、本地 tag 和公开 push。

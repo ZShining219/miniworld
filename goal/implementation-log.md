@@ -260,6 +260,43 @@
 
 ---
 
+## 2026-08-18 — Goal v0.7 对话意图与完成定义复审
+
+### 范围
+
+- 以用户原始确认而不是 v0.6 自身作为最高层依据，逐条复核住址、岗位范围、三闭环隔离、输入优先级、日报周报、自动化权限、本地优先和 Demo 完成定义；
+- 关联需求：全部 `REQ-*`，但本轮不扩大产品功能。
+
+### 审计结论
+
+- 11 类明确意图均能映射到 Goal 条款、实现入口和直接验证证据；新增 `goal/intent-audit.md` 固化映射；
+- 岗位匹配评分、投递跟踪、最终雷达视觉、真实偏好、多用户和外部写入仍保持非目标；
+- 发现 v0.6 把“允许受控远端 AI”扩大成“真实远端调用阻塞 Demo”，与“本地优先、先完成 Demo、模型细节暂不纠结”的原始意图不一致；
+- v0.7 保留 OpenAI Provider、schema、配置门、审计和未来真实调用能力，只把真实调用恢复为非阻塞可选验证；没有删除用户要求的三个闭环。
+
+### 当前完成判定
+
+- 根 `goal.md` 的 Demo 必选项全部勾选；
+- 真实地标/长期公司白名单、远端模型、最终视觉、tag 和公开 push 是配置、增强或发布决策，不是当前运行缺口；
+- 是否创建 tag 或公开 push 仍留给用户审阅后决定。
+
+### 最终验证
+
+- `bash -n scripts/verify-demo.sh` 与 `git diff --check` 通过；
+- `./scripts/test-local.sh` 通过：17 项后端测试，Ruff、Mypy、Ty、前端生产构建和 3 项 Playwright 均通过；Biome 无错误并保留 8 条已知 CSS 风格 warning；
+- `./scripts/test.sh` 通过四服务重建、三闭环、Worker、PostgreSQL checkpoint 恢复、容器重启和回环端口验证；最近一次为 `jobs=3 facts=110 reports=25 checkpoints=620`；
+- 容器验收脚本重复运行前后，业务计数均为 `jobs/facts/resumes/work/reports=3/110/33/24/25`；只新增预期的运行/checkpoint 账本，不再重复导入演示材料、工作记录或报告；
+- 本地位置 API 只返回 `••••••（仅保存在本机）`，不含地址或坐标字段；Git 候选、前端 bundle 和 Docker 日志扫描未发现真实 secret、地址、坐标或本机绝对路径；
+- secret-like 扫描仅命中 README 的 `replace-locally`、单元测试的 `sk-example-*` 与 bundle 中的字段名 `exact_address`，均经人工确认是占位符/输入契约，不是用户数据；
+- scope guard 的产品/代码变更全部位于 T-008 声明范围；报告中的范围外变化仅为测试工具清理的忽略缓存文件，不属于提交内容。
+
+### Git
+
+- 审计修正和治理提交待创建；
+- 未 tag、未 push。
+
+---
+
 ## 后续记录模板
 
 ```md

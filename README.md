@@ -12,7 +12,7 @@ MiniWorld Agent 是一个面向本机唯一用户的本地优先个人工作台�
 
 - `demo` 模式：四服务可在 Apple Silicon/ARM64 本机通过 `docker-compose` 构建和启动；三条 LangGraph 闭环、PostgreSQL checkpoint、Worker 定时触发和容器重启持久性已有自动化验证。
 - `live` 岗位来源：Lever 公开 Postings GET 适配器已完成一次临时库端到端验证；JobSpy 保留为默认关闭的最善努力回退。代码中没有申请 POST 执行器。
-- 远端模型：OpenAI Responses Provider 已实现但默认关闭；未配置时 Graph 明确暂停，非法 schema 不落库。一次经授权的真实模型调用仍待用户决定。
+- 远端模型：OpenAI Responses Provider 已实现但默认关闭；未配置时 Graph 明确暂停，非法 schema 不落库。真实调用是可选增强，不阻塞本地 Demo。
 - 未执行真实投递、消息、文件外传、第三方登录授权或公开 Git push。
 
 详见 [`PROGRESS.md`](PROGRESS.md) 和 [`goal/implementation-log.md`](goal/implementation-log.md)。
@@ -144,7 +144,7 @@ ALLOW_LIVE_JOB_SEARCH=false
 
 不需要 API Key；岗位和模型结果均明确标记为 `demo`。该模式用于冷启动、回归测试和隐私边界验证。
 
-### Live（尚未冻结）
+### Live 岗位读取（已验证、默认关闭）
 
 Live 岗位查询需要显式设置：
 
@@ -174,6 +174,8 @@ OPENAI_MODEL=gpt-5.6
 ```
 
 密钥只能保存在本机 `.env`，不得进入数据库、前端、日志或 Git。真实个人材料发给远端 Provider 前，需要按数据类别获得用户授权。
+
+远端模型调用不是本地 Demo 的启动或冻结条件。未配置时继续使用明确标记的确定性 Provider；用户日后如启用，再把真实调用作为单独的可选验收，不得把替身结果描述为真实推理。
 
 ## 隐私和权限边界
 
