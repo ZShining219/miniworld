@@ -1,16 +1,14 @@
 {
   "schema_version": 1,
   "project_id": "miniworld",
-  "generated_at": "2026-08-18T05:35:22+08:00",
-  "summary_status": "goal_v0.6_verified_one_authorized_remote_model_item_pending",
+  "generated_at": "2026-08-18T06:00:20+08:00",
+  "summary_status": "goal_v0.7_demo_verified_pending_user_review",
   "review_status": "pending_user_review",
   "checkpoint_id": null,
   "checkpoint_offsets": null,
   "active_windows": {},
   "active_locks": [],
-  "active_tasks": {
-    "T-006": "Overall Demo freeze awaits one user-authorized real remote-model structured call; every no-decision engineering gap was completed by T-007."
-  },
+  "active_tasks": {},
   "open_issues": {},
   "key_logic": {
     "D-001": "Three independent demo loops: job distance, profile/resume, and daily/weekly work reports.",
@@ -28,27 +26,29 @@
     "D-013": "Keep real operation, deterministic demo, live public-read, and privacy evidence distinct.",
     "D-014": "Prefer read-only company ATS/Job Board APIs, beginning with Lever, before best-effort JobSpy; application POST endpoints remain prohibited.",
     "D-015": "Separate target architecture decomposition from actual implemented graph nodes and completion evidence.",
-    "D-016": "Finish all no-decision freeze gaps and defer only real model authorization, long-term preferences, tag, and public push.",
-    "D-017": "Resume failed Graphs on the same checkpoint thread, retain safe error history, and reject retry after success."
+    "D-016": "Finish all no-decision freeze gaps and defer real model authorization, long-term preferences, tag, and public push.",
+    "D-017": "Resume failed Graphs on the same checkpoint thread, retain safe error history, and reject retry after success.",
+    "D-018": "A real remote-model call is optional authorized validation, not a mandatory local Demo freeze gate."
   },
   "pending_review": [
-    "User review of goal.md v0.6 and its single unchecked real remote-model acceptance item",
-    "Choose long-term nearby landmarks, Lever company sites, and read frequency; proof defaults do not encode a user preference",
-    "Choose Provider, model, and permitted data category before any real remote-model call",
-    "Approve any future tag or public push only after final review"
+    "Review goal.md v0.7 and the completed local Demo acceptance evidence",
+    "Choose real nearby landmarks, long-term Lever company sites, and read frequency; proof defaults do not encode a user preference",
+    "Optionally choose a Provider, model, and permitted data categories before any real remote-model call",
+    "Choose whether to create a local release tag or perform any public push",
+    "Choose the post-Demo priority among matching score, application tracking, and radar/map visualization"
   ],
   "assumptions": [
-    "The actual remote model remains configurable behind ModelProvider.",
+    "The optional remote model remains configurable behind ModelProvider and disabled by default.",
     "The user will enter or correct exact home coordinates locally without external geocoding of the exact address.",
     "No public Git push or real personal-material model call occurs before explicit confirmation.",
     "The Lever verification company and Hong Kong landmark are public/fictitious proof inputs, not long-term job preferences."
   ],
   "derived_from": {
-    "source": "Goal v0.6, commits 56d5b25 and 1002418, test-local/container/Lever proofs, privacy scans, and scope audit at 2026-08-18T05:33:34+08:00",
+    "source": "Goal v0.7, commits 8d94c5c and fcb58c5, test-local/container/Lever proofs, idempotency comparison, privacy scans, and scope audit at 2026-08-18T06:00:20+08:00",
     "pools": {
-      "task_pool.ndjson": 47,
+      "task_pool.ndjson": 53,
       "issue_pool.ndjson": 10,
-      "logic_pool.ndjson": 17
+      "logic_pool.ndjson": 18
     }
   }
 }

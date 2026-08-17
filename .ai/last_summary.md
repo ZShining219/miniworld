@@ -1,24 +1,26 @@
 # Last Summary
 
 [Quick Link]
-- TASK: T-007 — all no-decision Demo-freeze gaps completed in commits `56d5b25` and `1002418`
-- DECISION: D-017 — failed Graphs resume the same checkpoint thread and cannot retry after success
-- ISSUE: ISS-003 — resolved by the Lever public GET end-to-end proof
+- TASK: T-008 — completed conversation-to-Goal audit, repeatable Demo verification, and Goal v0.7 handoff
+- DECISION: D-018 — real remote-model execution is optional authorized validation, not a local Demo freeze gate
+- ISSUE: none open
 
 [Current Focus]
-- Goal v0.6 now has one unchecked item: a real remote-model structured call after the user authorizes a Provider, model, and data category.
-- Local LangGraph OSS, three isolated Graphs, Lever Live public reads, explicit unresolved distances, Provider/schema failure safety, PostgreSQL checkpoint recovery, and the four-service dashboard are verified.
+- Goal v0.7 is aligned to all 11 confirmed user intents and its required Demo acceptance items are complete.
+- Local LangGraph OSS, three isolated Graphs, Lever public reads, local distance handling, file/GitHub/GPT inputs, daily/weekly reports, controlled scheduling, PostgreSQL checkpoint recovery, and the four-service dashboard are verified.
+- `scripts/verify-demo.sh` is repeatable: the latest before/after business counts remained `3/110/33/24/25` for jobs/facts/resumes/work/reports.
 
 [Active Locks]
 - None.
 
 [Open Issues]
-- None. Remote-model authorization, a release tag, and public push are pending user decisions rather than implementation defects.
+- None. Real landmarks/company preferences, optional remote Provider validation, final radar/map visual direction, a release tag, and public push are user choices rather than implementation defects.
 
 [Pending Review]
-- User review of Goal v0.6 and the single unchecked real remote-model acceptance item.
-- User choice of long-term nearby landmarks, Lever company-site whitelist, and query frequency; `binance`/`Hong Kong` were fictional/public verification inputs only.
-- User approval is still required before a real personal-material model call, `demo-v0.1` tag, or public push.
+- Review Goal v0.7 and run the README Demo path.
+- Choose real nearby landmarks, a long-term Lever company whitelist, and query frequency; `binance`/`Hong Kong` were fictional/public verification inputs only.
+- Optionally authorize a Provider, model, and permitted data categories before any real personal-material model call.
+- Decide separately whether to create a local tag or perform a public push.
 
 [Next Step]
-- Ask the user to choose Provider, model, and permitted data category. If authorized, run one minimized structured-output proof with non-sensitive or explicitly selected material, repeat privacy checks, then ask separately about tag and public push.
+- The user can run and review the local Demo immediately. After review, take only the specific optional configuration, enhancement, or release action the user selects.
