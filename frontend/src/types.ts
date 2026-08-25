@@ -45,6 +45,38 @@ export type Job = {
   observed_at: string
 }
 
+export type RadarJobProperties = {
+  id: string
+  title: string
+  company: string
+  distance_km: number | null
+  source: string
+  url: string
+}
+
+export type RadarJobFeature = {
+  type: "Feature"
+  id: string
+  geometry: {
+    type: "Point"
+    coordinates: [number, number]
+  }
+  properties: RadarJobProperties
+}
+
+export type RadarScene = {
+  mode: "fictional_demo" | "local"
+  center: [number, number] | null
+  jobs: {
+    type: "FeatureCollection"
+    features: RadarJobFeature[]
+  }
+  unresolved_count: number
+  total_count: number
+  map_name: string
+  map_available: boolean
+}
+
 export type Artifact = {
   id: string
   source_type: "file" | "github" | "gpt_conversation"

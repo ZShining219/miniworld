@@ -297,6 +297,221 @@
 
 ---
 
+## 2026-08-19 — 岗位雷达呈现调研与实施计划
+
+### 范围
+
+- 关联 `REQ-RADAR`、`REQ-PRIVACY` 和 `REQ-RUNTIME`；
+- 只完成开源模块、离线底图、桌面悬浮窗与渲染接口的选型和计划，不实现岗位数据来源或真实地图运行。
+
+### 已完成
+
+- 复核当前 React 19/Vite 前端、纯 CSS 雷达占位、位置 API 隐私契约与 Jobs 数据结构；
+- 核验 MapLibre GL JS、PMTiles、Protomaps Basemaps、Leaflet、Tauri 2 和 OSMF Tile Usage Policy 的官方资料；
+- 选择 Tauri 2 + MapLibre GL JS + PMTiles + Protomaps 本地矢量底图；Leaflet 保留为低配回退评估；
+- 将用户明确的悬浮窗、街道地图、中心 HOME 与黄色闪光岗位点写入 Goal v0.8，并形成 Phase 7 的接口、数据流、降级、测试和提交边界。
+
+### 未完成
+
+- 尚未安装依赖、下载或生成地图包、创建 Radar 组件、场景 API 或 Tauri 宿主；
+- 尚未选择真实城市/区域地图包；选择必须使用公开区域或附近地标，不能向外部地图服务发送精确住址或家庭坐标；
+- 岗位数据接入按用户要求暂缓，首个原型使用明确标记的虚构坐标。
+
+### 验证
+
+- 官方 MapLibre 文档确认 TypeScript/WebGL 矢量瓦片渲染、style/source/layer 与 Vite ESM worker 接入；
+- PMTiles 文档确认单文件、HTTP Range、本地服务器和 MapLibre/Leaflet/OpenLayers 集成；
+- Protomaps Basemaps README 确认 OSM/Natural Earth → PMTiles、MapLibre 主题样式和 BSD-3/CC0/ODbL attribution；
+- Leaflet 官方页确认约 42 KB、无外部依赖及 Marker/GeoJSON/CSS 能力；
+- Tauri 2 配置文档确认 `alwaysOnTop`、`resizable`、`minWidth/minHeight`、`decorations` 与 macOS 透明窗口限制；
+- OSMF policy 确认标准瓦片服务禁止离线预取，离线应用应使用自托管或明确允许离线的瓦片。
+
+### 偏差与决策
+
+- 不采用“在线 OSM 栅格 + Leaflet”作为默认方案：它会把住所视口发送给外部服务，且标准 OSM 瓦片不能用于离线预取；
+- 不采用 deck.gl/Cesium：当前岗位点规模和二维街道需求不足以证明额外复杂度；
+- 首版不做透明、点击穿透悬浮窗，避免 macOS 私有 API、发布与交互可靠性风险。
+
+### Git
+
+- 分支：`codex/bootstrap-langgraph`；
+- 本轮仅修改 Goal、研究、架构、计划、决策和治理记录；未安装依赖、未 tag、未 push。
+
+### 下一步
+
+- 按 Phase 7.1 使用虚构区域 PMTiles 和虚构岗位点实现可在浏览器审阅的离线 Radar 原型，再进入场景 API 与 Tauri 原生窗口。
+
+---
+
+## 2026-08-19 — Phase 7.1 离线岗位雷达原型
+
+### 范围
+
+- 关联 `REQ-RADAR`、`REQ-PRIVACY` 和 `REQ-RUNTIME`；
+- 只使用 Firenze 公共示例地图包、虚构 HOME 中心和 4 个虚构岗位坐标，不接入真实地址或岗位数据。
+
+### 已完成
+
+- 固定 `maplibre-gl@6.4.1`、`pmtiles@4.5.0`、`@protomaps/basemaps@5.7.2` 与 GeoJSON 类型，`/radar` 以懒加载模块隔离于主看板首包；
+- 实现深色街道、建筑和水系底图、固定中心 HOME、GeoJSON 黄色实心点与外扩脉冲光晕、扫描扇区、距离圈和岗位摘要；
+- 主看板可打开 420×420 可缩放浏览器审阅窗；该入口是原生窗口前的原型，不冒充 Tauri 悬浮窗；
+- 新增只允许 `.pmtiles` 的 localhost Range 端点，以及带 SHA256 校验的 `scripts/fetch-radar-demo-map.sh`；地图运行文件位于 Git 忽略的 `runtime-data/maps/`；
+- 增加 PMTiles 可用性 Range 预检、明确缺图提示和 Vite MapLibre worker 优化排除，修复开发服务器永久 loading 的真实集成问题；
+- 新增 Radar Playwright 覆盖 HOME 几何居中、黄色信号、320×320、420×420、900×700、缺图状态和零外部地图请求。
+
+### 未完成
+
+- 尚未实现 `/api/v1/radar/scene`、真实本地位置/岗位过滤、未解析计数、无岗位状态或 WebGL 不可用状态；这些属于 Phase 7.2；
+- 尚未创建 Tauri 宿主、原生置顶/拖动/关闭/尺寸持久化；浏览器弹窗不能作为 `goal.md` 10.8 的原生验收证据；
+- 地图包仍是 Firenze 公共示例，不代表用户真实城市或长期地图包选择。
+
+### 验证
+
+- `uv run --project backend pytest backend/tests/test_api_privacy.py -q`：6 passed；`uv run --project backend ruff check backend/app backend/tests`：通过；
+- `bun run build`：通过，主看板与 Radar 分块输出；`bun run lint`：零错误，保留 8 条既有 CSS warning；
+- `bun run test`：5 passed，其中 Radar 2 项覆盖三档尺寸、缺图和网络边界；
+- PMTiles 为 6,601,156 bytes，SHA256 `7190f3d807a62f4f012b574007c96b809f6842f45a6b0c508639331fc68fd30a`，`git check-ignore` 确认不进入版本库；
+- 本地 QA 截图位于忽略目录 `output/playwright/radar-qa/`；像素检查确认三档尺寸街道可读、HOME 居中、黄色岗位信号和 OSM attribution 可见；
+- `git diff --check` 通过。
+
+### 偏差与决策
+
+- 将 Tauri npm/Rust 依赖固定移到真正创建原生宿主的 Phase 7.3，避免 Phase 7.1 原型携带未使用依赖；产品目标、版本选择与隐私边界不变；
+- MapLibre 的 `load` 事件不能可靠证明 PMTiles 存在，因此增加独立 Range 预检作为缺图状态依据。
+
+### Git
+
+- 分支：`codex/bootstrap-langgraph`；
+- 本轮工作树尚未提交；未 tag、未 push。
+
+### 下一步
+
+- 单独声明 Phase 7.2 场景 API 与隐私范围，以本机已保存位置和岗位数据替换虚构场景，同时保留虚构 Demo 回退和地址不回显。
+
+---
+
+## 2026-08-19 — Phase 7.2 本地雷达场景与隐私门
+
+### 范围
+
+- 关联 `REQ-RADAR` 与 `REQ-PRIVACY`；
+- 实现场景渲染契约和降级状态，不扩大岗位采集来源，不使用真实地址或真实岗位材料。
+
+### 已完成
+
+- 新增 `GET /api/v1/radar/scene`，返回 `[longitude, latitude]` 中心、GeoJSON 岗位点、未解析/总数、地图包名称和本地可用状态，并设置 `Cache-Control: no-store`；
+- `demo` 模式集中返回 Firenze 虚构场景；非 demo 本地模式只映射 `distance_status=calculated` 且经纬度完整的岗位；
+- 场景属性只含岗位 ID、标题、公司、距离、来源和链接，不含精确住址文本、`location_text` 或未解析岗位正文；
+- Radar 改为场景 API 驱动，地图名和中心不再硬编码在前端；保留 PMTiles Range 预检；
+- 增加零岗位/未解析计数状态、无本地位置/场景请求失败状态、地图包缺失状态和 WebGL2 不可用状态；
+- WebGL2 在创建 MapLibre 前主动探测，避免初始化失败后 ResizeObserver 访问未完成 painter。
+
+### 验证
+
+- `uv run --project backend pytest backend/tests/test_api_privacy.py -q`：8 passed；默认 Demo 与非 demo 本地过滤均验证 `no-store` 和地址不回显；
+- `bun run test tests/radar.spec.ts`：4 passed，覆盖三档中心/黄色点/无外部请求、未解析空态、WebGL2 降级和缺图状态；
+- `bun run build`：通过，Radar 继续保持独立懒加载块。
+
+### 偏差与决策
+
+- 用户已明确岗位数据接入暂缓，因此默认场景仍为虚构 Demo；非 demo 过滤契约已有测试，但不把它宣称为真实岗位雷达数据已完成；
+- 当前地图包名为本地配置基线 `demo-firenze.pmtiles`；真实城市/区域包仍需用户以后选择公开区域，不能从精确家庭坐标向外部地图服务生成请求。
+
+### Git
+
+- 分支：`codex/bootstrap-langgraph`；
+- 本轮工作树尚未提交；未 tag、未 push。
+
+### 下一步
+
+- 创建 Tauri 2 原生宿主，仅承载现有 `/radar`，完成置顶、拖动、尺寸/位置持久化和 macOS ARM64 构建验收。
+
+---
+
+## 2026-08-19 — Phase 7.3 Tauri 原生岗位雷达与 v0.8 验收闭合
+
+### 范围
+
+- 关联 `REQ-RADAR`、`REQ-PRIVACY` 与 `REQ-RUNTIME`；
+- 只新增本机原生呈现、最小窗口控制、geometry 持久化、降级状态和验收证据，不接入真实地址、真实岗位、外部瓦片、投递或消息能力。
+
+### 已完成
+
+- 固定 `@tauri-apps/api@2.11.1`、`@tauri-apps/cli@2.11.4`、Rust `tauri@2.11.3` 与 `tauri-build@2.6.3`，生成并保留 `Cargo.lock`；
+- 创建只承载 `index.html?surface=radar` 的 Tauri 2 窗口：初始 420×420、最小 320×320、最大 900×700、可缩放、无边框、不透明且默认置顶；
+- capability 只开放窗口居中、关闭、读取/设置置顶和开始拖动；应用内控制条完成拖动、图钉、重新居中和关闭桥接，浏览器 `/radar` 仍可独立审阅；
+- Rust 只把逻辑坐标和尺寸保存到 `~/Library/Application Support/com.zshining219.miniworld.radar/radar-window.json`，当前内容为 `{"x":120.0,"y":120.0,"width":900.0,"height":700.0}`，没有地图中心、地址、岗位或坐标；
+- 本地 API、地图包和 WebGL2 三类失败分别显示 `LOCAL API UNAVAILABLE`、`LOCAL MAP UNAVAILABLE` 和 `WEBGL UNAVAILABLE`；API 状态给出 `docker-compose up -d`，地图状态只指向本地资源脚本；
+- 未解析岗位继续不落图，空态显示待解析数量和明确的“返回岗位列表”动作；HOME 场景坐标不进入可见文本；
+- Tauri CSP 的网络连接只允许 IPC 和 `http://127.0.0.1:8000`，后端允许 Tauri 本地 origin 与 PMTiles `Range` 请求，不增加外部地图连接。
+
+### 验证
+
+- `./scripts/test-local.sh`：22 项后端测试通过；Ruff、Mypy、Ty、Vite 生产构建通过；Biome 零错误并保留 8 条既有 CSS warning；Playwright 9 项通过；
+- Radar 专项 6 项覆盖 320×320、420×420、900×700、HOME 居中、黄色脉冲点、岗位点击摘要、坐标不回显、未解析计数/列表入口、API 503、WebGL2 和地图包缺失，网络拦截确认无外部请求；
+- `cargo fmt --check` 与 `cargo check` 通过；`bun run tauri:build` 生成未签名 `MiniWorld Job Radar.app`；`file` 确认为 `Mach-O 64-bit executable arm64`；
+- 最终 release 原生运行的 Quartz 窗口为 `layer=5`、`900×700 @ (120,120)`，证明浮动层与 geometry 恢复；同一 T-012 的首次原生 QA 记录为 420×420；
+- release/bundle 扫描未发现 debug QA 开关、测试端口、测试家庭坐标或演示地址；`MINIWORLD_RADAR_QA_EXPANDED` 只在 debug 编译中存在；
+- Firenze PMTiles 为 6,601,156 bytes，SHA256 `7190f3d807a62f4f012b574007c96b809f6842f45a6b0c508639331fc68fd30a`；地图、`frontend/dist` 与 Tauri `target` 均由 Git 忽略；
+- `git diff --check` 通过，第三方版本、BSD-3、Apache-2.0/MIT、OSM attribution 与 ODbL 已记录。
+
+### 偏差与决策
+
+- release 使用 `--no-sign`，仅作为本机 Demo 产物，不宣称签名、公证或可分发发布包；
+- 系统鼠标自动化无法稳定进入无边框 WebView，因此原生缩放证据由 Tauri 配置、真实 420/900 窗口、geometry 恢复和三档渲染回归共同构成，不把自动化限制误报为产品故障；
+- 默认继续使用 Firenze 公共示例地图和明确标记的虚构岗位；真实城市地图包与真实岗位坐标接入仍由用户后续选择，不属于本阶段完成门。
+
+### Git
+
+- 分支：`codex/bootstrap-langgraph`；
+- Phase 7 当前工作树尚未提交；未创建 tag，未执行 push。
+
+### 下一步
+
+- 用户审阅原生岗位雷达后，再决定公开城市/区域地图包与真实岗位数据接入；任何 tag、公开 push 或真实个人数据操作仍需单独确认。
+
+---
+
+## 2026-08-25 — v0.8 状态整理与本地提交
+
+### 范围
+
+- 关联 `REQ-RADAR`、`REQ-PRIVACY` 与 `REQ-RUNTIME`；
+- 审核并提交既有 Phase 7.1—7.3 工作树，不新增真实岗位、真实位置、远端模型、tag 或公开 push。
+
+### 已完成
+
+- 逐项复核岗位雷达后端场景接口、React/MapLibre 前端、Tauri 2 原生宿主、依赖锁、第三方许可、Goal v0.8 文档和治理事件；
+- 发现并修复标准 Compose 启动路径未把宿主 `runtime-data/maps/` 提供给 API 容器的问题：API 现在以只读方式挂载 `/data/radar-maps`，不会把 PMTiles 写入镜像或 Git；
+- 确认 PMTiles、前端 `dist`、Playwright 输出和 Tauri `target` 均保持 Git 忽略，提交候选不包含运行数据或构建产物；
+- 按 D-021 将共同验证、共享场景契约与隐私证据的 Phase 7.1—7.3 收口为一个真实的本地 Git 检查点，不伪造历史拆分。
+
+### 验证
+
+- `./scripts/test-local.sh`：22 项后端测试、Ruff、Mypy、Ty、Vite 生产构建和 9 项 Playwright 测试通过；Biome 零错误，保留 8 条既有 CSS warning；
+- `cargo fmt --manifest-path frontend/src-tauri/Cargo.toml --check` 与 `cargo check --manifest-path frontend/src-tauri/Cargo.toml`：通过；
+- `bun run tauri:build`：未签名 macOS `.app` 打包通过，二进制仍为 Mach-O arm64；
+- `docker-compose config`：确认 `runtime-data/maps` 只读绑定到 API `/data/radar-maps`，并由 `RADAR_MAP_DIR` 指向该路径；
+- 地图 SHA256 仍为 `7190f3d807a62f4f012b574007c96b809f6842f45a6b0c508639331fc68fd30a`；候选 secret/PII 扫描只命中明确测试占位符；`git diff --check` 通过。
+
+### 偏差与决策
+
+- 首次沙箱内 Playwright 因禁止绑定 `127.0.0.1:4173` 而未启动；在获准的本机执行环境重跑同一完整命令后 9 项全部通过，未归类为产品故障；
+- scope guard 的范围外变化仅为被忽略的测试、类型检查、前端构建和 Tauri 构建缓存；没有范围外源文件变化；
+- Compose 地图挂载属于让既有 README 与已验收本地运行契约一致的缺口修复，不扩大产品范围。
+
+### Git
+
+- 分支：`codex/bootstrap-langgraph`；
+- Goal v0.8 Phase 7 源码、测试、文档和治理状态由 T-013 收口为一个本地提交；
+- 未创建 tag，未执行 push。
+
+### 下一步
+
+- 用户可启动本地 API 与 Tauri 窗口审阅 Firenze 虚构 Demo；后续是否选择真实公共城市地图、接入本地真实岗位坐标、验证远端 Provider、创建 tag 或 push 均需独立决定。
+
+---
+
 ## 后续记录模板
 
 ```md

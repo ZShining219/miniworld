@@ -1,0 +1,982 @@
+{
+  "schema_version": 1,
+  "captured_at": "2026-08-19T01:54:08+08:00",
+  "project_root": "/Users/zfh/Documents/迷你世界",
+  "excludes": [
+    ".git/**",
+    ".ai/**",
+    "node_modules/**",
+    ".venv/**",
+    "__pycache__/**"
+  ],
+  "files": {
+    "uv.lock": {
+      "size": 332394,
+      "mtime_ns": 1786994841704875691
+    },
+    ".project_id": {
+      "size": 158,
+      "mtime_ns": 1784812394579804565
+    },
+    "pyproject.toml": {
+      "size": 656,
+      "mtime_ns": 1786992542046095165
+    },
+    "goal.md": {
+      "size": 26547,
+      "mtime_ns": 1787072655907294896
+    },
+    "PROGRESS.md": {
+      "size": 4730,
+      "mtime_ns": 1787003922266261755
+    },
+    "THIRD_PARTY_NOTICES.md": {
+      "size": 730,
+      "mtime_ns": 1786992568874785821
+    },
+    "bun.lock": {
+      "size": 32075,
+      "mtime_ns": 1787073626660864651
+    },
+    "README.md": {
+      "size": 8698,
+      "mtime_ns": 1787003071171234679
+    },
+    ".dockerignore": {
+      "size": 164,
+      "mtime_ns": 1786992542210405519
+    },
+    ".gitignore": {
+      "size": 525,
+      "mtime_ns": 1787074304499151957
+    },
+    "package.json": {
+      "size": 428,
+      "mtime_ns": 1786992541997613320
+    },
+    ".gitattributes": {
+      "size": 29,
+      "mtime_ns": 1786992542259850367
+    },
+    ".python-version": {
+      "size": 5,
+      "mtime_ns": 1786992542308329795
+    },
+    ".env.example": {
+      "size": 541,
+      "mtime_ns": 1787001347450935398
+    },
+    "AGENTS.md": {
+      "size": 1676,
+      "mtime_ns": 1786992131601521423
+    },
+    "miniworld.db": {
+      "size": 192512,
+      "mtime_ns": 1787074329865621286
+    },
+    "compose.yml": {
+      "size": 2440,
+      "mtime_ns": 1787001347415808983
+    },
+    "frontend/tsconfig.node.json": {
+      "size": 213,
+      "mtime_ns": 1786955921000000000
+    },
+    "frontend/index.html": {
+      "size": 578,
+      "mtime_ns": 1787074794819246977
+    },
+    "frontend/Dockerfile": {
+      "size": 444,
+      "mtime_ns": 1786994758440205276
+    },
+    "frontend/Dockerfile.playwright": {
+      "size": 373,
+      "mtime_ns": 1786955921000000000
+    },
+    "frontend/README.md": {
+      "size": 4077,
+      "mtime_ns": 1786955921000000000
+    },
+    "frontend/.dockerignore": {
+      "size": 18,
+      "mtime_ns": 1786955921000000000
+    },
+    "frontend/package.json": {
+      "size": 893,
+      "mtime_ns": 1787073626661694065
+    },
+    "frontend/tsconfig.build.json": {
+      "size": 67,
+      "mtime_ns": 1786955921000000000
+    },
+    "frontend/components.json": {
+      "size": 446,
+      "mtime_ns": 1786955921000000000
+    },
+    "frontend/tsconfig.json": {
+      "size": 724,
+      "mtime_ns": 1786955921000000000
+    },
+    "frontend/playwright.config.ts": {
+      "size": 848,
+      "mtime_ns": 1787001804956817851
+    },
+    "frontend/nginx.conf": {
+      "size": 321,
+      "mtime_ns": 1786994758474115193
+    },
+    "frontend/vite.config.ts": {
+      "size": 458,
+      "mtime_ns": 1787074026427278088
+    },
+    "frontend/biome.json": {
+      "size": 1191,
+      "mtime_ns": 1786955921000000000
+    },
+    "frontend/openapi-ts.config.ts": {
+      "size": 562,
+      "mtime_ns": 1786955921000000000
+    },
+    ".ruff_cache/CACHEDIR.TAG": {
+      "size": 43,
+      "mtime_ns": 1786994901328252816
+    },
+    ".ruff_cache/.gitignore": {
+      "size": 35,
+      "mtime_ns": 1786994901328359025
+    },
+    "backend/alembic.ini": {
+      "size": 1596,
+      "mtime_ns": 1786955921000000000
+    },
+    "backend/Dockerfile": {
+      "size": 623,
+      "mtime_ns": 1786999443525020078
+    },
+    "backend/pyproject.toml": {
+      "size": 1997,
+      "mtime_ns": 1786994224498833754
+    },
+    "backend/README.md": {
+      "size": 5095,
+      "mtime_ns": 1786955921000000000
+    },
+    "backend/.dockerignore": {
+      "size": 76,
+      "mtime_ns": 1786955921000000000
+    },
+    ".mypy_cache/CACHEDIR.TAG": {
+      "size": 190,
+      "mtime_ns": 1786994948692938233
+    },
+    ".mypy_cache/.gitignore": {
+      "size": 34,
+      "mtime_ns": 1786994948692843358
+    },
+    "scripts/generate-client.sh": {
+      "size": 268,
+      "mtime_ns": 1786992542456101380
+    },
+    "scripts/test-local.sh": {
+      "size": 351,
+      "mtime_ns": 1786998735296900257
+    },
+    "scripts/verify-demo.sh": {
+      "size": 14426,
+      "mtime_ns": 1787003377668266010
+    },
+    "scripts/fetch-radar-demo-map.sh": {
+      "size": 1064,
+      "mtime_ns": 1787073337066235144
+    },
+    "scripts/test.sh": {
+      "size": 94,
+      "mtime_ns": 1786998735332192356
+    },
+    "scripts/verify-live-lever.py": {
+      "size": 3440,
+      "mtime_ns": 1787001876604629398
+    },
+    ".playwright-cli/page-2026-08-17T20-07-59-624Z.yml": {
+      "size": 4621,
+      "mtime_ns": 1786997279625219586
+    },
+    ".playwright-cli/page-2026-08-17T20-13-50-059Z.yml": {
+      "size": 4219,
+      "mtime_ns": 1786997630060498542
+    },
+    ".playwright-cli/page-2026-08-17T20-11-05-324Z.yml": {
+      "size": 4030,
+      "mtime_ns": 1786997465325296776
+    },
+    ".playwright-cli/console-2026-08-17T20-06-18-474Z.log": {
+      "size": 313,
+      "mtime_ns": 1786997629145553282
+    },
+    ".playwright-cli/page-2026-08-17T20-06-18-594Z.yml": {
+      "size": 1695,
+      "mtime_ns": 1786997178595759921
+    },
+    ".playwright-cli/page-2026-08-17T20-09-18-859Z.yml": {
+      "size": 15141,
+      "mtime_ns": 1786997358860693634
+    },
+    ".playwright-cli/page-2026-08-17T20-08-34-907Z.yml": {
+      "size": 4673,
+      "mtime_ns": 1786997314908491132
+    },
+    ".playwright-cli/page-2026-08-17T20-09-53-582Z.yml": {
+      "size": 6503,
+      "mtime_ns": 1786997393583754181
+    },
+    ".playwright-cli/page-2026-08-17T20-13-14-524Z.yml": {
+      "size": 1767,
+      "mtime_ns": 1786997594525186712
+    },
+    ".playwright-cli/page-2026-08-17T20-10-28-442Z.yml": {
+      "size": 14979,
+      "mtime_ns": 1786997428442948698
+    },
+    "goal/architecture.md": {
+      "size": 15184,
+      "mtime_ns": 1787072607069469114
+    },
+    "goal/README.md": {
+      "size": 2784,
+      "mtime_ns": 1787072606996540184
+    },
+    "goal/implementation-log.md": {
+      "size": 25303,
+      "mtime_ns": 1787075510820920008
+    },
+    "goal/research.md": {
+      "size": 14817,
+      "mtime_ns": 1787072736359619254
+    },
+    "goal/plan.md": {
+      "size": 16630,
+      "mtime_ns": 1787075510772332546
+    },
+    "goal/intent-audit.md": {
+      "size": 3863,
+      "mtime_ns": 1787003963963558716
+    },
+    "goal/decisions.md": {
+      "size": 6837,
+      "mtime_ns": 1787072607033585961
+    },
+    ".cache/uv/.lock": {
+      "size": 0,
+      "mtime_ns": 1786999181729247176
+    },
+    ".cache/uv/CACHEDIR.TAG": {
+      "size": 43,
+      "mtime_ns": 1786999181728666626
+    },
+    ".cache/uv/.gitignore": {
+      "size": 1,
+      "mtime_ns": 1786999181728729960
+    },
+    ".cache/uv/sdists-v9/.gitignore": {
+      "size": 0,
+      "mtime_ns": 1786999181728795295
+    },
+    ".cache/uv/sdists-v9/.git": {
+      "size": 0,
+      "mtime_ns": 1786999181728830545
+    },
+    ".cache/uv/interpreter-v4/6a2fb127545f0f98/6b44dc46091d7a7b.msgpack": {
+      "size": 1719,
+      "mtime_ns": 1787073605261432563
+    },
+    ".mypy_cache/3.14/cache.5.db": {
+      "size": 4296704,
+      "mtime_ns": 1787075541629140513
+    },
+    ".mypy_cache/3.14/cache.1.db": {
+      "size": 5062656,
+      "mtime_ns": 1787075541627939669
+    },
+    ".mypy_cache/3.14/cache.0.db": {
+      "size": 3907584,
+      "mtime_ns": 1787075541627577446
+    },
+    ".mypy_cache/3.14/cache.4.db": {
+      "size": 3457024,
+      "mtime_ns": 1787075541628704979
+    },
+    ".mypy_cache/3.14/cache.12.db": {
+      "size": 4993024,
+      "mtime_ns": 1786994948717668775
+    },
+    ".mypy_cache/3.14/cache.13.db": {
+      "size": 4218880,
+      "mtime_ns": 1786994948719424025
+    },
+    ".mypy_cache/3.14/cache.10.db": {
+      "size": 4493312,
+      "mtime_ns": 1787075541630492936
+    },
+    ".mypy_cache/3.14/cache.9.db": {
+      "size": 4300800,
+      "mtime_ns": 1787075541630263297
+    },
+    ".mypy_cache/3.14/cache.14.db": {
+      "size": 5816320,
+      "mtime_ns": 1787075541631278698
+    },
+    ".mypy_cache/3.14/cache.15.db": {
+      "size": 3702784,
+      "mtime_ns": 1787075541631541576
+    },
+    ".mypy_cache/3.14/cache.11.db": {
+      "size": 6475776,
+      "mtime_ns": 1786994948716318191
+    },
+    ".mypy_cache/3.14/cache.8.db": {
+      "size": 2932736,
+      "mtime_ns": 1787075541630006875
+    },
+    ".mypy_cache/3.14/cache.3.db": {
+      "size": 3756032,
+      "mtime_ns": 1787075541628394073
+    },
+    ".mypy_cache/3.14/cache.7.db": {
+      "size": 3620864,
+      "mtime_ns": 1787075541629631364
+    },
+    ".mypy_cache/3.14/cache.6.db": {
+      "size": 3592192,
+      "mtime_ns": 1786994948705407233
+    },
+    ".mypy_cache/3.14/cache.2.db": {
+      "size": 4087808,
+      "mtime_ns": 1786994948699479816
+    },
+    "third_party/licenses/fastapi-template-MIT.txt": {
+      "size": 1076,
+      "mtime_ns": 1786992542406590532
+    },
+    "backend/app/worker.py": {
+      "size": 2121,
+      "mtime_ns": 1786996960484232265
+    },
+    "backend/app/models.py": {
+      "size": 7852,
+      "mtime_ns": 1787001347310195357
+    },
+    "backend/app/backend_pre_start.py": {
+      "size": 921,
+      "mtime_ns": 1786955921000000000
+    },
+    "backend/app/initial_data.py": {
+      "size": 122,
+      "mtime_ns": 1786994301940603770
+    },
+    "backend/app/__init__.py": {
+      "size": 0,
+      "mtime_ns": 1786955921000000000
+    },
+    "backend/app/schemas.py": {
+      "size": 5529,
+      "mtime_ns": 1787075166642266258
+    },
+    "backend/app/tests_pre_start.py": {
+      "size": 917,
+      "mtime_ns": 1786955921000000000
+    },
+    "backend/app/main.py": {
+      "size": 2440,
+      "mtime_ns": 1786994175296614801
+    },
+    "backend/.pytest_cache/CACHEDIR.TAG": {
+      "size": 191,
+      "mtime_ns": 1786995174850030395
+    },
+    "backend/.pytest_cache/README.md": {
+      "size": 302,
+      "mtime_ns": 1786995174849916187
+    },
+    "backend/.pytest_cache/.gitignore": {
+      "size": 37,
+      "mtime_ns": 1786995174849973562
+    },
+    "backend/.ruff_cache/CACHEDIR.TAG": {
+      "size": 43,
+      "mtime_ns": 1786994901328454691
+    },
+    "backend/.ruff_cache/.gitignore": {
+      "size": 35,
+      "mtime_ns": 1786994901328500525
+    },
+    "backend/tests/test_workflows.py": {
+      "size": 10813,
+      "mtime_ns": 1787001537628560301
+    },
+    "backend/tests/conftest.py": {
+      "size": 918,
+      "mtime_ns": 1786995206387231573
+    },
+    "backend/tests/test_api_privacy.py": {
+      "size": 6194,
+      "mtime_ns": 1787075166708219212
+    },
+    "backend/tests/test_policy.py": {
+      "size": 1448,
+      "mtime_ns": 1786995163285085683
+    },
+    "backend/scripts/prestart.sh": {
+      "size": 222,
+      "mtime_ns": 1786999330767483510
+    },
+    "backend/scripts/lint.sh": {
+      "size": 97,
+      "mtime_ns": 1786955921000000000
+    },
+    "backend/scripts/tests-start.sh": {
+      "size": 93,
+      "mtime_ns": 1786955921000000000
+    },
+    "backend/scripts/test.sh": {
+      "size": 144,
+      "mtime_ns": 1786955921000000000
+    },
+    "backend/scripts/format.sh": {
+      "size": 74,
+      "mtime_ns": 1786955921000000000
+    },
+    "backend/tests/__pycache__/test_workflows.cpython-314-pytest-9.1.1.pyc": {
+      "size": 50818,
+      "mtime_ns": 1787001820491090388
+    },
+    "backend/tests/__pycache__/test_api_privacy.cpython-314-pytest-9.1.1.pyc": {
+      "size": 32491,
+      "mtime_ns": 1787075206300269303
+    },
+    "backend/tests/__pycache__/test_policy.cpython-314-pytest-9.1.1.pyc": {
+      "size": 4223,
+      "mtime_ns": 1786995174462580228
+    },
+    "backend/tests/__pycache__/conftest.cpython-314-pytest-9.1.1.pyc": {
+      "size": 2347,
+      "mtime_ns": 1786995336112275914
+    },
+    "backend/tests/fixtures/demo-profile.md": {
+      "size": 163,
+      "mtime_ns": 1786996882498668485
+    },
+    "backend/.ruff_cache/0.15.20/7573524097155763049": {
+      "size": 194,
+      "mtime_ns": 1787075205438730407
+    },
+    "backend/.ruff_cache/0.15.20/17855491377174919725": {
+      "size": 907,
+      "mtime_ns": 1787075205438672946
+    },
+    "backend/.pytest_cache/v/cache/nodeids": {
+      "size": 1762,
+      "mtime_ns": 1787075540079106195
+    },
+    "backend/.pytest_cache/v/cache/lastfailed": {
+      "size": 2,
+      "mtime_ns": 1786995197349422987
+    },
+    "backend/app/core/db.py": {
+      "size": 2193,
+      "mtime_ns": 1786994921007722608
+    },
+    "backend/app/core/config.py": {
+      "size": 2269,
+      "mtime_ns": 1787073336958947690
+    },
+    "backend/app/core/__init__.py": {
+      "size": 0,
+      "mtime_ns": 1786955921000000000
+    },
+    "backend/app/agent/runner.py": {
+      "size": 9256,
+      "mtime_ns": 1787001386914846540
+    },
+    "backend/app/agent/policy.py": {
+      "size": 1779,
+      "mtime_ns": 1786995335844255123
+    },
+    "backend/app/agent/__init__.py": {
+      "size": 58,
+      "mtime_ns": 1786992959769354251
+    },
+    "backend/app/agent/checkpoints.py": {
+      "size": 980,
+      "mtime_ns": 1787001347380457937
+    },
+    "backend/app/agent/providers.py": {
+      "size": 5468,
+      "mtime_ns": 1786995335844474539
+    },
+    "backend/app/agent/artifacts.py": {
+      "size": 1014,
+      "mtime_ns": 1786994921007790483
+    },
+    "backend/app/agent/graphs.py": {
+      "size": 14297,
+      "mtime_ns": 1787001537592874993
+    },
+    "backend/app/agent/adapters.py": {
+      "size": 8323,
+      "mtime_ns": 1787001347238152818
+    },
+    "backend/app/__pycache__/tests_pre_start.cpython-314.pyc": {
+      "size": 2101,
+      "mtime_ns": 1786994901390205150
+    },
+    "backend/app/__pycache__/initial_data.cpython-314.pyc": {
+      "size": 529,
+      "mtime_ns": 1786994901387596900
+    },
+    "backend/app/__pycache__/schemas.cpython-314.pyc": {
+      "size": 18118,
+      "mtime_ns": 1787075206259661276
+    },
+    "backend/app/__pycache__/main.cpython-314.pyc": {
+      "size": 4329,
+      "mtime_ns": 1786994901387980900
+    },
+    "backend/app/__pycache__/worker.cpython-314.pyc": {
+      "size": 3540,
+      "mtime_ns": 1786997696782039856
+    },
+    "backend/app/__pycache__/models.cpython-314.pyc": {
+      "size": 15744,
+      "mtime_ns": 1787001503407282019
+    },
+    "backend/app/__pycache__/__init__.cpython-314.pyc": {
+      "size": 122,
+      "mtime_ns": 1786994901376591900
+    },
+    "backend/app/__pycache__/backend_pre_start.cpython-314.pyc": {
+      "size": 2105,
+      "mtime_ns": 1786994901386487941
+    },
+    "backend/app/api/__init__.py": {
+      "size": 0,
+      "mtime_ns": 1786955921000000000
+    },
+    "backend/app/api/main.py": {
+      "size": 668,
+      "mtime_ns": 1786994175260282346
+    },
+    "backend/app/alembic/script.py.mako": {
+      "size": 523,
+      "mtime_ns": 1786955921000000000
+    },
+    "backend/app/alembic/env.py": {
+      "size": 2311,
+      "mtime_ns": 1786955921000000000
+    },
+    "backend/app/alembic/README": {
+      "size": 39,
+      "mtime_ns": 1786955921000000000
+    },
+    "backend/app/alembic/versions/20260818_0002_retry_and_distance_reason.py": {
+      "size": 946,
+      "mtime_ns": 1787001347485665470
+    },
+    "backend/app/alembic/versions/20260818_0001_miniworld.py": {
+      "size": 9404,
+      "mtime_ns": 1786994280890923642
+    },
+    "backend/app/alembic/versions/.keep": {
+      "size": 0,
+      "mtime_ns": 1786955921000000000
+    },
+    "backend/app/alembic/__pycache__/env.cpython-314.pyc": {
+      "size": 2919,
+      "mtime_ns": 1786994901382530566
+    },
+    "backend/app/alembic/versions/__pycache__/20260818_0001_miniworld.cpython-314.pyc": {
+      "size": 16356,
+      "mtime_ns": 1786994901383756441
+    },
+    "backend/app/api/__pycache__/deps.cpython-314.pyc": {
+      "size": 3180,
+      "mtime_ns": 1786994901384298025
+    },
+    "backend/app/api/__pycache__/main.cpython-314.pyc": {
+      "size": 1272,
+      "mtime_ns": 1786994901384494525
+    },
+    "backend/app/api/__pycache__/__init__.cpython-314.pyc": {
+      "size": 126,
+      "mtime_ns": 1786994901383961441
+    },
+    "backend/app/api/routes/miniworld.py": {
+      "size": 18385,
+      "mtime_ns": 1787075166675652289
+    },
+    "backend/app/api/routes/__init__.py": {
+      "size": 0,
+      "mtime_ns": 1786955921000000000
+    },
+    "backend/app/api/routes/__pycache__/miniworld.cpython-314.pyc": {
+      "size": 33424,
+      "mtime_ns": 1787075205967793039
+    },
+    "backend/app/api/routes/__pycache__/__init__.cpython-314.pyc": {
+      "size": 133,
+      "mtime_ns": 1786994901384678858
+    },
+    "backend/app/agent/__pycache__/adapters.cpython-314.pyc": {
+      "size": 12307,
+      "mtime_ns": 1787001503549253151
+    },
+    "backend/app/agent/__pycache__/graphs.cpython-314.pyc": {
+      "size": 24117,
+      "mtime_ns": 1787001820153192235
+    },
+    "backend/app/agent/__pycache__/policy.cpython-314.pyc": {
+      "size": 4337,
+      "mtime_ns": 1786995336342895540
+    },
+    "backend/app/agent/__pycache__/runner.cpython-314.pyc": {
+      "size": 16177,
+      "mtime_ns": 1787001503436591974
+    },
+    "backend/app/agent/__pycache__/providers.cpython-314.pyc": {
+      "size": 11800,
+      "mtime_ns": 1786995336344071665
+    },
+    "backend/app/agent/__pycache__/checkpoints.cpython-314.pyc": {
+      "size": 1541,
+      "mtime_ns": 1787001503437089402
+    },
+    "backend/app/agent/__pycache__/__init__.cpython-314.pyc": {
+      "size": 194,
+      "mtime_ns": 1786994901376844691
+    },
+    "backend/app/agent/__pycache__/artifacts.cpython-314.pyc": {
+      "size": 2040,
+      "mtime_ns": 1786995096523838611
+    },
+    "backend/app/core/__pycache__/config.cpython-314.pyc": {
+      "size": 5288,
+      "mtime_ns": 1787073606085623364
+    },
+    "backend/app/core/__pycache__/db.cpython-314.pyc": {
+      "size": 3775,
+      "mtime_ns": 1786995096872030986
+    },
+    "backend/app/core/__pycache__/__init__.cpython-314.pyc": {
+      "size": 127,
+      "mtime_ns": 1786994901386739691
+    },
+    "output/playwright/radar-qa/radar-900x700.png": {
+      "size": 760767,
+      "mtime_ns": 1787074730717155820
+    },
+    "output/playwright/radar-qa/radar-320x320.png": {
+      "size": 130576,
+      "mtime_ns": 1787074730260250734
+    },
+    "output/playwright/radar-qa/radar-420x420.png": {
+      "size": 214368,
+      "mtime_ns": 1787074730425186329
+    },
+    "output/playwright/radar-qa/.playwright-cli/console-2026-08-18T17-33-26-007Z.log": {
+      "size": 774,
+      "mtime_ns": 1787074406520398269
+    },
+    "output/playwright/radar-qa/.playwright-cli/page-2026-08-18T17-36-04-396Z.yml": {
+      "size": 0,
+      "mtime_ns": 1787074564397142245
+    },
+    "output/playwright/radar-qa/.playwright-cli/page-2026-08-18T17-33-26-204Z.yml": {
+      "size": 0,
+      "mtime_ns": 1787074406204985190
+    },
+    "output/playwright/radar-qa/.playwright-cli/console-2026-08-18T17-36-04-235Z.log": {
+      "size": 706,
+      "mtime_ns": 1787074892988086186
+    },
+    ".ruff_cache/0.15.20/10466173711656714967": {
+      "size": 84,
+      "mtime_ns": 1787001911582067791
+    },
+    "runtime-data/maps/demo-firenze.pmtiles": {
+      "size": 6601156,
+      "mtime_ns": 1787073124498749325
+    },
+    "frontend/dist/index.html": {
+      "size": 676,
+      "mtime_ns": 1787075542945877111
+    },
+    "frontend/.ruff_cache/CACHEDIR.TAG": {
+      "size": 43,
+      "mtime_ns": 1787001515295948868
+    },
+    "frontend/.ruff_cache/.gitignore": {
+      "size": 35,
+      "mtime_ns": 1787001515296000161
+    },
+    "frontend/tests/radar.spec.ts": {
+      "size": 6463,
+      "mtime_ns": 1787075374972373155
+    },
+    "frontend/tests/dashboard.spec.ts": {
+      "size": 5650,
+      "mtime_ns": 1787001710426439516
+    },
+    "frontend/.mypy_cache/CACHEDIR.TAG": {
+      "size": 190,
+      "mtime_ns": 1787001515419044364
+    },
+    "frontend/.mypy_cache/.gitignore": {
+      "size": 34,
+      "mtime_ns": 1787001515418985446
+    },
+    "frontend/test-results/.last-run.json": {
+      "size": 45,
+      "mtime_ns": 1787075548740869894
+    },
+    "frontend/src/App.tsx": {
+      "size": 36464,
+      "mtime_ns": 1787073479236908133
+    },
+    "frontend/src/main.tsx": {
+      "size": 613,
+      "mtime_ns": 1787073712440197699
+    },
+    "frontend/src/styles.css": {
+      "size": 20247,
+      "mtime_ns": 1787073479272502632
+    },
+    "frontend/src/api.ts": {
+      "size": 4164,
+      "mtime_ns": 1787075231491233566
+    },
+    "frontend/src/types.ts": {
+      "size": 2937,
+      "mtime_ns": 1787075231458139419
+    },
+    "frontend/src/vite-env.d.ts": {
+      "size": 38,
+      "mtime_ns": 1786994561850403118
+    },
+    "frontend/src/radar/radar.css": {
+      "size": 11550,
+      "mtime_ns": 1787073593369782318
+    },
+    "frontend/src/radar/RadarApp.tsx": {
+      "size": 12340,
+      "mtime_ns": 1787075455084971728
+    },
+    "frontend/src/radar/radar-style.ts": {
+      "size": 2647,
+      "mtime_ns": 1787073479330213038
+    },
+    "frontend/.cache/uv/.lock": {
+      "size": 0,
+      "mtime_ns": 1787001515212199596
+    },
+    "frontend/.cache/uv/CACHEDIR.TAG": {
+      "size": 43,
+      "mtime_ns": 1787001515211652709
+    },
+    "frontend/.cache/uv/.gitignore": {
+      "size": 1,
+      "mtime_ns": 1787001515211836171
+    },
+    "frontend/.cache/uv/sdists-v9/.gitignore": {
+      "size": 0,
+      "mtime_ns": 1787001515211946674
+    },
+    "frontend/.cache/uv/sdists-v9/.git": {
+      "size": 0,
+      "mtime_ns": 1787001515212013842
+    },
+    "frontend/.cache/uv/interpreter-v4/6a2fb127545f0f98/6b44dc46091d7a7b.msgpack": {
+      "size": 1719,
+      "mtime_ns": 1787001515256368847
+    },
+    "frontend/.mypy_cache/3.14/cache.5.db": {
+      "size": 16384,
+      "mtime_ns": 1787001515420779695
+    },
+    "frontend/.mypy_cache/3.14/cache.1.db": {
+      "size": 16384,
+      "mtime_ns": 1787001515419736172
+    },
+    "frontend/.mypy_cache/3.14/cache.0.db": {
+      "size": 16384,
+      "mtime_ns": 1787001515419501791
+    },
+    "frontend/.mypy_cache/3.14/cache.4.db": {
+      "size": 16384,
+      "mtime_ns": 1787001515420570607
+    },
+    "frontend/.mypy_cache/3.14/cache.12.db": {
+      "size": 16384,
+      "mtime_ns": 1787001515422618237
+    },
+    "frontend/.mypy_cache/3.14/cache.13.db": {
+      "size": 16384,
+      "mtime_ns": 1787001515422994412
+    },
+    "frontend/.mypy_cache/3.14/cache.10.db": {
+      "size": 16384,
+      "mtime_ns": 1787001515422107809
+    },
+    "frontend/.mypy_cache/3.14/cache.9.db": {
+      "size": 16384,
+      "mtime_ns": 1787001515421788135
+    },
+    "frontend/.mypy_cache/3.14/cache.14.db": {
+      "size": 16384,
+      "mtime_ns": 1787001515423247960
+    },
+    "frontend/.mypy_cache/3.14/cache.15.db": {
+      "size": 16384,
+      "mtime_ns": 1787001515423543008
+    },
+    "frontend/.mypy_cache/3.14/cache.11.db": {
+      "size": 16384,
+      "mtime_ns": 1787001515422407316
+    },
+    "frontend/.mypy_cache/3.14/cache.8.db": {
+      "size": 16384,
+      "mtime_ns": 1787001515421592589
+    },
+    "frontend/.mypy_cache/3.14/cache.3.db": {
+      "size": 16384,
+      "mtime_ns": 1787001515420199849
+    },
+    "frontend/.mypy_cache/3.14/cache.7.db": {
+      "size": 16384,
+      "mtime_ns": 1787001515421278582
+    },
+    "frontend/.mypy_cache/3.14/cache.6.db": {
+      "size": 16384,
+      "mtime_ns": 1787001515421048952
+    },
+    "frontend/.mypy_cache/3.14/cache.2.db": {
+      "size": 16384,
+      "mtime_ns": 1787001515419954052
+    },
+    "frontend/public/assets/images/fastapi-icon.svg": {
+      "size": 2609,
+      "mtime_ns": 1786955921000000000
+    },
+    "frontend/public/assets/images/fastapi-logo-light.svg": {
+      "size": 7162,
+      "mtime_ns": 1786955921000000000
+    },
+    "frontend/public/assets/images/favicon.png": {
+      "size": 5043,
+      "mtime_ns": 1786955921000000000
+    },
+    "frontend/public/assets/images/fastapi-logo.svg": {
+      "size": 7238,
+      "mtime_ns": 1786955921000000000
+    },
+    "frontend/public/assets/images/fastapi-icon-light.svg": {
+      "size": 2608,
+      "mtime_ns": 1786955921000000000
+    },
+    "frontend/node_modules/.vite/deps/_metadata.json": {
+      "size": 1409,
+      "mtime_ns": 1787074040585385483
+    },
+    "frontend/node_modules/.vite/deps/react-dom_client.js": {
+      "size": 835018,
+      "mtime_ns": 1787074040582035588
+    },
+    "frontend/node_modules/.vite/deps/react_jsx-dev-runtime.js": {
+      "size": 10472,
+      "mtime_ns": 1787074040582245341
+    },
+    "frontend/node_modules/.vite/deps/react.js": {
+      "size": 38252,
+      "mtime_ns": 1787074040582115089
+    },
+    "frontend/node_modules/.vite/deps/react-dom_client.js.map": {
+      "size": 1524610,
+      "mtime_ns": 1787074040583286861
+    },
+    "frontend/node_modules/.vite/deps/pmtiles.js": {
+      "size": 27242,
+      "mtime_ns": 1787074040581896002
+    },
+    "frontend/node_modules/.vite/deps/@protomaps_basemaps.js.map": {
+      "size": 75315,
+      "mtime_ns": 1787074040582371052
+    },
+    "frontend/node_modules/.vite/deps/pmtiles.js.map": {
+      "size": 134527,
+      "mtime_ns": 1787074040583014064
+    },
+    "frontend/node_modules/.vite/deps/package.json": {
+      "size": 23,
+      "mtime_ns": 1787074040497700033
+    },
+    "frontend/node_modules/.vite/deps/@protomaps_basemaps.js": {
+      "size": 56025,
+      "mtime_ns": 1787074040581574037
+    },
+    "frontend/node_modules/.vite/deps/lucide-react.js": {
+      "size": 1097785,
+      "mtime_ns": 1787074040581747791
+    },
+    "frontend/node_modules/.vite/deps/react.js.map": {
+      "size": 68853,
+      "mtime_ns": 1787074040583867246
+    },
+    "frontend/node_modules/.vite/deps/react_jsx-dev-runtime.js.map": {
+      "size": 18134,
+      "mtime_ns": 1787074040583965040
+    },
+    "frontend/node_modules/.vite/deps/lucide-react.js.map": {
+      "size": 1871197,
+      "mtime_ns": 1787074040582676724
+    },
+    "frontend/node_modules/.vite/deps/rolldown-runtime-EAsCxrDo.js": {
+      "size": 496,
+      "mtime_ns": 1787074040582306218
+    },
+    "frontend/dist/assets/index-DMtzWmK5.js": {
+      "size": 224484,
+      "mtime_ns": 1787075542945097525
+    },
+    "frontend/dist/assets/index-Css8-HOO.css": {
+      "size": 15868,
+      "mtime_ns": 1787075542945817501
+    },
+    "frontend/dist/assets/RadarApp-BaFOgTtm.js": {
+      "size": 999089,
+      "mtime_ns": 1787075542945260523
+    },
+    "frontend/dist/assets/RadarApp-CazG7wf_.css": {
+      "size": 91699,
+      "mtime_ns": 1787075542945693201
+    },
+    "frontend/dist/assets/images/fastapi-icon.svg": {
+      "size": 2609,
+      "mtime_ns": 1787075542859727083
+    },
+    "frontend/dist/assets/images/fastapi-logo-light.svg": {
+      "size": 7162,
+      "mtime_ns": 1787075542860808423
+    },
+    "frontend/dist/assets/images/favicon.png": {
+      "size": 5043,
+      "mtime_ns": 1787075542861676611
+    },
+    "frontend/dist/assets/images/fastapi-logo.svg": {
+      "size": 7238,
+      "mtime_ns": 1787075542861069312
+    },
+    "frontend/dist/assets/images/fastapi-icon-light.svg": {
+      "size": 2608,
+      "mtime_ns": 1787075542859529385
+    }
+  }
+}

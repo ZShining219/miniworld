@@ -2,7 +2,7 @@
 
 本目录把根目录 [`goal.md`](../goal.md) 中已经确认的产品意图转换为可执行的技术与操作指导。
 
-当前对齐版本：`goal.md` v0.7。本地三闭环、四服务、Lever 公开只读来源、未解析地点、Provider 失败门和 PostgreSQL checkpoint 恢复均有证据，Demo 必选验收项全部通过。真实远端模型是用户授权后的可选验证，不阻塞本地 Demo。实现状态以 [`plan.md`](plan.md) 的“当前阶段事实”和 [`implementation-log.md`](implementation-log.md) 的最新追加记录为准；旧日志只代表当时事实。
+当前对齐版本：`goal.md` v0.8。v0.7 本地三闭环、四服务、Lever 公开只读来源、未解析地点、Provider 失败门和 PostgreSQL checkpoint 恢复均有证据，Demo 必选验收项全部通过；v0.8 本机可调 Tauri 悬浮窗、本地街道底图、中心用户位置、黄色闪光岗位点、隐私门和降级状态也已通过验收，真实岗位地图接入仍暂不扩展。实现状态以 [`plan.md`](plan.md) 的“当前阶段事实”和 [`implementation-log.md`](implementation-log.md) 的最新追加记录为准；旧日志只代表当时事实。
 
 ## 文档优先级
 

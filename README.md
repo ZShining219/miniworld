@@ -12,6 +12,7 @@ MiniWorld Agent 是一个面向本机唯一用户的本地优先个人工作台�
 
 - `demo` 模式：四服务可在 Apple Silicon/ARM64 本机通过 `docker-compose` 构建和启动；三条 LangGraph 闭环、PostgreSQL checkpoint、Worker 定时触发和容器重启持久性已有自动化验证。
 - `live` 岗位来源：Lever 公开 Postings GET 适配器已完成一次临时库端到端验证；JobSpy 保留为默认关闭的最善努力回退。代码中没有申请 POST 执行器。
+- 岗位雷达：MapLibre + 本地 PMTiles 场景已接入 Tauri 2 原生悬浮窗；窗口可缩放、置顶、拖动和关闭，HOME 固定中心，虚构岗位以黄色脉冲点显示。
 - 远端模型：OpenAI Responses Provider 已实现但默认关闭；未配置时 Graph 明确暂停，非法 schema 不落库。真实调用是可选增强，不阻塞本地 Demo。
 - 未执行真实投递、消息、文件外传、第三方登录授权或公开 Git push。
 
@@ -81,6 +82,36 @@ docker-compose down
 
 只有确认要删除所有本地业务数据、导入材料和 checkpoint 时，才使用 `docker-compose down -v`。
 
+## 岗位雷达悬浮窗
+
+岗位雷达是现有浏览器看板之外的独立本机入口，不替换四服务或三个业务闭环。默认使用 Firenze 公共示例区域和虚构岗位，真实岗位数据接入仍按产品计划暂缓。
+
+首次准备被 Git 忽略的本地地图包：
+
+```bash
+./scripts/fetch-radar-demo-map.sh
+```
+
+确认本地 API 正在 `127.0.0.1:8000` 运行，然后启动原生开发窗口：
+
+```bash
+cd frontend
+bun run tauri:dev
+```
+
+窗口初始为 420×420，允许缩放到 320×320—900×700；顶部空白区域可拖动，图钉按钮切换置顶，十字按钮让窗口回到屏幕中心。关闭/重开会恢复窗口尺寸和位置，但不会把地图中心、精确坐标或岗位内容写入窗口状态文件。API 不可用、地图包缺失或 WebGL2 不可用时，窗口只显示本地启动说明，不会回退到外部地图服务。
+
+地图运行文件位于 `runtime-data/maps/demo-firenze.pmtiles`；窗口状态位于 `~/Library/Application Support/com.zshining219.miniworld.radar/radar-window.json`，只包含 `x`、`y`、`width`、`height`。两者均不进入 Git，许可证和地图数据归属见 [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md)。
+
+构建本机 ARM64 `.app`：
+
+```bash
+cd frontend
+bun run tauri:build
+```
+
+产物位于 `frontend/src-tauri/target/release/bundle/macos/MiniWorld Job Radar.app`。当前命令明确使用 `--no-sign`，用于本机 Demo，不构成签名或公证发布包。
+
 ## Demo 操作路径
 
 1. 在“雷达总览”确认界面显示 `DEMO MODE · 本地确定性`；
@@ -124,7 +155,7 @@ docker-compose down
 ./scripts/test-local.sh
 ```
 
-当前证据：后端 17 项测试、Ruff、Mypy、Ty、前端生产构建和 Playwright 3 项 E2E 通过；Biome 无 error，保留 8 条 CSS 风格 warning。
+当前证据：后端 22 项测试、Ruff、Mypy、Ty、前端生产构建和 Playwright 9 项 E2E 通过；Biome 无 error，保留 8 条 CSS 风格 warning；Tauri ARM64 debug 链接与未签名 release `.app` 打包通过，最终二进制为 Mach-O arm64。
 
 一条命令构建、启动并执行完整容器验证：
 
@@ -192,6 +223,7 @@ OPENAI_MODEL=gpt-5.6
 ```text
 backend/                 FastAPI、SQLModel、LangGraph、Worker、迁移和测试
 frontend/                React/TypeScript 看板与 Playwright 测试
+frontend/src-tauri/      Tauri 2 原生岗位雷达宿主与窗口几何持久化
 goal.md                  产品目标、强约束和验收清单
 goal/                    架构、调研、计划、决策和实现记录
 scripts/verify-demo.sh   容器端到端和重启持久性验证
@@ -210,4 +242,4 @@ PROGRESS.md              当前证据、未完成项和待决事项
 
 ## 当前非目标
 
-匹配评分、投递跟踪、自动投递、最终地图/雷达视觉、精确通勤时间、多用户和云 SaaS 均不属于当前 Demo。完整边界以 [`goal.md`](goal.md) 为准。
+匹配评分、投递跟踪、自动投递、真实岗位地图接入、精确通勤时间、多用户和云 SaaS 均不属于当前岗位雷达呈现阶段。完整边界以 [`goal.md`](goal.md) 为准。

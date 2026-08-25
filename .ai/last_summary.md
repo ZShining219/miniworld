@@ -1,26 +1,26 @@
 # Last Summary
 
 [Quick Link]
-- TASK: T-008 — completed conversation-to-Goal audit, repeatable Demo verification, and Goal v0.7 handoff
-- DECISION: D-018 — real remote-model execution is optional authorized validation, not a local Demo freeze gate
-- ISSUE: none open
+- TASK: T-013 — audited, revalidated and consolidated the complete Goal v0.8 Phase 7 worktree into a local checkpoint
+- TASK: T-012 — completed and verified the Tauri 2 macOS job-radar presentation module and Goal v0.8 acceptance
+- DECISION: D-021 — preserve the jointly verified Phase 7 work as one truthful local commit boundary
 
 [Current Focus]
-- Goal v0.7 is aligned to all 11 confirmed user intents and its required Demo acceptance items are complete.
-- Local LangGraph OSS, three isolated Graphs, Lever public reads, local distance handling, file/GitHub/GPT inputs, daily/weekly reports, controlled scheduling, PostgreSQL checkpoint recovery, and the four-service dashboard are verified.
-- `scripts/verify-demo.sh` is repeatable: the latest before/after business counts remained `3/110/33/24/25` for jobs/facts/resumes/work/reports.
+- Goal v0.8 job-radar presentation is complete and locally checkpointed: local street map, centered HOME, yellow pulsing job signals, minimized scene API and a native resizable always-on-top window are verified.
+- T-013 reconfirmed 22 backend tests, Ruff/Mypy/Ty, Vite build, 9 Playwright tests, Cargo format/check, an unsigned ARM64 `.app`, ignored-artifact and secret/PII gates.
+- The standard Compose path now mounts `runtime-data/maps` read-only into the API container, closing the gap between the resource script and documented four-service startup.
+- Default data remains explicitly fictional Firenze Demo data. Real city map selection and real job-coordinate integration remain future user choices, not hidden implementation claims.
 
 [Active Locks]
 - None.
 
 [Open Issues]
-- None. Real landmarks/company preferences, optional remote Provider validation, final radar/map visual direction, a release tag, and public push are user choices rather than implementation defects.
+- None. The 8 existing Biome CSS warnings are non-blocking and unchanged.
 
 [Pending Review]
-- Review Goal v0.7 and run the README Demo path.
-- Choose real nearby landmarks, a long-term Lever company whitelist, and query frequency; `binance`/`Hong Kong` were fictional/public verification inputs only.
-- Optionally authorize a Provider, model, and permitted data categories before any real personal-material model call.
-- Decide separately whether to create a local tag or perform a public push.
+- User may review the unsigned local app at `frontend/src-tauri/target/release/bundle/macos/MiniWorld Job Radar.app`.
+- A real public city/region map package and real local job-coordinate integration require a later user choice; exact home-centered bounds must never be sent externally.
+- Optional remote Provider validation, a local release tag and any public push remain separate user decisions; T-013 performed none of them.
 
 [Next Step]
-- The user can run and review the local Demo immediately. After review, take only the specific optional configuration, enhancement, or release action the user selects.
+- Run the local API and `bun run tauri:dev` for interactive review; then choose whether to keep the Firenze Demo or begin a separately scoped real-city/local-job-data phase.

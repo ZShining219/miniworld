@@ -1,8 +1,19 @@
 import hashlib
 import uuid
 from datetime import UTC, datetime
+from pathlib import Path
 
-from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile, status
+from fastapi import (
+    APIRouter,
+    Depends,
+    File,
+    HTTPException,
+    Query,
+    Response,
+    UploadFile,
+    status,
+)
+from fastapi.responses import FileResponse
 from sqlmodel import Session, col, func, select
 
 from app.agent.artifacts import convert_uploaded_bytes
@@ -42,6 +53,11 @@ from app.schemas import (
     LocationStatus,
     OverviewResponse,
     ProfileFactPublic,
+    RadarFeatureCollection,
+    RadarJobFeature,
+    RadarJobProperties,
+    RadarPointGeometry,
+    RadarSceneResponse,
     ReportRequest,
     ResumeDraftPublic,
     ScheduleInput,
@@ -55,12 +71,132 @@ from app.worker import run_schedule_tick
 router = APIRouter()
 SessionDep = Depends(get_session)
 
+RADAR_MAP_NAME = "demo-firenze.pmtiles"
+DEMO_RADAR_CENTER = (11.2543435, 43.7672134)
+DEMO_RADAR_JOBS = (
+    ("signal-01", "AI 产品实习生", "Arno Research", 0.7, 11.2604, 43.7708),
+    ("signal-02", "前端工程实习生", "Studio Nodo", 1.1, 11.2478, 43.7639),
+    ("signal-03", "数据分析助理", "Campo Labs", 1.4, 11.2659, 43.7631),
+    ("signal-04", "研究工程师", "Forma Systems", 1.8, 11.242, 43.7752),
+)
+
 
 def _get_or_404(session: Session, model, object_id):
     value = session.get(model, object_id)
     if value is None:
         raise HTTPException(status_code=404, detail="Resource not found")
     return value
+
+
+@router.get("/radar/maps/{map_name}", tags=["radar"])
+def get_radar_map(map_name: str) -> FileResponse:
+    if map_name != Path(map_name).name or not map_name.endswith(".pmtiles"):
+        raise HTTPException(status_code=404, detail="Radar map not found")
+
+    map_root = settings.RADAR_MAP_DIR.resolve()
+    map_path = (map_root / map_name).resolve()
+    if map_path.parent != map_root or not map_path.is_file():
+        raise HTTPException(status_code=404, detail="Radar map not found")
+
+    return FileResponse(
+        map_path,
+        media_type="application/vnd.pmtiles",
+        headers={
+            "Cache-Control": "private, max-age=86400",
+            "X-Content-Type-Options": "nosniff",
+        },
+    )
+
+
+def _radar_feature(
+    *,
+    job_id: str,
+    title: str,
+    company: str,
+    distance_km: float | None,
+    source: str,
+    url: str,
+    longitude: float,
+    latitude: float,
+) -> RadarJobFeature:
+    return RadarJobFeature(
+        id=job_id,
+        geometry=RadarPointGeometry(coordinates=(longitude, latitude)),
+        properties=RadarJobProperties(
+            id=job_id,
+            title=title,
+            company=company,
+            distance_km=distance_km,
+            source=source,
+            url=url,
+        ),
+    )
+
+
+@router.get("/radar/scene", response_model=RadarSceneResponse, tags=["radar"])
+def get_radar_scene(
+    response: Response, session: Session = SessionDep
+) -> RadarSceneResponse:
+    response.headers["Cache-Control"] = "no-store"
+    map_available = (settings.RADAR_MAP_DIR.resolve() / RADAR_MAP_NAME).is_file()
+
+    if settings.EXECUTION_MODE == "demo":
+        features = [
+            _radar_feature(
+                job_id=job_id,
+                title=title,
+                company=company,
+                distance_km=distance_km,
+                source="fictional-demo",
+                url="",
+                longitude=longitude,
+                latitude=latitude,
+            )
+            for job_id, title, company, distance_km, longitude, latitude in DEMO_RADAR_JOBS
+        ]
+        return RadarSceneResponse(
+            mode="fictional_demo",
+            center=DEMO_RADAR_CENTER,
+            jobs=RadarFeatureCollection(features=features),
+            unresolved_count=0,
+            total_count=len(features),
+            map_name=RADAR_MAP_NAME,
+            map_available=map_available,
+        )
+
+    location = session.get(PrivateLocation, 1)
+    jobs = list(session.exec(select(JobPosting)).all())
+    mapped_jobs = [
+        job
+        for job in jobs
+        if job.distance_status == "calculated"
+        and job.latitude is not None
+        and job.longitude is not None
+    ]
+    features = [
+        _radar_feature(
+            job_id=str(job.id),
+            title=job.title,
+            company=job.company,
+            distance_km=job.distance_km,
+            source=job.source,
+            url=job.url,
+            longitude=job.longitude,
+            latitude=job.latitude,
+        )
+        for job in mapped_jobs
+        if job.longitude is not None and job.latitude is not None
+    ]
+    center = None if location is None else (location.longitude, location.latitude)
+    return RadarSceneResponse(
+        mode="local",
+        center=center,
+        jobs=RadarFeatureCollection(features=features),
+        unresolved_count=len(jobs) - len(features),
+        total_count=len(jobs),
+        map_name=RADAR_MAP_NAME,
+        map_available=map_available,
+    )
 
 
 @router.get("/overview", response_model=OverviewResponse, tags=["overview"])

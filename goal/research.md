@@ -142,3 +142,37 @@ Khoj 已具备本地知识、Agent、互联网研究和自动化能力，但它�
 8. 保留 MIT 许可证归属和来源说明。
 
 JobSpy、LangGraph、MarkItDown 和 JSON Resume schema 通过依赖管理器固定版本，不复制其完整仓库。
+
+## 9. 2026-08-19 岗位雷达呈现选型
+
+### 9.1 候选结论
+
+| 候选 | 优点 | 局限 | 本项目结论 |
+| --- | --- | --- | --- |
+| [Leaflet](https://leafletjs.com/) | 官方说明核心约 42 KB、无外部依赖，Marker/GeoJSON/CSS 定制成熟 | 最顺手的是栅格瓦片；深色矢量街道样式与高频动态层需要额外插件或自建方案 | 最轻回退候选，不作为首选 |
+| [MapLibre GL JS](https://maplibre.org/maplibre-gl-js/docs/) | TypeScript + WebGL 直接渲染矢量瓦片；样式、source/layer、marker 和事件完整；官方给出 Vite ESM/worker 接入 | 比 Leaflet 重，需要 WebGL 和 worker；必须控制本地资产与 CSP | **首选渲染器** |
+| [OpenLayers](https://openlayers.org/) | GIS 能力最完整，投影、栅格/矢量分析丰富 | 当前只需街道底图与点层，能力和 API 面过大 | 不采用 |
+| deck.gl / Cesium | 大规模可视化或 3D 能力强 | 不是轻量街道底图的最短路径，增加 GPU 与集成复杂度 | 不采用 |
+| 自绘 Canvas/SVG 雷达 | 极轻、视觉完全可控 | 需要自行处理街道拓扑、缩放、标注、裁剪和命中测试，不是可复用地图模块 | 只用于扫描扇区等覆盖效果 |
+
+### 9.2 本地底图与隐私
+
+[PMTiles](https://docs.protomaps.com/pmtiles/) 是只读的单文件瓦片金字塔格式，浏览器通过 HTTP Range 请求按需读取。官方文档明确列出 MapLibre、Leaflet 和 OpenLayers 集成，并把 MapLibre 推荐为平滑体验和自定义样式的方案。单文件比海量 `z/x/y` 文件更适合本机安装、版本和删除管理。
+
+[Protomaps Basemaps](https://github.com/protomaps/basemaps) 可以从 OpenStreetMap 与 Natural Earth 生成 PMTiles，并提供 MapLibre 多主题样式、可下载的字体和 sprite。代码为 BSD-3、地图设计为 CC0、基于 OSM 的瓦片为 ODbL Produced Work，界面必须可见标注 `© OpenStreetMap contributors`，派生代码须保留许可证声明。
+
+不能把 `tile.openstreetmap.org` 当成离线资源来源：OSMF 的 [Tile Usage Policy](https://operations.osmfoundation.org/policies/tiles/) 明确禁止批量预取和离线使用，要求离线场景使用自托管瓦片或明确允许离线的 Provider；其隐私章节也要求不要向服务提交个人或机密信息。本项目因此不把精确住所视口请求发送给 OSM、MapTiler 或其他外部地图服务。
+
+底图包采用“用户选择公开城市/区域 → 一次性下载或本地生成 → 本机 Range 读取”的方式。下载条件只使用公开区域名或附近地标，不使用精确住址或以住所为中心的窄边界。地图包属于运行数据，不进入 Git。
+
+### 9.3 悬浮窗选型
+
+[Tauri 2 WindowConfig](https://v2.tauri.app/reference/config/#windowconfig) 原生提供 `alwaysOnTop`、`resizable`、`minWidth`、`minHeight`、`decorations` 和 `visibleOnAllWorkspaces`。它能直接复用当前 React/Vite 构建，并比 Electron 更适合作为单一雷达窗口的轻量宿主。
+
+首版采用不透明、无标准标题栏但有应用内拖动/置顶/关闭控制的 420×420 窗口，最小 320×320。Tauri 文档说明 macOS 透明窗口需要 `macOSPrivateApi`，会影响 App Store 接受，因此透明/点击穿透不进入首版。
+
+### 9.4 推荐组合
+
+最终组合为：**Tauri 2 + 现有 React/Vite + MapLibre GL JS + PMTiles JS + Protomaps Basemaps + MapLibre GeoJSON/circle layer + CSS 扫描覆盖层**。2026-08-19 核验并计划固定的包版本是 [`maplibre-gl@6.4.1`](https://www.npmjs.com/package/maplibre-gl)、[`pmtiles@4.5.0`](https://www.npmjs.com/package/pmtiles)、[`@protomaps/basemaps@5.7.2`](https://www.npmjs.com/package/@protomaps/basemaps)、[`@tauri-apps/cli@2.11.4`](https://www.npmjs.com/package/@tauri-apps/cli) 和 [`@tauri-apps/api@2.11.1`](https://www.npmjs.com/package/@tauri-apps/api)；Rust 依赖使用同一 Tauri 2.11 发行线并由 `Cargo.lock` 固定。
+
+直接使用 MapLibre API，不增加 `react-map-gl` 等包装层；这样依赖更少，也便于显式管理实例销毁、窗口 resize 和本地协议。岗位闪光点不引入 deck.gl，使用单一 GeoJSON source 与 circle paint 属性完成；岗位数量增长到数万且出现性能证据后再评估 deck.gl。

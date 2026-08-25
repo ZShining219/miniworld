@@ -6,13 +6,15 @@ import type {
   LocationStatus,
   Overview,
   ProfileFact,
+  RadarScene,
   ResumeDraft,
   Schedule,
   WorkEntry,
   WorkReport,
 } from "./types"
 
-const API_ROOT = import.meta.env.VITE_API_URL ?? "http://127.0.0.1:8000/api/v1"
+export const API_ROOT =
+  import.meta.env.VITE_API_URL ?? "http://127.0.0.1:8000/api/v1"
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const response = await fetch(`${API_ROOT}${path}`, {
@@ -41,6 +43,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 
 export const api = {
   overview: () => request<Overview>("/overview"),
+  radarScene: () => request<RadarScene>("/radar/scene"),
   jobs: () => request<Job[]>("/jobs"),
   runJobs: (query: string, live: boolean) =>
     request<AgentRun>("/job-runs", {

@@ -40,8 +40,10 @@ services:
       LANGGRAPH_CHECKPOINT_MODE: postgres
       SCHEDULER_ENABLED: "false"
       UPLOAD_DIR: /data/uploads
+      RADAR_MAP_DIR: /data/radar-maps
     volumes:
       - miniworld-uploads:/data/uploads
+      - ./runtime-data/maps:/data/radar-maps:ro
     ports:
       - "127.0.0.1:8000:8000"
     command: ["bash", "-c", "bash scripts/prestart.sh && fastapi run app/main.py --host 0.0.0.0 --port 8000"]

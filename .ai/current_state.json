@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
   "project_id": "miniworld",
-  "generated_at": "2026-08-18T06:00:20+08:00",
-  "summary_status": "goal_v0.7_demo_verified_pending_user_review",
-  "review_status": "pending_user_review",
+  "generated_at": "2026-08-25T20:08:40+08:00",
+  "summary_status": "goal_v0.8_radar_presentation_committed_locally_pending_user_review",
+  "review_status": "reviewed",
   "checkpoint_id": null,
   "checkpoint_offsets": null,
   "active_windows": {},
@@ -28,27 +28,30 @@
     "D-015": "Separate target architecture decomposition from actual implemented graph nodes and completion evidence.",
     "D-016": "Finish all no-decision freeze gaps and defer real model authorization, long-term preferences, tag, and public push.",
     "D-017": "Resume failed Graphs on the same checkpoint thread, retain safe error history, and reject retry after success.",
-    "D-018": "A real remote-model call is optional authorized validation, not a mandatory local Demo freeze gate."
+    "D-018": "A real remote-model call is optional authorized validation, not a mandatory local Demo freeze gate.",
+    "D-019": "Use Tauri 2, MapLibre GL JS, local PMTiles and Protomaps Basemaps for the offline street-level job radar; never send the home viewport to an external tile service.",
+    "D-020": "Use a minimal Tauri window capability set, persist only logical geometry, and keep scene/map data on configured localhost endpoints.",
+    "D-021": "Preserve the jointly verified Phase 7.1 through 7.3 work as one truthful local checkpoint instead of creating synthetic historical splits."
   },
   "pending_review": [
-    "Review goal.md v0.7 and the completed local Demo acceptance evidence",
-    "Choose real nearby landmarks, long-term Lever company sites, and read frequency; proof defaults do not encode a user preference",
+    "Review the unsigned local MiniWorld Job Radar.app and its native controls",
+    "Choose a broad public city/region map package and a separate real local job-coordinate integration phase if desired",
     "Optionally choose a Provider, model, and permitted data categories before any real remote-model call",
-    "Choose whether to create a local release tag or perform any public push",
-    "Choose the post-Demo priority among matching score, application tracking, and radar/map visualization"
+    "Choose whether to create a local release tag or perform any public push"
   ],
   "assumptions": [
-    "The optional remote model remains configurable behind ModelProvider and disabled by default.",
-    "The user will enter or correct exact home coordinates locally without external geocoding of the exact address.",
-    "No public Git push or real personal-material model call occurs before explicit confirmation.",
-    "The Lever verification company and Hong Kong landmark are public/fictitious proof inputs, not long-term job preferences."
+    "The default radar remains explicitly fictional until the user starts a separately scoped real-data phase.",
+    "Exact home coordinates stay local and are never used to request an external tile viewport or exact-address geocoding.",
+    "The optional remote model remains disabled unless the user authorizes a Provider, model, task and minimized data category.",
+    "No tag, public push, real personal material or external write occurs without explicit user confirmation.",
+    "The Tauri radar is an additional local entry point and does not replace the verified browser dashboard or three business loops."
   ],
   "derived_from": {
-    "source": "Goal v0.7, commits 8d94c5c and fcb58c5, test-local/container/Lever proofs, idempotency comparison, privacy scans, and scope audit at 2026-08-18T06:00:20+08:00",
+    "source": "Goal v0.8 acceptance plus T-013 commit audit: tasks T-010 through T-013, decisions D-019 through D-021, 22 backend and 9 Playwright tests, Cargo/Tauri ARM64 build, Compose read-only map mount, ignored-artifact and privacy/license scans at 2026-08-25T20:08:40+08:00",
     "pools": {
-      "task_pool.ndjson": 53,
+      "task_pool.ndjson": 88,
       "issue_pool.ndjson": 10,
-      "logic_pool.ndjson": 18
+      "logic_pool.ndjson": 21
     }
   }
 }

@@ -74,6 +74,15 @@ function statusTone(status: string): string {
   return "status waiting"
 }
 
+function openRadarWindow(): void {
+  const radarWindow = window.open(
+    "/radar",
+    "miniworld-job-radar",
+    "popup=yes,width=420,height=420,resizable=yes,scrollbars=no",
+  )
+  radarWindow?.focus()
+}
+
 function App() {
   const [view, setView] = useState<View>("overview")
   const [notice, setNotice] = useState<{
@@ -211,14 +220,23 @@ function OverviewPage({
               <span className="eyebrow">SIGNAL FIELD</span>
               <h2>个人机会雷达</h2>
             </div>
-            <button
-              className="icon-button"
-              type="button"
-              onClick={() => void load()}
-              aria-label="刷新"
-            >
-              <RefreshCw size={17} />
-            </button>
+            <div className="panel-head-actions">
+              <button
+                className="text-button"
+                type="button"
+                onClick={openRadarWindow}
+              >
+                打开岗位雷达 <ArrowUpRight size={15} />
+              </button>
+              <button
+                className="icon-button"
+                type="button"
+                onClick={() => void load()}
+                aria-label="刷新"
+              >
+                <RefreshCw size={17} />
+              </button>
+            </div>
           </div>
           <div
             className="radar-visual"

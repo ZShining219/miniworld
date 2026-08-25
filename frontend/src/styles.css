@@ -273,6 +273,11 @@ main {
     500 10px Menlo,
     monospace;
 }
+.panel-head-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
 .hero-grid {
   display: grid;
   grid-template-columns: minmax(0, 1.45fr) minmax(280px, 0.75fr);

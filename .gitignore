@@ -10,6 +10,8 @@ data/
 uploads/
 exports/
 logs/
+runtime-data/
+output/
 *.log
 *.sqlite
 *.sqlite3

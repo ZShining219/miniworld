@@ -23,6 +23,7 @@ class Settings(BaseSettings):
 
     UPLOAD_DIR: Path = Path("uploads")
     MAX_UPLOAD_BYTES: int = 8 * 1024 * 1024
+    RADAR_MAP_DIR: Path = Path("runtime-data/maps")
 
     MODEL_PROVIDER_MODE: Literal["demo", "openai", "disabled"] = "demo"
     OPENAI_API_KEY: str | None = None

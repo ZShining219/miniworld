@@ -238,7 +238,17 @@ v0.7 已有 `DemoJobAdapter`、`LeverJobAdapter` 与 `JobSpyAdapter`。Live 默�
 - `Agent Runs`：Graph、节点进度、错误、重试；
 - `Settings`：精确位置（受保护）、附近地标、来源、模型 Provider 和授权策略。
 
-首版不要求地图。距离排序和状态可读性优先。
+v0.7 首版不要求地图，距离排序和状态可读性优先；v0.8 新增的岗位雷达是独立呈现层，不替换现有 Jobs 列表。
+
+### 8.1 v0.8 岗位雷达呈现架构
+
+- 桌面壳：Tauri 2 创建独立 `radar` 窗口，默认 420×420、最小 320×320、可缩放、置顶、可拖动；首版保持不透明并保留焦点交互，不启用点击穿透；
+- 地图渲染：React 组件直接管理 MapLibre GL JS 实例，不再增加 React 地图库封装；`pmtiles` 协议读取本地城市/区域单文件矢量瓦片，Protomaps Basemaps 提供可裁剪的深色街道样式；
+- 本地资源：`.pmtiles`、glyph、sprite 和 style 资产放在 Git 忽略的 `runtime-data/maps/`，由 localhost 静态资源端点提供 Range 请求；地图始终展示 `© OpenStreetMap contributors`；
+- 场景接口：新增只绑定 localhost 的 `GET /api/v1/radar/scene`，返回运行时中心坐标、可显示岗位 GeoJSON、未解析计数和地图包状态；不返回精确地址文本。精确坐标只进入本机雷达内存，不写入前端 bundle、日志、遥测或任何外部请求；
+- 信号层：中心 `HOME` 标记固定在视觉中心；岗位使用一个 GeoJSON source 和 MapLibre circle layers，以 `circle-radius`、`circle-opacity` 和 blur 动画形成黄色脉冲；CSS 扫描扇区仅作视觉覆盖，不承载业务坐标；
+- 降级：没有岗位时显示空场；地点未解析时只进入列表/计数；地图包缺失时显示安装指引；WebGL 不可用时显示明确错误并保留 Jobs 列表，不静默切换外部在线地图；
+- 生命周期：现有 Docker Compose 继续运行前端/API/Worker/PostgreSQL；Tauri 是宿主机原生可选入口，连接回环 API，不进入 Linux 容器。
 
 ## 9. 错误与安全处理
 

@@ -1,0 +1,696 @@
+body.radar-surface {
+  min-width: 320px;
+  min-height: 320px;
+  overflow: hidden;
+  color: #f7f2d0;
+  background: #050704;
+}
+
+body.radar-surface::before {
+  z-index: 20;
+  opacity: 0.1;
+  background-image: repeating-linear-gradient(
+    0deg,
+    rgba(255, 255, 255, 0.08) 0,
+    rgba(255, 255, 255, 0.08) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  background-size: auto;
+  mask-image: none;
+  pointer-events: none;
+}
+
+body.radar-surface #root {
+  height: 100vh;
+}
+
+.radar-window {
+  --radar-yellow: #ffe14f;
+  --radar-yellow-soft: #fff3a1;
+  --radar-ink: #070906;
+  --radar-line: rgba(207, 224, 136, 0.27);
+  display: grid;
+  grid-template-rows: 54px minmax(0, 1fr);
+  width: 100%;
+  height: 100vh;
+  min-width: 320px;
+  min-height: 320px;
+  overflow: hidden;
+  color: #f1efdd;
+  background: var(--radar-ink);
+  border: 1px solid #32372a;
+  font-family: "Avenir Next", "PingFang SC", sans-serif;
+}
+
+.radar-toolbar {
+  position: relative;
+  z-index: 15;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto repeat(3, 30px);
+  gap: 6px;
+  align-items: center;
+  padding: 0 9px 0 12px;
+  border-bottom: 1px solid #33392c;
+  background: rgba(8, 10, 7, 0.97);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.38);
+}
+
+.radar-toolbar::after {
+  position: absolute;
+  right: 52px;
+  bottom: -1px;
+  width: 42px;
+  height: 1px;
+  content: "";
+  background: var(--radar-yellow);
+  box-shadow: 0 0 12px rgba(255, 225, 79, 0.7);
+}
+
+.radar-brand {
+  display: flex;
+  gap: 9px;
+  align-items: center;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+}
+
+.radar-brand-mark {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  flex: 0 0 auto;
+  place-items: center;
+  color: #111309;
+  background: var(--radar-yellow);
+  clip-path: polygon(0 0, 78% 0, 100% 22%, 100% 100%, 22% 100%, 0 78%);
+}
+
+.radar-brand b,
+.radar-brand small {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.radar-brand b {
+  font:
+    700 11px / 1 "Avenir Next Condensed",
+    sans-serif;
+  letter-spacing: 0.12em;
+}
+
+.radar-brand small,
+.radar-runtime,
+.radar-map-meta,
+.radar-map-footer,
+.signal-index,
+.radar-back-link {
+  font:
+    600 8px / 1.2 Menlo,
+    monospace;
+  letter-spacing: 0.09em;
+}
+
+.radar-brand small {
+  margin-top: 4px;
+  color: #858b73;
+}
+
+.radar-runtime {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  color: #b9bea6;
+}
+
+.radar-runtime i {
+  width: 6px;
+  height: 6px;
+  background: var(--radar-yellow);
+  border-radius: 50%;
+  box-shadow: 0 0 10px var(--radar-yellow);
+  animation: radar-runtime-blink 1.6s steps(2, end) infinite;
+}
+
+.radar-runtime.error {
+  color: #ff9575;
+}
+
+.radar-runtime.error i {
+  background: #ff7145;
+  box-shadow: 0 0 10px #ff7145;
+}
+
+.radar-tool-button,
+.radar-zoom-controls button {
+  display: grid;
+  padding: 0;
+  place-items: center;
+  color: #d9dccb;
+  border: 1px solid #3b4132;
+  background: rgba(12, 15, 10, 0.88);
+  cursor: pointer;
+  transition: 140ms ease;
+}
+
+.radar-tool-button {
+  width: 30px;
+  height: 30px;
+}
+
+.radar-native-control:not(.active) {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.radar-native-control.pinned {
+  color: var(--radar-yellow);
+  border-color: rgba(255, 225, 79, 0.58);
+}
+
+.radar-tool-button:hover,
+.radar-zoom-controls button:hover {
+  color: #161807;
+  border-color: var(--radar-yellow);
+  background: var(--radar-yellow);
+}
+
+.radar-stage {
+  position: relative;
+  min-height: 0;
+  overflow: hidden;
+  isolation: isolate;
+  background:
+    radial-gradient(circle at 50% 45%, #182016 0, transparent 54%), #080a07;
+}
+
+.radar-map,
+.radar-map-vignette,
+.radar-coordinate-grid,
+.radar-sweep {
+  position: absolute;
+  inset: 0;
+}
+
+.radar-map {
+  z-index: 1;
+}
+
+.radar-map .maplibregl-canvas {
+  filter: saturate(0.72) contrast(1.12) brightness(0.88);
+}
+
+.radar-map-vignette {
+  z-index: 2;
+  background:
+    radial-gradient(circle at center, transparent 36%, rgba(3, 5, 2, 0.78) 100%),
+    linear-gradient(180deg, rgba(5, 7, 4, 0.18), transparent 35%);
+  pointer-events: none;
+}
+
+.radar-coordinate-grid {
+  z-index: 3;
+  opacity: 0.21;
+  background-image:
+    linear-gradient(rgba(225, 238, 169, 0.18) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(225, 238, 169, 0.18) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(circle at center, #000 0, transparent 77%);
+  pointer-events: none;
+}
+
+.radar-sweep {
+  inset: 50% auto auto 50%;
+  z-index: 4;
+  width: 64vmax;
+  height: 64vmax;
+  background: conic-gradient(
+    from -25deg,
+    transparent 0deg,
+    rgba(255, 225, 79, 0.015) 18deg,
+    rgba(255, 225, 79, 0.14) 34deg,
+    rgba(255, 239, 153, 0.28) 35deg,
+    transparent 36deg,
+    transparent 360deg
+  );
+  transform: translate(-50%, -50%);
+  animation: radar-scan 6.8s linear infinite;
+  pointer-events: none;
+}
+
+.radar-crosshair,
+.radar-range {
+  position: absolute;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.radar-crosshair.horizontal {
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(224, 236, 166, 0.23) 25%,
+    rgba(224, 236, 166, 0.23) 75%,
+    transparent
+  );
+}
+
+.radar-crosshair.vertical {
+  top: 0;
+  left: 50%;
+  width: 1px;
+  height: 100%;
+  background: linear-gradient(
+    transparent,
+    rgba(224, 236, 166, 0.23) 25%,
+    rgba(224, 236, 166, 0.23) 75%,
+    transparent
+  );
+}
+
+.radar-range {
+  top: 50%;
+  left: 50%;
+  border: 1px solid rgba(222, 235, 165, 0.23);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: inset 0 0 20px rgba(255, 225, 79, 0.015);
+}
+
+.radar-range::before,
+.radar-range::after {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  content: "";
+  border-color: rgba(255, 225, 79, 0.6);
+  border-style: solid;
+}
+
+.radar-range::before {
+  top: -1px;
+  left: -1px;
+  border-width: 1px 0 0 1px;
+}
+
+.radar-range::after {
+  right: -1px;
+  bottom: -1px;
+  border-width: 0 1px 1px 0;
+}
+
+.range-near {
+  width: min(35vw, 35vh);
+  height: min(35vw, 35vh);
+}
+
+.range-far {
+  width: min(68vw, 68vh);
+  height: min(68vw, 68vh);
+}
+
+.radar-home {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 9;
+  display: grid;
+  justify-items: center;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.radar-home span {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  color: #111307;
+  background: var(--radar-yellow);
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 5px rgba(255, 225, 79, 0.14),
+    0 0 30px rgba(255, 225, 79, 0.55);
+}
+
+.radar-home b {
+  margin-top: 7px;
+  padding: 3px 5px;
+  color: #171909;
+  background: var(--radar-yellow);
+  font:
+    800 8px / 1 Menlo,
+    monospace;
+  letter-spacing: 0.13em;
+}
+
+.radar-map-meta {
+  position: absolute;
+  top: 12px;
+  z-index: 8;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  color: #a4aa94;
+  pointer-events: none;
+}
+
+.radar-map-meta.top-left {
+  left: 12px;
+}
+
+.radar-map-meta.top-right {
+  right: 12px;
+  color: var(--radar-yellow-soft);
+}
+
+.radar-zoom-controls {
+  position: absolute;
+  top: 34px;
+  right: 11px;
+  z-index: 10;
+  display: grid;
+  gap: 4px;
+}
+
+.radar-zoom-controls button {
+  width: 29px;
+  height: 29px;
+}
+
+.radar-signal-card {
+  position: absolute;
+  bottom: 30px;
+  left: 12px;
+  z-index: 10;
+  width: min(66%, 260px);
+  padding: 11px 12px 10px;
+  border: 1px solid rgba(255, 225, 79, 0.44);
+  background: linear-gradient(
+    135deg,
+    rgba(9, 12, 7, 0.96),
+    rgba(17, 21, 13, 0.9)
+  );
+  box-shadow: 0 13px 34px rgba(0, 0, 0, 0.42);
+  backdrop-filter: blur(8px);
+  pointer-events: none;
+}
+
+.radar-signal-card::after {
+  position: absolute;
+  top: -1px;
+  right: -1px;
+  width: 24px;
+  height: 6px;
+  content: "";
+  border-top: 1px solid var(--radar-yellow);
+  border-right: 1px solid var(--radar-yellow);
+}
+
+.signal-index {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  color: #9ea58d;
+}
+
+.signal-index i {
+  width: 5px;
+  height: 5px;
+  background: var(--radar-yellow);
+  border-radius: 50%;
+  box-shadow: 0 0 9px var(--radar-yellow);
+}
+
+.radar-signal-card h1 {
+  max-width: calc(100% - 60px);
+  margin: 6px 0 2px;
+  overflow: hidden;
+  font-size: clamp(13px, 3vw, 17px);
+  line-height: 1.08;
+  letter-spacing: -0.035em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.radar-signal-card p {
+  margin: 0;
+  overflow: hidden;
+  color: #9ea58d;
+  font-size: 9px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.radar-signal-card strong {
+  position: absolute;
+  right: 12px;
+  bottom: 10px;
+  color: var(--radar-yellow);
+  font:
+    700 11px / 1 Menlo,
+    monospace;
+}
+
+.radar-state-card {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 12;
+  display: grid;
+  width: min(78%, 280px);
+  justify-items: center;
+  padding: 18px;
+  color: #c9ceba;
+  border: 1px solid #3e4534;
+  background: rgba(8, 10, 7, 0.94);
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.52);
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.radar-state-card i {
+  width: 18px;
+  height: 18px;
+  margin-bottom: 10px;
+  border: 1px solid var(--radar-yellow);
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: radar-spinner 0.8s linear infinite;
+}
+
+.radar-state-card b {
+  color: var(--radar-yellow-soft);
+  font:
+    700 9px Menlo,
+    monospace;
+  letter-spacing: 0.1em;
+}
+
+.radar-state-card span,
+.radar-state-card code {
+  margin-top: 7px;
+  color: #959b88;
+  font-size: 9px;
+  line-height: 1.45;
+}
+
+.radar-state-card.error {
+  border-color: #784b3d;
+}
+
+.radar-state-card.error b {
+  color: #ff9575;
+}
+
+.radar-state-card.error code {
+  padding: 5px 7px;
+  color: #e8e4d2;
+  background: #151810;
+}
+
+.radar-state-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 10px;
+  padding: 6px 8px;
+  color: var(--radar-yellow-soft);
+  font:
+    700 8px / 1 Menlo,
+    monospace;
+  letter-spacing: 0.08em;
+  border: 1px solid #515a3f;
+  background: #151810;
+  cursor: pointer;
+}
+
+.radar-state-action:hover,
+.radar-state-action:focus-visible {
+  color: var(--radar-ink);
+  background: var(--radar-yellow);
+}
+
+.radar-map-footer {
+  position: absolute;
+  right: 9px;
+  bottom: 7px;
+  left: 9px;
+  z-index: 11;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  color: #747a69;
+  pointer-events: none;
+}
+
+.radar-map-footer a {
+  overflow: hidden;
+  color: #929985;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  pointer-events: auto;
+}
+
+.radar-back-link {
+  display: none;
+}
+
+@keyframes radar-scan {
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+@keyframes radar-runtime-blink {
+  50% {
+    opacity: 0.25;
+  }
+}
+
+@keyframes radar-spinner {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 370px), (max-height: 380px) {
+  .radar-window {
+    grid-template-rows: 46px minmax(0, 1fr);
+  }
+
+  .radar-toolbar {
+    padding-left: 8px;
+  }
+
+  .radar-brand-mark {
+    width: 25px;
+    height: 25px;
+  }
+
+  .radar-brand small,
+  .radar-map-meta.top-left,
+  .radar-map-footer > span {
+    display: none;
+  }
+
+  .radar-runtime {
+    gap: 0;
+    font-size: 0;
+    letter-spacing: 0;
+  }
+
+  .radar-signal-card {
+    bottom: 25px;
+    left: 8px;
+    width: min(72%, 220px);
+    padding: 8px 9px;
+  }
+
+  .radar-signal-card h1 {
+    margin-top: 4px;
+    font-size: 12px;
+  }
+
+  .radar-signal-card p {
+    display: none;
+  }
+
+  .radar-signal-card strong {
+    right: 9px;
+    bottom: 8px;
+    font-size: 9px;
+  }
+
+  .radar-map-footer {
+    justify-content: flex-end;
+  }
+}
+
+@media (min-width: 640px) and (min-height: 520px) {
+  .radar-window {
+    grid-template-rows: 62px minmax(0, 1fr);
+  }
+
+  .radar-toolbar {
+    padding-right: 14px;
+    padding-left: 17px;
+  }
+
+  .radar-brand-mark {
+    width: 34px;
+    height: 34px;
+  }
+
+  .radar-brand b {
+    font-size: 13px;
+  }
+
+  .radar-signal-card {
+    bottom: 36px;
+    left: 18px;
+    width: 310px;
+    padding: 15px 16px 13px;
+  }
+
+  .radar-signal-card h1 {
+    font-size: 20px;
+  }
+
+  .radar-signal-card strong {
+    right: 16px;
+    bottom: 13px;
+    font-size: 13px;
+  }
+
+  .radar-map-meta {
+    top: 17px;
+  }
+
+  .radar-map-meta.top-left {
+    left: 18px;
+  }
+
+  .radar-map-meta.top-right,
+  .radar-zoom-controls {
+    right: 18px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .radar-sweep,
+  .radar-runtime i,
+  .radar-state-card i {
+    animation: none;
+  }
+}

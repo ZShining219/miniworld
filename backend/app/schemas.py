@@ -82,6 +82,42 @@ class JobPublic(ApiModel):
     observed_at: datetime
 
 
+class RadarPointGeometry(ApiModel):
+    type: Literal["Point"] = "Point"
+    coordinates: tuple[float, float]
+
+
+class RadarJobProperties(ApiModel):
+    id: str
+    title: str
+    company: str
+    distance_km: float | None
+    source: str
+    url: str
+
+
+class RadarJobFeature(ApiModel):
+    type: Literal["Feature"] = "Feature"
+    id: str
+    geometry: RadarPointGeometry
+    properties: RadarJobProperties
+
+
+class RadarFeatureCollection(ApiModel):
+    type: Literal["FeatureCollection"] = "FeatureCollection"
+    features: list[RadarJobFeature]
+
+
+class RadarSceneResponse(ApiModel):
+    mode: Literal["fictional_demo", "local"]
+    center: tuple[float, float] | None
+    jobs: RadarFeatureCollection
+    unresolved_count: int
+    total_count: int
+    map_name: str
+    map_available: bool
+
+
 class ImportTextRequest(ApiModel):
     source_type: Literal["file", "github", "gpt_conversation"]
     source_label: str = Field(min_length=1, max_length=500)

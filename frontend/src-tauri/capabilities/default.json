@@ -1,0 +1,14 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "radar-window",
+  "description": "Minimal native permissions for the local job radar controls",
+  "windows": ["main"],
+  "permissions": [
+    "core:default",
+    "core:window:allow-center",
+    "core:window:allow-close",
+    "core:window:allow-is-always-on-top",
+    "core:window:allow-set-always-on-top",
+    "core:window:allow-start-dragging"
+  ]
+}
