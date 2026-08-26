@@ -4,7 +4,7 @@
 >
 > 当前执行分支：`codex/bootstrap-langgraph`
 >
-> 当前阶段：Phase 1—9 已验证；Fitness H5 Demo 已完成，微信小程序与 Android/HBuilderX 仍只具备结构兼容性
+> 当前阶段：Phase 1—9 已验证；Phase 10 Fitness 单用户生产部署执行中；微信小程序与 Android/HBuilderX 仍只具备结构兼容性
 
 ## 当前阶段事实
 
@@ -22,6 +22,7 @@
 | 岗位雷达 | Phase 7 已验证 | `/radar`、本地 PMTiles Range、最小化场景 API、HOME 中心、黄色脉冲、未解析过滤、API/WebGL/缺图状态、三档窗口与 Tauri 2 ARM64 原生悬浮窗均已通过 |
 | 多端系统壳 | Phase 8 Web 已验证 | unibest 4.4.1 已按固定 commit 导入；锁定安装、类型检查、21 项单测、H5 构建及桌面/手机浏览器验收通过，本地服务只绑定 `127.0.0.1:9000` |
 | Fitness 辅助工具 | Phase 9 H5 已验证 | 首页 `04 健身记录`；独立 Fitness 数据表、后端包、前端模块和六个页面；27 项后端测试与 27 项 Shell 测试通过 |
+| Fitness 生产部署 | Phase 10 执行中 | 临时域名 `103-52-153-212.sslip.io`；只公开 Caddy 80/443；固定 SHA、备份、Fitness 四表迁移和手机验收完成后转为已验证 |
 
 以上状态只陈述仓库事实。“本地 Demo 已验证”不等于“Live 互联网能力已完成”，也不等于已可执行投递或其他外部写入。
 

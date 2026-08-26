@@ -1,0 +1,103 @@
+name: miniworld-fitness-production
+
+services:
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-miniworld}
+      POSTGRES_USER: ${POSTGRES_USER:-miniworld}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
+    volumes:
+      - fitness-postgres:/var/lib/postgresql/data
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U miniworld -d miniworld"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+    logging: &logging
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  api:
+    image: miniworld-fitness-api:${RELEASE_SHA:?RELEASE_SHA must be an exact Git commit SHA}
+    build:
+      context: ../..
+      dockerfile: backend/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-miniworld}:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}@db:5432/${POSTGRES_DB:-miniworld}
+      FASTAPI_ENV: production
+      FRONTEND_HOST: https://${PUBLIC_HOST:-103-52-153-212.sslip.io}
+      EXECUTION_MODE: demo
+      SEED_DEMO_DATA: "false"
+      MODEL_PROVIDER_MODE: disabled
+      OPENAI_API_KEY: ""
+      ALLOW_LIVE_JOB_SEARCH: "false"
+      LANGGRAPH_CHECKPOINT_MODE: postgres
+      SCHEDULER_ENABLED: "false"
+      UPLOAD_DIR: /tmp/miniworld-uploads
+      RADAR_MAP_DIR: /tmp/miniworld-radar-maps
+    command: ["bash", "-c", "bash scripts/prestart.sh && fastapi run app/main.py --host 0.0.0.0 --port 8000"]
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8000/api/v1/health"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+    logging: *logging
+
+  web:
+    image: miniworld-fitness-web:${RELEASE_SHA:?RELEASE_SHA must be an exact Git commit SHA}
+    build:
+      context: ../..
+      dockerfile: deploy/production/Dockerfile.web
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
+    environment:
+      PUBLIC_HOST: ${PUBLIC_HOST:-103-52-153-212.sslip.io}
+      BASIC_AUTH_HASH: ${BASIC_AUTH_HASH:?BASIC_AUTH_HASH is required}
+      RELEASE_SHA: ${RELEASE_SHA}
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    read_only: true
+    tmpfs:
+      - /config:size=16m,mode=0700
+      - /tmp:size=16m,mode=1777
+    volumes:
+      - caddy-data:/data
+      - caddy-logs:/var/log/caddy
+    networks:
+      - edge
+      - backend
+    healthcheck:
+      test: ["CMD", "caddy", "validate", "--config", "/etc/caddy/Caddyfile"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+    logging: *logging
+
+networks:
+  edge:
+  backend:
+    internal: true
+
+volumes:
+  fitness-postgres:
+  caddy-data:
+  caddy-logs:

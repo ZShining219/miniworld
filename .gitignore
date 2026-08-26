@@ -2,6 +2,7 @@
 .env
 .env.*
 !.env.example
+!deploy/production/.env.production.example
 !apps/miniworld-shell/env/.env
 !apps/miniworld-shell/env/.env.development
 !apps/miniworld-shell/env/.env.production

@@ -1,0 +1,18 @@
+FROM node:22-alpine AS build
+
+RUN npm install --global pnpm@10.10.0
+WORKDIR /app
+
+COPY apps/miniworld-shell/package.json apps/miniworld-shell/pnpm-lock.yaml apps/miniworld-shell/pnpm-workspace.yaml ./
+COPY apps/miniworld-shell/.npmrc ./
+RUN pnpm install --ignore-scripts --frozen-lockfile
+
+COPY apps/miniworld-shell/ ./
+RUN pnpm init-baseFiles \
+    && pnpm build:h5:prod \
+    && ! grep -R -F "127.0.0.1:8000" dist/build/h5
+
+FROM caddy:2.10.2-alpine
+
+COPY deploy/production/Caddyfile /etc/caddy/Caddyfile
+COPY --from=build /app/dist/build/h5 /srv

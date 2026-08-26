@@ -21,7 +21,7 @@ unibest 是项目的统一呈现平台，不等同于某一个业务模块。它
 | 功能/工具 | 当前状态 | 呈现入口 | 责任边界 | 验证与说明 |
 | --- | --- | --- | --- | --- |
 | unibest 统一呈现平台 | Web 已验证 | [`apps/miniworld-shell/`](apps/miniworld-shell/)；`http://127.0.0.1:9000/` | 负责跨端入口、导航和页面承载；业务数据仍由独立模块/API 管理 | `pnpm type-check`、27 项单测、H5 构建和桌面/手机浏览器验收通过 |
-| 健身训练记录 | H5 Demo 已验证 | 首页 `04 健身记录` → `/pages/fitness/index` | 独立 Fitness 数据表、后端包和前端模块；不接入三个 Agent 闭环或模型 Provider | 逐组保存、恢复、历史、日历、重量趋势和下次默认值均通过自动化与浏览器验收 |
+| 健身训练记录 | H5 Demo 已验证，生产部署中 | 首页 `04 健身记录` → `/pages/fitness/index`；生产入口 `https://103-52-153-212.sslip.io` | 独立 Fitness 数据表、后端包和前端模块；生产只公开受 Basic Auth 保护的 Fitness H5/API，不接入三个 Agent 闭环或模型 Provider | 逐组保存、恢复、历史、日历、重量趋势和下次默认值均通过自动化与浏览器验收；生产验收完成后补记 SHA 与数据核对 |
 | 岗位发现闭环 | Demo 与 Live 只读验证完成 | React 看板“岗位信号”；后续接入 unibest “岗位” | 公开岗位读取、标准化、去重和本地直线距离；不得改写档案/简历 | Lever 公开 GET、岗位 Graph、隐私测试和岗位雷达均有记录 |
 | 岗位雷达 | 本地 Demo 已验证 | Tauri 原生悬浮窗；后续接入统一入口 | 本地地图包、岗位坐标呈现和窗口状态；不发送家庭中心到外部地图 | MapLibre/PMTiles、Tauri ARM64 构建及无外网请求验证通过 |
 | 个人档案与简历 | 本地 Demo 已验证 | React 看板“个人档案”；后续接入 unibest “档案” | 只处理用户主动导入的材料，保留来源和事实证据 | 文件/GitHub/GPT 材料入口、事实和简历草稿测试通过 |
@@ -66,6 +66,7 @@ README 只登记项目级事实；详细设计、决策和逐次验证记录分�
 | `RUN-REACT` | React/Nginx 完整 Agent 看板；承载岗位、档案/简历、工作沉淀、Agent Runs、审批、设置和浏览器 Radar | `RUN-API` | `docker-compose up -d --build frontend` | `http://127.0.0.1:5173`；Radar 为 `http://127.0.0.1:5173/radar` | `docker-compose stop frontend` | 生产构建和 9 项 Playwright E2E 已验证 |
 | `RUN-H5` | unibest/uni-app 统一 Web 壳；首页模块导航和完整 Fitness H5 工作流，Jobs/Profile/Work 目前仍为占位入口 | `RUN-API`；首次运行需要 pnpm 依赖 | `cd apps/miniworld-shell && pnpm dev:h5` | `http://127.0.0.1:9000`；Fitness 为首页 `04 健身记录` | 前台终端 `Ctrl-C` | TypeScript、27 项单测、H5 build 和桌面/手机浏览器验收已通过 |
 | `RUN-RADAR-NATIVE` | Tauri 2 本机岗位雷达；显示本地 PMTiles、HOME 中心、岗位信号和原生窗口控制 | `RUN-API`；本地地图包；前端依赖 | `cd frontend && bun run tauri:dev` | 本机 `MiniWorld Job Radar` 窗口；API/地图/WebGL 失败均有明确状态 | 关闭窗口并在启动终端 `Ctrl-C` | macOS ARM64 开发运行和未签名 `.app` 构建已验证 |
+| `RUN-FITNESS-PROD` | 手机使用的单用户 Fitness 生产栈；Caddy HTTPS、H5、FastAPI、PostgreSQL | Ubuntu 服务器、Docker Compose、`600` 权限生产环境文件、固定 Git SHA | 服务器 root 执行 `/srv/miniworld/scripts/deploy-production.sh <40位SHA>` | `https://103-52-153-212.sslip.io`；未认证必须为 `401` | `docker compose --env-file /etc/miniworld/production.env -f /srv/miniworld/deploy/production/compose.yml down` | 部署执行中；生产只允许 80/443，API 与 DB 不映射宿主端口 |
 
 `RUN-RADAR-WEB` 不是独立进程，而是 `RUN-REACT` 的 `/radar` 页面。Fitness 正式数据依赖 `RUN-API` 和 `RUN-DB`；只启动 `RUN-H5` 可以查看壳，但不能完成训练数据读写。
 
@@ -91,6 +92,7 @@ Radar 首次运行前执行 `./scripts/fetch-radar-demo-map.sh`。该脚本只�
 | `VERIFY-DEMO` | 四服务、三 Graph、Worker、checkpoint、持久性和隐私端到端验证 | `./scripts/verify-demo.sh` | 要求完整 Compose 已运行；只写入明确的虚构 Demo 数据 |
 | `VERIFY-ALL` | 构建并启动四个 Compose 服务，然后执行 `VERIFY-DEMO` | `./scripts/test.sh` | 完成后服务仍保持运行，需要手动执行 `docker-compose down` |
 | `VERIFY-LIVE-JOBS` | Lever 公开职位 GET 的一次性 Live 只读验证 | `UV_CACHE_DIR=.cache/uv uv run --package app python scripts/verify-live-lever.py` | 会访问互联网；使用虚构位置和临时数据库，不执行申请 POST |
+| `VERIFY-FITNESS-PROD` | 生产脚本、Compose/Caddy 边界与 H5 同源构建 | `./scripts/test-production-deployment.sh`，再按 [`deploy/production/README.md`](deploy/production/README.md) 做公网、数据、备份恢复验收 | 公网验收会读取生产 Fitness 数据；功能写操作仅在用户正式使用或明确的验收训练中执行 |
 
 ### 统一停服
 

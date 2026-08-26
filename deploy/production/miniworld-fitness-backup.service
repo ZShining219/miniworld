@@ -1,0 +1,18 @@
+[Unit]
+Description=Back up MiniWorld Fitness production data
+Requires=docker.service
+After=docker.service
+
+[Service]
+Type=oneshot
+ExecStart=/srv/miniworld/scripts/backup-production.sh
+User=root
+Group=root
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=strict
+ReadWritePaths=/var/backups/miniworld-fitness
+ReadOnlyPaths=/srv/miniworld /etc/miniworld /srv/miniworld-deployed-sha
+
+[Install]
+WantedBy=multi-user.target

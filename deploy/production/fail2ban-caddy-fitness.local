@@ -1,0 +1,9 @@
+[caddy-fitness]
+enabled = true
+filter = caddy-fitness
+backend = auto
+logpath = /var/lib/docker/volumes/miniworld-fitness-production_caddy-logs/_data/access.log
+port = http,https
+maxretry = 8
+findtime = 10m
+bantime = 30m

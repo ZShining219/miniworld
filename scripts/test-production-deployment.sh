@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+
+repo=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
+cd "$repo"
+
+for script in scripts/bootstrap-production-host.sh scripts/configure-production-secrets.sh scripts/install-production-operations.sh scripts/backup-production.sh \
+  scripts/export-fitness-data.sh scripts/restore-production-smoke.sh \
+  scripts/import-fitness-data.sh scripts/deploy-production.sh; do
+  bash -n "$script"
+done
+
+grep -Fq "VITE_SERVER_BASEURL = '/fg-api'" apps/miniworld-shell/env/.env.production
+grep -Fq '@fitness_api path /fg-api/api/v1/fitness /fg-api/api/v1/fitness/*' deploy/production/Caddyfile
+grep -Fq '@blocked_api path /fg-api /fg-api/* /api /api/* /docs /docs/*' deploy/production/Caddyfile
+! grep -Eq 'ports:.*(5432|8000)' deploy/production/compose.yml
+
+echo "Production deployment static checks passed."

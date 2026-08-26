@@ -43,6 +43,7 @@
 | T-019 | Accepted | 使用 Tauri 2 增加独立原生雷达窗口，不替换现有浏览器看板 | Tauri 原生支持 always-on-top、resizable、最小尺寸与无边框窗口；首版使用不透明窗口，避免 macOS 透明窗口私有 API 与发布限制 |
 | T-020 | Accepted | 使用独立 unibest/uni-app 工程建立多端系统壳，保留现有 React 看板和 Tauri Radar；本轮只完成 Web | 用户选择 unibest 并明确暂不考虑微信小程序构建；独立目录避免 Vue 工具链覆盖已验证资产，Android 只保留最小权限入口，出包暂缓 |
 | T-021 | Accepted | Fitness 作为独立辅助工具接入 unibest 首页，正式数据复用本地 PostgreSQL，后端封装在独立 Fitness 包 | 跨端历史必须有统一正式数据源；独立包和 `/api/v1/fitness/*` 路由能避免侵入 Jobs、Profile/Resume、Work、LangGraph 与模型 Provider |
+| T-022 | Accepted | Fitness 首版生产使用单机 Docker Compose、Caddy HTTPS/Basic Auth、FastAPI 和 PostgreSQL，固定 Git SHA 发布 | 用户要求次日开始手机使用；公网只允许 H5 与 `/api/v1/fitness/*`，Worker、React、Radar、其他 API、文档和远端模型不启动或不转发；生产库上线后成为训练记录唯一正式数据源 |
 
 ## 尚未锁定但已明确不阻塞 Demo
 

@@ -1,0 +1,11 @@
+[Unit]
+Description=Daily MiniWorld Fitness production backup
+
+[Timer]
+OnCalendar=*-*-* 03:20:00
+Persistent=true
+RandomizedDelaySec=10m
+Unit=miniworld-fitness-backup.service
+
+[Install]
+WantedBy=timers.target
