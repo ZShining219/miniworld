@@ -792,4 +792,23 @@
 
 ### 下一步
 - 用户实际体验追加动作和完成一组后的保存反馈，再讨论历史/统计的数据呈现优化。
+
+## 2026-08-26 — T-022 Fitness 前端优化生产发布
+
+### 变更
+- 完成 T-019 至 T-021 的 Fitness H5 前端优化收口，未修改后端、API 合约或数据库结构。
+- 生产发布固定到 commit `d5a56e4f3c7064b1e445965f12a153752dba8564`，通过既有 `scripts/deploy-production.sh` 部署。
+
+### 验证
+- 生产静态检查、TypeScript、27 项前端单测、H5 production build、暂存区 secret/PII 与文件大小扫描均通过。
+- GitHub `origin/codex/bootstrap-langgraph` 与本地发布 SHA 一致。
+- 服务器 `/srv/miniworld-deployed-sha` 与发布 SHA 一致；生产 API、PostgreSQL、Caddy/H5 容器均为 healthy。
+- 未认证 HTTPS 根地址、Fitness API 和文档路径均返回 `401`；部署脚本内部健康检查通过。
+
+### Git
+- 提交：`d5a56e4 feat: harden fitness mobile logging flow`
+- 已推送并部署；工作区仅保留本次治理记录变更，待下一次治理收口提交。
+
+### 下一步
+- 使用手机验证线上新增动作、训练中追加动作和“已保存到本地数据库”反馈；之后再决定是否优化历史/统计页面。
 ```

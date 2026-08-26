@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "project_id": "miniworld",
-  "generated_at": "2026-08-26T22:50:02+08:00",
-  "summary_status": "fitness_frontend_data_safety_completed",
+  "generated_at": "2026-08-26T23:08:02+08:00",
+  "summary_status": "fitness_frontend_optimization_production_deployed",
   "review_status": "reviewed",
   "checkpoint_id": null,
   "checkpoint_offsets": null,
@@ -48,10 +48,11 @@
     "Future Fitness optimization or production changes require a new scoped task.",
     "Frontend UX optimization T-019 did not change backend, API contracts, database or deployment configuration.",
     "Active workout action management T-020 reuses existing create/archive exercise APIs and active session refresh behavior.",
-    "T-021 makes active workout exercise management append-only and adds explicit save confirmation without backend changes."
+    "T-021 makes active workout exercise management append-only and adds explicit save confirmation without backend changes.",
+    "T-022 deployed the frontend-only optimization at fixed SHA d5a56e4f3c7064b1e445965f12a153752dba8564; production API, database and web containers are healthy."
   ],
   "derived_from": {
-    "source": "T-021 Fitness frontend data-safety and field-label adjustments completed and verified at 2026-08-26T22:50:02+08:00.",
+    "source": "T-022 Fitness frontend optimization published and deployed to production at 2026-08-26T23:08:02+08:00.",
     "pools": {
       "task_pool.ndjson": 127,
       "issue_pool.ndjson": 14,
