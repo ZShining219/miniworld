@@ -16,6 +16,7 @@ env_file=${PRODUCTION_ENV_FILE:-/etc/miniworld/production.env}
 compose_file="$repo/deploy/production/compose.yml"
 deployed_file=/srv/miniworld-deployed-sha
 previous_sha=$(cat "$deployed_file" 2>/dev/null || true)
+git_repo=(git -c "safe.directory=$repo" -C "$repo")
 
 test -f "$env_file"
 test "$(stat -c '%a' "$env_file")" = 600
@@ -23,18 +24,20 @@ test "$(stat -c '%a' "$env_file")" = 600
 if [[ ! -d $repo/.git ]]; then
   install -d -m 0755 "$repo"
   git -C "$repo" init
-  git -C "$repo" remote add origin https://github.com/ZShining219/miniworld.git
+fi
+if ! "${git_repo[@]}" remote get-url origin >/dev/null 2>&1; then
+  "${git_repo[@]}" remote add origin https://github.com/ZShining219/miniworld.git
 fi
 
-git -C "$repo" fetch --prune origin codex/bootstrap-langgraph
-git -C "$repo" cat-file -e "${target_sha}^{commit}"
-git -C "$repo" merge-base --is-ancestor "$target_sha" origin/codex/bootstrap-langgraph
+"${git_repo[@]}" fetch --prune origin codex/bootstrap-langgraph
+"${git_repo[@]}" cat-file -e "${target_sha}^{commit}"
+"${git_repo[@]}" merge-base --is-ancestor "$target_sha" origin/codex/bootstrap-langgraph
 
 rollback() {
   status=$?
   if [[ $status -ne 0 && $previous_sha =~ ^[0-9a-f]{40}$ ]]; then
     echo "Deployment failed; restoring application commit $previous_sha (database is not downgraded)." >&2
-    git -C "$repo" checkout --detach --force "$previous_sha"
+    "${git_repo[@]}" checkout --detach --force "$previous_sha"
     export RELEASE_SHA=$previous_sha PRODUCTION_ENV_FILE=$env_file
     docker compose --env-file "$env_file" -f "$compose_file" up -d --no-build
   fi
@@ -47,7 +50,7 @@ if docker compose --env-file "$env_file" -f "$compose_file" ps -q db 2>/dev/null
     "$repo/scripts/backup-production.sh"
 fi
 
-git -C "$repo" checkout --detach --force "$target_sha"
+"${git_repo[@]}" checkout --detach --force "$target_sha"
 export RELEASE_SHA=$target_sha PRODUCTION_ENV_FILE=$env_file
 docker compose --env-file "$env_file" -f "$compose_file" build api
 docker compose --env-file "$env_file" -f "$compose_file" build web
