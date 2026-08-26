@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "project_id": "miniworld",
-  "generated_at": "2026-08-25T22:45:03+08:00",
-  "summary_status": "fitness_h5_demo_verified_local_server_running",
+  "generated_at": "2026-08-26T18:52:07+08:00",
+  "summary_status": "v09_published_to_remote_feature_branch",
   "review_status": "reviewed",
   "checkpoint_id": null,
   "checkpoint_offsets": null,
@@ -36,23 +36,22 @@
     "D-023": "Implement Fitness as an independent uni-app module using the existing local FastAPI/PostgreSQL service as source of truth; use only a small cross-platform local draft cache for unsaved current inputs, and do not couple Fitness to Jobs, Profile/Resume, or Work Reporting."
   },
   "pending_review": [
+    "Choose whether origin/codex/bootstrap-langgraph should become or merge into a future remote main branch",
+    "Choose whether to create a release tag",
     "Android and WeChat Mini Program packaging and device verification",
-    "Optional remote Provider validation after explicit provider/model/data authorization",
-    "Choose a broad public city/region map package and a separate real local job-coordinate integration phase if desired",
-    "Choose whether to create a local release tag or perform any public push"
+    "Optional remote Provider and real map/job-data phases after separate authorization"
   ],
   "assumptions": [
-    "Fitness is an auxiliary tool and does not alter the three existing Agent workflow boundaries.",
-    "The unibest shell remains the cross-end entry layer; Android and WeChat packaging remain deferred.",
+    "The user authorized publishing the current branch but did not request creating or rewriting a remote main branch.",
+    "Fitness remains an auxiliary tool and does not alter the three existing Agent workflow boundaries.",
     "Formal workout history is stored in local PostgreSQL; browser storage contains only unsaved input drafts.",
-    "No tag, public push, real personal material or external write occurs without explicit user confirmation.",
-    "The H5 dev server remains intentionally available at http://127.0.0.1:9000/ for user review."
+    "The H5 dev server is on-demand and is currently stopped; Compose services remain running."
   ],
   "derived_from": {
-    "source": "T-015 Fitness H5 Demo implementation, 27 backend tests, 27 Shell tests, type/lint/build verification, browser acceptance and governance handoff completed at 2026-08-25T22:45:03+08:00.",
+    "source": "T-016 candidate audit, release commit 1de73ce, remote branch push, SHA verification, runtime check and governance handoff completed at 2026-08-26T18:52:07+08:00.",
     "pools": {
-      "task_pool.ndjson": 118,
-      "issue_pool.ndjson": 12,
+      "task_pool.ndjson": 122,
+      "issue_pool.ndjson": 14,
       "logic_pool.ndjson": 23
     }
   }

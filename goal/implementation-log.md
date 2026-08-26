@@ -639,6 +639,42 @@
 
 ---
 
+## 2026-08-26 — v0.9 Git 收口与远端发布
+
+### 范围
+
+- 收口 T-014 unibest Web Shell 与 T-015 Fitness H5 Demo 的已验证工作树；
+- 只发布源码、测试、迁移、许可证、占位配置、产品文档与精简治理记录，不发布数据库、地图运行数据、构建产物、依赖目录、日志、密钥或真实个人材料。
+
+### 已完成
+
+- 确认远端 `origin` 为 `https://github.com/ZShining219/miniworld.git`，发布前远端没有任何 heads 或 tags；
+- 增加 `.ai/runtime/windows/*.json` 忽略规则，新生成的本机 scope manifest 不进入 Git；既有已跟踪治理历史不做重写；
+- 将 unibest Shell、Fitness 数据库/后端/前端、v0.9 Goal 和许可证记录收口为提交 `1de73ce feat: add multi-end shell and fitness demo`；
+- 创建远端分支 `origin/codex/bootstrap-langgraph` 并建立 upstream；发布后远端与本地 commit SHA 均为 `1de73ceeea0025b04ad7992c6ee6131a99420d0b`。
+
+### 验证
+
+- 后端：27 项 Pytest 通过，Fitness 相关 Ruff 通过；
+- unibest Shell：TypeScript、7 个测试文件/27 项测试和 H5 production build 通过；
+- 索引级检查确认没有私钥、真实 API key、数据库、日志、地图运行数据或超过 1 MB 的新增 Git blob；`OPENAI_API_KEY=replace-locally` 与 `sk-example-value-1234567890` 仅为文档/安全测试占位；
+- `git diff --cached --check`、`git fsck --no-dangling` 通过；
+- scope guard 报告的范围外路径全部是已忽略的 H5 dist、node_modules 缓存、Pytest 缓存和 uni-app 自动生成文件，不是 Git 候选。
+
+### 运行状态
+
+- Docker Compose 的 PostgreSQL、FastAPI API、APScheduler Worker 和 React/Nginx 看板正在运行；
+- `127.0.0.1:8000/api/v1/health` 与 `127.0.0.1:5173` 实测可访问；
+- unibest H5 开发服务当前未运行，但 `pnpm dev:h5` 可恢复 `127.0.0.1:9000`；
+- Tauri Radar 是按需启动的本机窗口，不作为常驻 Compose 服务。
+
+### 未完成
+
+- 远端仍没有 `main` 分支或 tag；本轮按当前分支原样发布，没有擅自创建、合并或改写 `main`；
+- Android、微信小程序、真实远端模型、真实岗位地图、签名发布包仍需独立授权与验收。
+
+---
+
 ## 后续记录模板
 
 ```md
