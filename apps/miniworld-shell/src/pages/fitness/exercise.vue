@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { ExerciseLog, WorkoutSet } from '@/modules/fitness'
+import type { ExerciseLog } from '@/modules/fitness'
 import NumberStepper from '@/modules/fitness/components/NumberStepper.vue'
 import {
   clearFitnessDraft,
@@ -70,19 +70,6 @@ async function completeSet() {
     saving.value = false
   }
 }
-
-function deleteSet(set: WorkoutSet) {
-  uni.showModal({
-    title: `删除第 ${set.setOrder} 组`,
-    content: `${set.weight} kg × ${set.reps}`,
-    success: async (result) => {
-      if (!result.confirm || !log.value)
-        return
-      await fitnessApi.deleteSet(set.id)
-      log.value.currentSets = log.value.currentSets.filter(item => item.id !== set.id)
-    },
-  })
-}
 </script>
 
 <template>
@@ -101,7 +88,7 @@ function deleteSet(set: WorkoutSet) {
         <view class="fitness-row-between section-heading-row">
           <view>
             <text class="fitness-section-title">今天已完成</text>
-            <text class="fitness-meta">已保存的组可以删除后重新记录</text>
+            <text class="fitness-meta">已保存的组只读保留，避免误操作清理训练数据</text>
           </view>
           <text class="exercise-total-sets">{{ log?.currentSets.length || 0 }} 组</text>
         </view>
@@ -109,12 +96,9 @@ function deleteSet(set: WorkoutSet) {
           <view v-for="set in log.currentSets" :key="set.id" class="set-line completed-set-line">
             <text class="set-order">{{ String(set.setOrder).padStart(2, '0') }}</text>
             <text class="set-value">{{ set.weight }} kg × {{ set.reps }} 次</text>
-            <button class="set-delete" aria-label="删除这一组" @click="deleteSet(set)">
-              ×
-            </button>
           </view>
         </view>
-        <text v-else class="fitness-empty compact-empty">完成第一组后会立即显示在这里。</text>
+        <text v-else class="fitness-empty compact-empty">完成第一组后会立即显示在这里；已保存记录只读保留。</text>
       </view>
 
       <view class="fitness-section current-section">
