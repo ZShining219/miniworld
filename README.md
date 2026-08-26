@@ -48,9 +48,59 @@ README 只登记项目级事实；详细设计、决策和逐次验证记录分�
 - `live` 岗位来源：Lever 公开 Postings GET 适配器已完成一次临时库端到端验证；JobSpy 保留为默认关闭的最善努力回退。代码中没有申请 POST 执行器。
 - 岗位雷达：MapLibre + 本地 PMTiles 场景已接入 Tauri 2 原生悬浮窗；窗口可缩放、置顶、拖动和关闭，HOME 固定中心，虚构岗位以黄色脉冲点显示。
 - 远端模型：OpenAI Responses Provider 已实现但默认关闭；未配置时 Graph 明确暂停，非法 schema 不落库。真实调用是可选增强，不阻塞本地 Demo。
-- 未执行真实投递、消息、文件外传、第三方登录授权或公开 Git push。
+- 未执行真实投递、消息、文件外传或第三方登录授权；源码已发布到远端 `codex/bootstrap-langgraph` 分支，远端 `main` 与 release tag 尚未建立。
 
 详见 [`PROGRESS.md`](PROGRESS.md) 和 [`goal/implementation-log.md`](goal/implementation-log.md)。
+
+## 运行内容注册表
+
+本节是项目可运行内容的统一注册入口。后续开发应先按任务选择最小运行组合，再使用对应的验证命令；新增、删除或改变端口、依赖、启动方式时，必须同步更新本节。表中的“已验证”表示已有可复现证据，不表示服务当前正在运行。
+
+### 长期运行单元
+
+| 运行 ID | 内容与任务 | 依赖 | 启动命令 | 入口/健康检查 | 停止方式 | 验证状态 |
+| --- | --- | --- | --- | --- | --- | --- |
+| `RUN-DB` | PostgreSQL 正式数据源；保存三个 Agent 闭环、运行审计、LangGraph checkpoint 和 Fitness 数据 | Docker | `docker-compose up -d db` | 仅 Compose 内网 `db:5432`；`docker-compose ps db` | `docker-compose stop db` | PostgreSQL 17、迁移和重启持久性已验证 |
+| `RUN-API` | FastAPI 统一后端；提供 Jobs、Profile/Resume、Work、Agent Runs、Approval、Radar 和 `/api/v1/fitness/*` | `RUN-DB` | `docker-compose up -d --build api` | `http://127.0.0.1:8000/docs`；`curl -fsS http://127.0.0.1:8000/api/v1/health` | `docker-compose stop api` | API、迁移、隐私边界和 Fitness 接口已验证 |
+| `RUN-WORKER` | APScheduler 后台任务；执行启用的定时公开读取和限定本地更新，不执行未确认的外部写入 | `RUN-DB`、`RUN-API` | `docker-compose up -d --build worker` | 无宿主端口；`docker-compose ps worker`、`docker-compose logs --tail=100 worker` | `docker-compose stop worker` | Demo 定时触发和本地写入边界已验证 |
+| `RUN-REACT` | React/Nginx 完整 Agent 看板；承载岗位、档案/简历、工作沉淀、Agent Runs、审批、设置和浏览器 Radar | `RUN-API` | `docker-compose up -d --build frontend` | `http://127.0.0.1:5173`；Radar 为 `http://127.0.0.1:5173/radar` | `docker-compose stop frontend` | 生产构建和 9 项 Playwright E2E 已验证 |
+| `RUN-H5` | unibest/uni-app 统一 Web 壳；首页模块导航和完整 Fitness H5 工作流，Jobs/Profile/Work 目前仍为占位入口 | `RUN-API`；首次运行需要 pnpm 依赖 | `cd apps/miniworld-shell && pnpm dev:h5` | `http://127.0.0.1:9000`；Fitness 为首页 `04 健身记录` | 前台终端 `Ctrl-C` | TypeScript、27 项单测、H5 build 和桌面/手机浏览器验收已通过 |
+| `RUN-RADAR-NATIVE` | Tauri 2 本机岗位雷达；显示本地 PMTiles、HOME 中心、岗位信号和原生窗口控制 | `RUN-API`；本地地图包；前端依赖 | `cd frontend && bun run tauri:dev` | 本机 `MiniWorld Job Radar` 窗口；API/地图/WebGL 失败均有明确状态 | 关闭窗口并在启动终端 `Ctrl-C` | macOS ARM64 开发运行和未签名 `.app` 构建已验证 |
+
+`RUN-RADAR-WEB` 不是独立进程，而是 `RUN-REACT` 的 `/radar` 页面。Fitness 正式数据依赖 `RUN-API` 和 `RUN-DB`；只启动 `RUN-H5` 可以查看壳，但不能完成训练数据读写。
+
+### 按任务启动
+
+| 任务 | 最小组合 | 命令 |
+| --- | --- | --- |
+| 完整 Agent Demo | `RUN-DB` + `RUN-API` + `RUN-WORKER` + `RUN-REACT` | `docker-compose up -d --build` |
+| 后端/API 开发 | `RUN-DB` + `RUN-API` | `docker-compose up -d --build db api` |
+| Fitness H5 开发 | `RUN-DB` + `RUN-API` + `RUN-H5` | 先执行 `docker-compose up -d --build db api`，再执行 `cd apps/miniworld-shell && pnpm dev:h5` |
+| 浏览器岗位雷达 | `RUN-DB` + `RUN-API` + `RUN-REACT` | 准备地图后执行 `docker-compose up -d --build db api frontend`，打开 `/radar` |
+| 原生岗位雷达 | `RUN-DB` + `RUN-API` + `RUN-RADAR-NATIVE` | 准备地图并启动 API，再执行 `cd frontend && bun run tauri:dev` |
+
+Radar 首次运行前执行 `./scripts/fetch-radar-demo-map.sh`。该脚本只准备被 Git 忽略的本地 Demo 地图包；不要使用精确家庭坐标请求外部地图。
+
+### 验证任务注册表
+
+| 验证 ID | 覆盖内容 | 命令 | 前置条件/副作用 |
+| --- | --- | --- | --- |
+| `VERIFY-LOCAL` | 后端 Pytest/Ruff/Mypy/Ty，以及 React build/lint/test | `./scripts/test-local.sh` | 不要求 Compose；生成的缓存和构建目录被 Git 忽略 |
+| `VERIFY-FITNESS-BACKEND` | Fitness 与共享后端回归 | `UV_CACHE_DIR=.cache/uv uv run --project backend pytest backend/tests -q` | 使用测试数据库，不写正式 PostgreSQL |
+| `VERIFY-H5` | Shell TypeScript、27 项单测和 H5 production build | `cd apps/miniworld-shell && pnpm type-check && pnpm test:run && pnpm build:h5` | 需要已安装锁定的 pnpm 依赖；生成 `dist/` |
+| `VERIFY-DEMO` | 四服务、三 Graph、Worker、checkpoint、持久性和隐私端到端验证 | `./scripts/verify-demo.sh` | 要求完整 Compose 已运行；只写入明确的虚构 Demo 数据 |
+| `VERIFY-ALL` | 构建并启动四个 Compose 服务，然后执行 `VERIFY-DEMO` | `./scripts/test.sh` | 完成后服务仍保持运行，需要手动执行 `docker-compose down` |
+| `VERIFY-LIVE-JOBS` | Lever 公开职位 GET 的一次性 Live 只读验证 | `UV_CACHE_DIR=.cache/uv uv run --package app python scripts/verify-live-lever.py` | 会访问互联网；使用虚构位置和临时数据库，不执行申请 POST |
+
+### 统一停服
+
+停止 Compose 服务并保留 PostgreSQL 与上传数据：
+
+```bash
+docker-compose down
+```
+
+`RUN-H5` 和 `RUN-RADAR-NATIVE` 是前台按需进程，应在各自启动终端使用 `Ctrl-C`，原生 Radar 同时关闭窗口。只有明确要永久删除所有本地业务数据、导入材料和 checkpoint 时才允许执行 `docker-compose down -v`；常规开发和测试不得使用 `-v`。
 
 ## 架构
 

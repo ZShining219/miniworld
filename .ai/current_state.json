@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "project_id": "miniworld",
-  "generated_at": "2026-08-26T18:52:07+08:00",
-  "summary_status": "v09_published_to_remote_feature_branch",
+  "generated_at": "2026-08-26T19:12:50+08:00",
+  "summary_status": "runtime_registry_complete_all_services_stopped",
   "review_status": "reviewed",
   "checkpoint_id": null,
   "checkpoint_offsets": null,
@@ -36,21 +36,21 @@
     "D-023": "Implement Fitness as an independent uni-app module using the existing local FastAPI/PostgreSQL service as source of truth; use only a small cross-platform local draft cache for unsaved current inputs, and do not couple Fitness to Jobs, Profile/Resume, or Work Reporting."
   },
   "pending_review": [
+    "Push the local runtime-registry checkpoint when a future remote write is requested",
     "Choose whether origin/codex/bootstrap-langgraph should become or merge into a future remote main branch",
     "Choose whether to create a release tag",
-    "Android and WeChat Mini Program packaging and device verification",
-    "Optional remote Provider and real map/job-data phases after separate authorization"
+    "Android, WeChat Mini Program, optional remote Provider and real map/job-data phases"
   ],
   "assumptions": [
-    "The user authorized publishing the current branch but did not request creating or rewriting a remote main branch.",
-    "Fitness remains an auxiliary tool and does not alter the three existing Agent workflow boundaries.",
-    "Formal workout history is stored in local PostgreSQL; browser storage contains only unsaved input drafts.",
-    "The H5 dev server is on-demand and is currently stopped; Compose services remain running."
+    "Root README is the canonical registry for all supported runtime and validation entry points.",
+    "Future tasks should start only the smallest registered runtime combination they require.",
+    "All project services are currently stopped; PostgreSQL and upload data volumes are intentionally preserved.",
+    "No new push was authorized for the runtime-registry documentation checkpoint."
   ],
   "derived_from": {
-    "source": "T-016 candidate audit, release commit 1de73ce, remote branch push, SHA verification, runtime check and governance handoff completed at 2026-08-26T18:52:07+08:00.",
+    "source": "T-017 root runtime registry, task-oriented startup matrix, verification registry, non-destructive Compose shutdown and port/process verification completed at 2026-08-26T19:12:50+08:00.",
     "pools": {
-      "task_pool.ndjson": 122,
+      "task_pool.ndjson": 127,
       "issue_pool.ndjson": 14,
       "logic_pool.ndjson": 23
     }

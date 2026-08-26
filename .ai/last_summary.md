@@ -1,24 +1,24 @@
 # Last Summary
 
 [Quick Link]
-- TASK: T-016 — v0.9 source, tests and documentation committed and published to the remote branch
-- TASK: T-015 — Fitness H5 Demo remains verified; Android and WeChat packaging are deferred
-- DECISION: D-023 — Fitness uses local PostgreSQL and stays independent from the three Agent loops
+- TASK: T-017 — root README runtime registry completed and all project services stopped with data preserved
+- TASK: T-016 — v0.9 remains published on `origin/codex/bootstrap-langgraph`
+- TASK: T-015 — Fitness H5 Demo remains verified; native packaging is deferred
 
 [Current Focus]
-- Commit `1de73ce` contains the unibest multi-end Shell, Fitness database/backend/frontend, tests and Goal v0.9 documentation.
-- Remote branch `origin/codex/bootstrap-langgraph` exists and matches the local release commit; the previously empty remote still has no `main` branch or tag.
-- Compose PostgreSQL, API, Worker and React/Nginx dashboard are running; API health and `127.0.0.1:5173` pass. The H5 dev server on `127.0.0.1:9000` is currently stopped and can be started on demand.
+- Root `README.md` is now the canonical runtime registry for Compose services, H5, native Radar, task-oriented startup combinations, verification commands and stop rules.
+- All Compose containers and the project network are stopped and removed. Ports 5173, 8000 and 9000 have no listeners; no H5 or Tauri process remains.
+- PostgreSQL and upload volumes remain intact, so later task-oriented startup can resume existing local data.
 
 [Active Locks]
-- None after T-016 handoff.
+- None after T-017 handoff.
 
 [Open Issues]
-- None for the v0.9 Git publication or Fitness H5 Demo.
+- None for runtime registration or shutdown.
 
 [Pending Review]
-- Decide later whether to create a remote `main` branch and release tag; neither was inferred from the branch-push request.
-- Android, WeChat Mini Program, optional remote Provider and real map/job data remain separate scoped work.
+- The local runtime-registry checkpoint has not been pushed; remote `origin/codex/bootstrap-langgraph` remains at `7ae7d3c` until a later explicit push.
+- Remote `main`, release tags, Android, WeChat, optional remote Provider and real map/job data remain separate decisions.
 
 [Next Step]
-- Review `origin/codex/bootstrap-langgraph`; if this is to become the repository default, explicitly choose the `main`/release strategy before changing remote branch structure.
+- For future work, select the smallest combination from the root README `运行内容注册表`; do not start the full Compose stack unless the task needs it.

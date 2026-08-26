@@ -675,6 +675,39 @@
 
 ---
 
+## 2026-08-26 — 根 README 运行注册表与统一停服
+
+### 范围
+
+- 将所有已支持的长期运行单元、按任务最小组合、验证任务和停服边界注册到根 README；
+- 停止当前所有 MiniWorld 服务，但保留 PostgreSQL 和上传数据卷。
+
+### 已完成
+
+- 注册 `RUN-DB`、`RUN-API`、`RUN-WORKER`、`RUN-REACT`、`RUN-H5` 和 `RUN-RADAR-NATIVE`，明确任务、依赖、启动命令、入口/健康检查、停止方式和验证状态；
+- 明确浏览器 Radar 是 `RUN-REACT` 的 `/radar` 页面而非独立进程，Fitness H5 的正式读写依赖 API 与 PostgreSQL；
+- 增加完整 Agent、后端/API、Fitness H5、浏览器 Radar 和原生 Radar 五种最小启动组合；
+- 注册本地全量、Fitness 后端、H5、容器 Demo、全启动和 Lever Live 只读六类验证命令；
+- 统一规定常规停服使用 `docker-compose down`，H5/Tauri 使用前台 `Ctrl-C`；`down -v` 仅允许在明确永久删除数据时使用。
+
+### 停服结果
+
+- `docker-compose down` 成功停止并移除 frontend、worker、api、db 四个容器及项目网络；
+- 端口 5173、8000、9000 均无监听，未发现 MiniWorld Tauri Radar 或 H5 开发进程；
+- `miniworld-agent_miniworld-db` 和 `miniworld-agent_miniworld-uploads` 两个 local volume 仍存在，业务数据与上传数据未删除。
+
+### 验证
+
+- `docker-compose config --services` 与注册表四个 Compose 服务一致；
+- README 的运行 ID、验证 ID、按任务组合和停服章节均可检索；
+- `git diff --check` 通过。
+
+### Git
+
+- 本轮形成单独本地文档/治理检查点；未获得新的远端写入指令，因此不执行额外 push。
+
+---
+
 ## 后续记录模板
 
 ```md
