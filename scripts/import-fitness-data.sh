@@ -20,8 +20,11 @@ if [[ $existing != 0 ]]; then
   exit 1
 fi
 
-docker compose --env-file "$ENV_FILE" -f "$COMPOSE_FILE" exec -T db \
-  pg_restore -U miniworld -d miniworld --data-only --exit-on-error < "$1"
+for table in fitness_plan fitness_exercise fitness_session fitness_set; do
+  docker compose --env-file "$ENV_FILE" -f "$COMPOSE_FILE" exec -T db \
+    pg_restore -U miniworld -d miniworld --data-only --exit-on-error \
+      --table="$table" < "$1"
+done
 
 docker compose --env-file "$ENV_FILE" -f "$COMPOSE_FILE" exec -T db \
   psql -U miniworld -d miniworld -Atc \

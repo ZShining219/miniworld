@@ -25,8 +25,11 @@ db_password=$(docker compose --env-file "$ENV_FILE" -f "$COMPOSE_FILE" exec -T d
 docker compose --env-file "$ENV_FILE" -f "$COMPOSE_FILE" run --rm \
   -e "DATABASE_URL=postgresql://miniworld:${db_password}@db:5432/${smoke_db}" \
   api alembic upgrade head
-docker compose --env-file "$ENV_FILE" -f "$COMPOSE_FILE" exec -T db \
-  pg_restore -U miniworld -d "$smoke_db" --data-only --exit-on-error < "$1"
+for table in fitness_plan fitness_exercise fitness_session fitness_set; do
+  docker compose --env-file "$ENV_FILE" -f "$COMPOSE_FILE" exec -T db \
+    pg_restore -U miniworld -d "$smoke_db" --data-only --exit-on-error \
+      --table="$table" < "$1"
+done
 
 counts=$(docker compose --env-file "$ENV_FILE" -f "$COMPOSE_FILE" exec -T db \
   psql -U miniworld -d "$smoke_db" -Atc \
