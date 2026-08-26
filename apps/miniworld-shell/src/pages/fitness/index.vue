@@ -17,14 +17,8 @@ onShow(async () => {
   }
 })
 
-async function start(plan: FitnessPlan) {
-  try {
-    const session = await store.startSession(plan.id)
-    uni.navigateTo({ url: `/pages/fitness/plan?sessionId=${session.id}` })
-  }
-  catch {
-    error.value = '已有其他训练正在进行，请先继续并结束该训练。'
-  }
+function openPlan(plan: FitnessPlan) {
+  uni.navigateTo({ url: `/pages/fitness/plan-preview?planId=${plan.id}` })
 }
 
 function continueWorkout() {
@@ -40,10 +34,18 @@ function openPage(path: 'history' | 'stats' | 'settings') {
 <template>
   <view class="fitness-page pt-safe">
     <view class="fitness-shell">
-      <view class="fitness-heading">
-        <text class="fitness-eyebrow">FITNESS / LOCAL</text>
-        <text class="fitness-title">今天练什么？</text>
-        <text class="fitness-subtitle">选择计划即可开始；每完成一组都会立即保存。</text>
+      <view class="fitness-heading home-heading">
+        <view class="fitness-row-between home-heading-top">
+          <view>
+            <text class="fitness-eyebrow">FITNESS / LOCAL</text>
+            <text class="fitness-title">今天练什么？</text>
+          </view>
+          <view class="home-date">
+            <text class="home-date-day">{{ new Date().getDate() }}</text>
+            <text class="home-date-label">{{ new Date().toLocaleDateString('zh-CN', { month: 'short' }) }}</text>
+          </view>
+        </view>
+        <text class="fitness-subtitle">选择一个部位开始，训练过程中每一组都会立即保存。</text>
       </view>
 
       <text v-if="error" class="fitness-error">{{ error }}</text>
@@ -61,19 +63,31 @@ function openPage(path: 'history' | 'stats' | 'settings') {
         </view>
       </view>
 
-      <view class="fitness-section">
-        <text class="fitness-section-title">训练计划</text>
+      <view class="fitness-section plan-section">
+        <view class="fitness-row-between section-heading-row">
+          <view>
+            <text class="fitness-section-title">训练部位</text>
+            <text class="fitness-meta">按今天的状态自由选择，不要求固定顺序</text>
+          </view>
+          <text class="fitness-count">{{ store.state.plans.length }} 个</text>
+        </view>
         <view
           v-for="plan in store.state.plans"
           :key="plan.id"
-          class="fitness-list-row"
-          @click="start(plan)"
+          class="plan-card"
+          @click="openPlan(plan)"
         >
+          <view class="plan-card-index">
+            {{ String(plan.sortOrder + 1).padStart(2, '0') }}
+          </view>
           <view class="fitness-list-copy">
             <text class="fitness-list-title">{{ plan.name }}</text>
-            <text class="fitness-meta">{{ plan.exerciseCount }} 个动作</text>
+            <text class="fitness-meta">{{ plan.exerciseCount }} 个动作 · 点击查看并选择</text>
           </view>
-          <text class="fitness-arrow">→</text>
+          <view class="plan-card-action">
+            <text class="plan-card-action-label">进入</text>
+            <text class="fitness-arrow">↗</text>
+          </view>
         </view>
         <text v-if="!store.state.loading && !store.state.plans.length" class="fitness-empty">还没有训练计划。</text>
       </view>
@@ -103,4 +117,89 @@ function openPage(path: 'history' | 'stats' | 'settings') {
 
 <style scoped lang="scss">
 @import '@/modules/fitness/fitness.scss';
+
+.home-heading {
+  padding-bottom: 28rpx;
+}
+
+.home-heading-top {
+  align-items: flex-start;
+}
+
+.home-date {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  color: #176b57;
+}
+
+.home-date-day {
+  font-family: Georgia, serif;
+  font-size: 48rpx;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.home-date-label {
+  margin-top: 7rpx;
+  color: #777a73;
+  font-size: 18rpx;
+  text-transform: uppercase;
+}
+
+.section-heading-row {
+  align-items: flex-end;
+  margin-bottom: 22rpx;
+}
+
+.section-heading-row .fitness-section-title {
+  margin-bottom: 4rpx;
+}
+
+.fitness-count {
+  color: #777a73;
+  font-family: Georgia, serif;
+  font-size: 20rpx;
+}
+
+.plan-card {
+  display: flex;
+  min-height: 132rpx;
+  align-items: center;
+  gap: 18rpx;
+  padding: 0 18rpx;
+  border-top: 1rpx solid #d5d3cc;
+  transition:
+    background-color 150ms ease,
+    transform 150ms ease;
+}
+
+.plan-card:last-child {
+  border-bottom: 1rpx solid #d5d3cc;
+}
+
+.plan-card:active {
+  background: #ebe9e2;
+  transform: translateX(4rpx);
+}
+
+.plan-card-index {
+  width: 54rpx;
+  color: #176b57;
+  font-family: Georgia, serif;
+  font-size: 24rpx;
+  font-weight: 700;
+}
+
+.plan-card-action {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  color: #cf533d;
+}
+
+.plan-card-action-label {
+  color: #777a73;
+  font-size: 18rpx;
+}
 </style>

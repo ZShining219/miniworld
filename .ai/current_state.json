@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "project_id": "miniworld",
-  "generated_at": "2026-08-26T19:12:50+08:00",
-  "summary_status": "runtime_registry_complete_all_services_stopped",
+  "generated_at": "2026-08-26T22:50:02+08:00",
+  "summary_status": "fitness_frontend_data_safety_completed",
   "review_status": "reviewed",
   "checkpoint_id": null,
   "checkpoint_offsets": null,
@@ -44,11 +44,14 @@
   "assumptions": [
     "Root README is the canonical registry for all supported runtime and validation entry points.",
     "Future tasks should start only the smallest registered runtime combination they require.",
-    "All project services are currently stopped; PostgreSQL and upload data volumes are intentionally preserved.",
-    "No new push was authorized for the runtime-registry documentation checkpoint."
+    "The exposed server root password is not stored or passed through automation; public-key access is the approved production path.",
+    "Future Fitness optimization or production changes require a new scoped task.",
+    "Frontend UX optimization T-019 did not change backend, API contracts, database or deployment configuration.",
+    "Active workout action management T-020 reuses existing create/archive exercise APIs and active session refresh behavior.",
+    "T-021 makes active workout exercise management append-only and adds explicit save confirmation without backend changes."
   ],
   "derived_from": {
-    "source": "T-017 root runtime registry, task-oriented startup matrix, verification registry, non-destructive Compose shutdown and port/process verification completed at 2026-08-26T19:12:50+08:00.",
+    "source": "T-021 Fitness frontend data-safety and field-label adjustments completed and verified at 2026-08-26T22:50:02+08:00.",
     "pools": {
       "task_pool.ndjson": 127,
       "issue_pool.ndjson": 14,
