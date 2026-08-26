@@ -1,0 +1,12 @@
+packages:
+  - .
+
+allowBuilds:
+  '@uni-helper/unocss-preset-uni': set this to true or false
+
+overrides:
+  bin-wrapper: npm:bin-wrapper-china
+  unconfig: 7.3.2
+
+ignoredBuiltDependencies:
+  - '@uni-helper/unocss-preset-uni'

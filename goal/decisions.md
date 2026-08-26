@@ -41,6 +41,8 @@
 | T-017 | Accepted | 真实远端模型调用保留为可选验证，不作为本地 Demo 冻结门 | 用户要求是本地优先并允许受控远端 AI，同时要求先完成 Demo、把模型选择等决策留后；技术路线不能自行增加强制产品门 |
 | T-018 | Accepted | 岗位雷达使用 MapLibre GL JS + PMTiles + Protomaps Basemaps 的本地矢量底图组合 | 矢量街道可动态着色和缩放；PMTiles 单文件可由本地 Range 请求读取；不向外部瓦片服务暴露住所视口；Leaflet 保留为 WebGL 不可用时的回退评估 |
 | T-019 | Accepted | 使用 Tauri 2 增加独立原生雷达窗口，不替换现有浏览器看板 | Tauri 原生支持 always-on-top、resizable、最小尺寸与无边框窗口；首版使用不透明窗口，避免 macOS 透明窗口私有 API 与发布限制 |
+| T-020 | Accepted | 使用独立 unibest/uni-app 工程建立多端系统壳，保留现有 React 看板和 Tauri Radar；本轮只完成 Web | 用户选择 unibest 并明确暂不考虑微信小程序构建；独立目录避免 Vue 工具链覆盖已验证资产，Android 只保留最小权限入口，出包暂缓 |
+| T-021 | Accepted | Fitness 作为独立辅助工具接入 unibest 首页，正式数据复用本地 PostgreSQL，后端封装在独立 Fitness 包 | 跨端历史必须有统一正式数据源；独立包和 `/api/v1/fitness/*` 路由能避免侵入 Jobs、Profile/Resume、Work、LangGraph 与模型 Provider |
 
 ## 尚未锁定但已明确不阻塞 Demo
 

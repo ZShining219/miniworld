@@ -20,3 +20,14 @@ The imported template is used as an engineering scaffold. MiniWorld's product in
 - Firenze demonstration PMTiles — OpenStreetMap-derived public map data; © OpenStreetMap contributors, licensed under ODbL. The runtime file is downloaded by checksum-verified script and remains outside Git.
 
 The radar never uses the OpenStreetMap Foundation standard tile service. It reads the local PMTiles package through a localhost Range endpoint and keeps visible OpenStreetMap attribution in the window.
+
+## unibest
+
+- Source: <https://github.com/feige996/unibest>
+- Pinned import commit: `a3bd15128c4f86bb0ce00723ec4cbf66d3932f1d`
+- Imported template version: `4.4.1`
+- License: MIT
+- Copyright (c) 2025 菲鸽
+- Local license copy: `apps/miniworld-shell/LICENSE`
+
+The import excludes upstream Git history, Agent/editor instructions and example remote-service credentials. Local MiniWorld changes remain subject to this repository's privacy and approval boundaries.

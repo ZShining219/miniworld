@@ -2,9 +2,12 @@
 **/__pycache__
 **/.venv
 backend/htmlcov
+apps/**/dist
+apps/**/node_modules
 frontend/blob-report
 frontend/dist
 frontend/node_modules
 frontend/playwright-report
+frontend/src-tauri/target
 frontend/test-results
 node_modules

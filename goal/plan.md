@@ -1,10 +1,10 @@
 # 实施计划
 
-> 对齐基线：根目录 `goal.md` v0.8
+> 对齐基线：根目录 `goal.md` v0.9
 >
 > 当前执行分支：`codex/bootstrap-langgraph`
 >
-> 当前阶段：Phase 1—6 的 v0.7 Demo 与 Phase 7 的 v0.8 岗位雷达呈现均已验证；真实岗位地图接入、tag 和公开 push 仍保持延期或需用户确认
+> 当前阶段：Phase 1—9 已验证；Fitness H5 Demo 已完成，微信小程序与 Android/HBuilderX 仍只具备结构兼容性
 
 ## 当前阶段事实
 
@@ -20,6 +20,8 @@
 | 真实远端模型 | 可选、待授权 | OpenAI Responses Provider 与 schema 已实现；真实调用不是 Demo 门，只有用户选择 Provider、模型和数据类别后才验证 |
 | 公开 push | 未执行 | 必须先完成 secret/PII 扫描并获得用户确认 |
 | 岗位雷达 | Phase 7 已验证 | `/radar`、本地 PMTiles Range、最小化场景 API、HOME 中心、黄色脉冲、未解析过滤、API/WebGL/缺图状态、三档窗口与 Tauri 2 ARM64 原生悬浮窗均已通过 |
+| 多端系统壳 | Phase 8 Web 已验证 | unibest 4.4.1 已按固定 commit 导入；锁定安装、类型检查、21 项单测、H5 构建及桌面/手机浏览器验收通过，本地服务只绑定 `127.0.0.1:9000` |
+| Fitness 辅助工具 | Phase 9 H5 已验证 | 首页 `04 健身记录`；独立 Fitness 数据表、后端包、前端模块和六个页面；27 项后端测试与 27 项 Shell 测试通过 |
 
 以上状态只陈述仓库事实。“本地 Demo 已验证”不等于“Live 互联网能力已完成”，也不等于已可执行投递或其他外部写入。
 
@@ -256,6 +258,27 @@ v0.8 状态：Tauri 2 原生宿主、最小 capability、几何持久化、原�
 - 提交顺序：`docs: select local job radar stack` → `feat: add offline radar map` → `feat: add local radar scene` → `feat: add tauri radar window` → `test: verify radar privacy and resizing`。
 
 状态：Phase 7 验证门已全部通过，并由 T-013 完成提交前复核与本地检查点收口；未 tag、未 push。
+
+## Phase 8：unibest 多端系统壳
+
+1. 将 unibest 作为 `apps/miniworld-shell/` 独立 Vue 3/uni-app 工程导入，不替换 `frontend/` React 看板或 Tauri Radar；
+2. 固定上游 `base` commit，保留 MIT 许可证，不复制上游 Git、Agent 与编辑器指令；
+3. 移除示例远端 API、AppID、自动嵌套 Git 初始化、远端 Eruda 和 Android 默认敏感权限；Web 仅绑定 `127.0.0.1`；
+4. 建立总览、岗位、档案和工作四个空白入口，三个业务模块保持独立边界并明确标注“待接入”；
+5. 本轮验证依赖锁、类型检查、测试、H5 生产构建及手机/桌面响应式页面；微信小程序构建与 Android/HBuilderX 出包按用户指令暂缓。
+
+阶段验收：`pnpm install --ignore-scripts --frozen-lockfile`、`pnpm type-check`、`pnpm test:run`、`pnpm build:h5` 已通过；浏览器确认四个入口、桌面与手机视口均无横向溢出，控制台无 warning/error，页面资产请求均为 localhost。微信小程序和 Android/HBuilderX 不属于本次验收。
+
+## Phase 9：Fitness H5 Demo
+
+1. 在现有 PostgreSQL 中增加计划、计划动作、训练 Session 和训练 Set 四张表；SQLite 继续用于测试，不新增数据库或缓存；
+2. 以 `backend/app/fitness/` 独立封装模型、schema、repository、service、router 和 Demo seed，只通过 `/api/v1/fitness/*` 接入总 API；
+3. 在首页模块注册表登记 `04 健身记录 → /pages/fitness/index`，Fitness 不进入主 TabBar；
+4. 在 `modules/fitness` 和 `pages/fitness` 实现训练首页、计划训练、动作记录、历史、统计和计划管理；正式数据只来自 API，本地只留未提交输入草稿；
+5. 完成 Active Session 单例/恢复、逐组即时保存、Set 幂等与顺序、历史快照、软删除保护、Completed-only 统计和下次训练默认值；
+6. 用自动化与实际浏览器流程验证卧推 `80×8、80×8、75×10` 和上斜卧推两组，确认历史、日历、进度与下次默认值。
+
+阶段验收：后端 27 项测试、Fitness Ruff/Mypy/Ty、Shell 27 项测试、TypeScript、限定范围 ESLint 和 H5 production build 均通过；桌面 `1440×900` 与手机 `390×844` 浏览器流程通过，控制台无 warning/error。Android 和微信小程序未构建或验收。
 
 ## Git 提交策略
 

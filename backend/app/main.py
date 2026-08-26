@@ -39,6 +39,7 @@ app.add_middleware(
     allow_origins=[
         settings.FRONTEND_HOST,
         "http://127.0.0.1:5173",
+        "http://127.0.0.1:9000",
         "tauri://localhost",
         "http://tauri.localhost",
     ],

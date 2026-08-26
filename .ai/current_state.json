@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "project_id": "miniworld",
-  "generated_at": "2026-08-25T20:08:40+08:00",
-  "summary_status": "goal_v0.8_radar_presentation_committed_locally_pending_user_review",
+  "generated_at": "2026-08-25T22:45:03+08:00",
+  "summary_status": "fitness_h5_demo_verified_local_server_running",
   "review_status": "reviewed",
   "checkpoint_id": null,
   "checkpoint_offsets": null,
@@ -31,27 +31,29 @@
     "D-018": "A real remote-model call is optional authorized validation, not a mandatory local Demo freeze gate.",
     "D-019": "Use Tauri 2, MapLibre GL JS, local PMTiles and Protomaps Basemaps for the offline street-level job radar; never send the home viewport to an external tile service.",
     "D-020": "Use a minimal Tauri window capability set, persist only logical geometry, and keep scene/map data on configured localhost endpoints.",
-    "D-021": "Preserve the jointly verified Phase 7.1 through 7.3 work as one truthful local checkpoint instead of creating synthetic historical splits."
+    "D-021": "Preserve the jointly verified Phase 7.1 through 7.3 work as one truthful local checkpoint instead of creating synthetic historical splits.",
+    "D-022": "Use a separate unibest/uni-app Vue 3 shell beside the existing React dashboard and Tauri Radar; verify Web now and defer WeChat and Android packaging.",
+    "D-023": "Implement Fitness as an independent uni-app module using the existing local FastAPI/PostgreSQL service as source of truth; use only a small cross-platform local draft cache for unsaved current inputs, and do not couple Fitness to Jobs, Profile/Resume, or Work Reporting."
   },
   "pending_review": [
-    "Review the unsigned local MiniWorld Job Radar.app and its native controls",
+    "Android and WeChat Mini Program packaging and device verification",
+    "Optional remote Provider validation after explicit provider/model/data authorization",
     "Choose a broad public city/region map package and a separate real local job-coordinate integration phase if desired",
-    "Optionally choose a Provider, model, and permitted data categories before any real remote-model call",
     "Choose whether to create a local release tag or perform any public push"
   ],
   "assumptions": [
-    "The default radar remains explicitly fictional until the user starts a separately scoped real-data phase.",
-    "Exact home coordinates stay local and are never used to request an external tile viewport or exact-address geocoding.",
-    "The optional remote model remains disabled unless the user authorizes a Provider, model, task and minimized data category.",
+    "Fitness is an auxiliary tool and does not alter the three existing Agent workflow boundaries.",
+    "The unibest shell remains the cross-end entry layer; Android and WeChat packaging remain deferred.",
+    "Formal workout history is stored in local PostgreSQL; browser storage contains only unsaved input drafts.",
     "No tag, public push, real personal material or external write occurs without explicit user confirmation.",
-    "The Tauri radar is an additional local entry point and does not replace the verified browser dashboard or three business loops."
+    "The H5 dev server remains intentionally available at http://127.0.0.1:9000/ for user review."
   ],
   "derived_from": {
-    "source": "Goal v0.8 acceptance plus T-013 commit audit: tasks T-010 through T-013, decisions D-019 through D-021, 22 backend and 9 Playwright tests, Cargo/Tauri ARM64 build, Compose read-only map mount, ignored-artifact and privacy/license scans at 2026-08-25T20:08:40+08:00",
+    "source": "T-015 Fitness H5 Demo implementation, 27 backend tests, 27 Shell tests, type/lint/build verification, browser acceptance and governance handoff completed at 2026-08-25T22:45:03+08:00.",
     "pools": {
-      "task_pool.ndjson": 88,
-      "issue_pool.ndjson": 10,
-      "logic_pool.ndjson": 21
+      "task_pool.ndjson": 118,
+      "issue_pool.ndjson": 12,
+      "logic_pool.ndjson": 23
     }
   }
 }

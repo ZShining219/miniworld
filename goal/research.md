@@ -176,3 +176,17 @@ JobSpy、LangGraph、MarkItDown 和 JSON Resume schema 通过依赖管理器固�
 最终组合为：**Tauri 2 + 现有 React/Vite + MapLibre GL JS + PMTiles JS + Protomaps Basemaps + MapLibre GeoJSON/circle layer + CSS 扫描覆盖层**。2026-08-19 核验并计划固定的包版本是 [`maplibre-gl@6.4.1`](https://www.npmjs.com/package/maplibre-gl)、[`pmtiles@4.5.0`](https://www.npmjs.com/package/pmtiles)、[`@protomaps/basemaps@5.7.2`](https://www.npmjs.com/package/@protomaps/basemaps)、[`@tauri-apps/cli@2.11.4`](https://www.npmjs.com/package/@tauri-apps/cli) 和 [`@tauri-apps/api@2.11.1`](https://www.npmjs.com/package/@tauri-apps/api)；Rust 依赖使用同一 Tauri 2.11 发行线并由 `Cargo.lock` 固定。
 
 直接使用 MapLibre API，不增加 `react-map-gl` 等包装层；这样依赖更少，也便于显式管理实例销毁、窗口 resize 和本地协议。岗位闪光点不引入 deck.gl，使用单一 GeoJSON source 与 circle paint 属性完成；岗位数量增长到数万且出现性能证据后再评估 deck.gl。
+
+## 10. 2026-08-25 多端系统壳选型
+
+unibest 是基于 uni-app 的工程模板而非新的底层运行时，提供 Vue 3、TypeScript、Vite、UnoCSS、Pinia、约定式路由、请求封装以及 H5/App/小程序脚本。它比从裸 uni-app 开始更适合作为后续模块入口，但不能直接复用现有 React 组件，因此采用独立 `apps/miniworld-shell/`，先复用 FastAPI 契约与业务边界，后续再逐模块迁移界面。
+
+导入来源固定为 `feige996/unibest` 的 `base` commit `a3bd15128c4f86bb0ce00723ec4cbf66d3932f1d`（模板版本 4.4.1，MIT）。审查发现上游默认包含示例远端 API/AppID、`prepare` 内嵌套 `git init`、开发期 CDN Eruda 和一组过宽 Android 权限，本地导入必须全部移除或关闭。用户已明确本轮暂不考虑微信小程序构建；Android 只保留无敏感权限的配置入口，不安装 HBuilderX 或签名工具。
+
+## 11. 2026-08-25 Fitness 参考项目只读审计
+
+- OpenWorkout 固定审计 commit `25e485766118fa0466cd6bdcaf9aeba3f629473f`，根许可证为 MIT；
+- Zenith Fitness 固定审计 commit `7b171a0ae73ce0d860dbaf1557002cae61c17694`，未发现根目录许可证；
+- Forme 固定审计 commit `c1f583a76975521602136d38151f4666931ce345`，未发现根目录许可证。
+
+本轮只参考训练计划、训练 Session、逐组记录、历史和进度反馈的领域划分与交互思想，没有复制三个项目的源码、资源或数据库结构。Zenith Fitness 与 Forme 因根许可证不明确，尤其不能作为代码导入来源。

@@ -1,26 +1,24 @@
 # Last Summary
 
 [Quick Link]
-- TASK: T-013 — audited, revalidated and consolidated the complete Goal v0.8 Phase 7 worktree into a local checkpoint
-- TASK: T-012 — completed and verified the Tauri 2 macOS job-radar presentation module and Goal v0.8 acceptance
-- DECISION: D-021 — preserve the jointly verified Phase 7 work as one truthful local commit boundary
+- TASK: T-015 — Fitness H5 Demo implemented, verified and closed; native packaging remains deferred
+- DECISION: D-023 — Fitness uses local PostgreSQL as source of truth and remains independent from the three Agent loops
+- ISSUE: ISS-004 — validation caches and generated build outputs were verified ignored and resolved
 
 [Current Focus]
-- Goal v0.8 job-radar presentation is complete and locally checkpointed: local street map, centered HOME, yellow pulsing job signals, minimized scene API and a native resizable always-on-top window are verified.
-- T-013 reconfirmed 22 backend tests, Ruff/Mypy/Ty, Vite build, 9 Playwright tests, Cargo format/check, an unsigned ARM64 `.app`, ignored-artifact and secret/PII gates.
-- The standard Compose path now mounts `runtime-data/maps` read-only into the API container, closing the gap between the resource script and documented four-service startup.
-- Default data remains explicitly fictional Firenze Demo data. Real city map selection and real job-coordinate integration remain future user choices, not hidden implementation claims.
+- `apps/miniworld-shell/` now exposes `04 健身记录 → /pages/fitness/index` at `http://127.0.0.1:9000/`.
+- Fitness backend is isolated under `backend/app/fitness/` and mounted only at `/api/v1/fitness/*`; PostgreSQL stores plans, exercises, sessions and sets.
+- The verified browser flow recorded bench `80×8, 80×8, 75×10` and incline dumbbell press `25×10, 25×10`; history, calendar, progress and next-workout defaults updated correctly.
 
 [Active Locks]
-- None.
+- None after T-015 handoff.
 
 [Open Issues]
-- None. The 8 existing Biome CSS warnings are non-blocking and unchanged.
+- None for the Fitness H5 Demo. Full repository lint still has pre-existing Shell issues outside the Fitness scope.
 
 [Pending Review]
-- User may review the unsigned local app at `frontend/src-tauri/target/release/bundle/macos/MiniWorld Job Radar.app`.
-- A real public city/region map package and real local job-coordinate integration require a later user choice; exact home-centered bounds must never be sent externally.
-- Optional remote Provider validation, a local release tag and any public push remain separate user decisions; T-013 performed none of them.
+- Android and WeChat Mini Program packaging/device verification remain deferred and are not described as completed.
+- Optional remote Provider validation, real map data, local release tag and public push remain separate user decisions.
 
 [Next Step]
-- Run the local API and `bun run tauri:dev` for interactive review; then choose whether to keep the Firenze Demo or begin a separately scoped real-city/local-job-data phase.
+- User can review Fitness from `http://127.0.0.1:9000/`; any native packaging should be opened as a separate scoped task with its own toolchain and device acceptance.

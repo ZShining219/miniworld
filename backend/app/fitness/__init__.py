@@ -1,0 +1,1 @@
+"""Independent personal fitness domain."""

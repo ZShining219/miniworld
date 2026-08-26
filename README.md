@@ -1,12 +1,46 @@
 # MiniWorld Agent
 
-MiniWorld Agent 是一个面向本机唯一用户的本地优先个人工作台。它使用本地 LangGraph OSS、FastAPI、PostgreSQL 和 React，把以下能力保持为三个独立闭环：
+MiniWorld Agent 是一个面向本机唯一用户的本地优先个人工作台，也是后续个人 Agent 工具的统一呈现平台。
+
+当前项目采用双层结构：`apps/miniworld-shell/` 中的 unibest/uni-app 负责统一入口、跨端呈现和模块导航；现有 FastAPI、React 看板、LangGraph 工作流与 Tauri 岗位雷达继续作为可独立运行的业务工具。后续新功能先作为独立工具实现，再通过明确的接口、数据边界和审批门接入呈现平台，不把尚未完成的能力伪装成已交付功能。
+
+MiniWorld Agent 当前围绕以下三个独立闭环建设：
 
 1. 岗位发现、整理、去重与到本地住址的直线距离计算；
 2. 文件、公开 GitHub 信息和 GPT 对话材料导入，形成可追溯档案事实与简历草稿；
 3. 每日工作记录以及日报、周报生成。
 
 根目录 [`goal.md`](goal.md) 是产品范围、隐私边界和验收标准的最高优先级契约。当前实现严格区分确定性 `demo` 模式与真实联网 `live` 模式：固定演示岗位不会被描述成互联网实时结果。
+
+## 项目定位与功能备案
+
+unibest 是项目的统一呈现平台，不等同于某一个业务模块。它提供 Web 入口，并为未来 Android 与微信小程序端保留扩展位；当前只验收 Web，微信小程序和 Android/HBuilderX 出包暂缓。业务能力仍由各自工具负责，平台层不跨边界读写岗位、档案和工作沉淀数据。
+
+所有功能都必须在本 README 的“功能备案”表中登记。功能完成后补充入口、运行方式、验证证据和延期事项；未完成的功能必须保留状态，不得只依赖代码目录或聊天记录管理。
+
+| 功能/工具 | 当前状态 | 呈现入口 | 责任边界 | 验证与说明 |
+| --- | --- | --- | --- | --- |
+| unibest 统一呈现平台 | Web 已验证 | [`apps/miniworld-shell/`](apps/miniworld-shell/)；`http://127.0.0.1:9000/` | 负责跨端入口、导航和页面承载；业务数据仍由独立模块/API 管理 | `pnpm type-check`、27 项单测、H5 构建和桌面/手机浏览器验收通过 |
+| 健身训练记录 | H5 Demo 已验证 | 首页 `04 健身记录` → `/pages/fitness/index` | 独立 Fitness 数据表、后端包和前端模块；不接入三个 Agent 闭环或模型 Provider | 逐组保存、恢复、历史、日历、重量趋势和下次默认值均通过自动化与浏览器验收 |
+| 岗位发现闭环 | Demo 与 Live 只读验证完成 | React 看板“岗位信号”；后续接入 unibest “岗位” | 公开岗位读取、标准化、去重和本地直线距离；不得改写档案/简历 | Lever 公开 GET、岗位 Graph、隐私测试和岗位雷达均有记录 |
+| 岗位雷达 | 本地 Demo 已验证 | Tauri 原生悬浮窗；后续接入统一入口 | 本地地图包、岗位坐标呈现和窗口状态；不发送家庭中心到外部地图 | MapLibre/PMTiles、Tauri ARM64 构建及无外网请求验证通过 |
+| 个人档案与简历 | 本地 Demo 已验证 | React 看板“个人档案”；后续接入 unibest “档案” | 只处理用户主动导入的材料，保留来源和事实证据 | 文件/GitHub/GPT 材料入口、事实和简历草稿测试通过 |
+| 每日工作沉淀 | 本地 Demo 已验证 | React 看板“工作沉淀”；后续接入 unibest “工作” | 只读取用户主动记录；日报/周报进入档案前必须确认 | 日报、周报、来源追溯和跨模块隔离验证通过 |
+| Agent 运行与审批 | 已实现基础能力 | React 看板“Agent 运行”；统一入口待接入 | 展示 Graph 状态、失败原因、恢复和权限阻断 | PostgreSQL checkpoint、失败恢复和重复重试阻断已有证据 |
+| 微信小程序 | 暂缓 | 未配置 | 不在当前验收范围 | 按用户指令暂不配置 AppID 或构建链路 |
+| Android/HBuilderX 出包 | 暂缓 | 未配置 | 不在当前验收范围 | 按用户指令暂不安装或验证原生打包链路 |
+
+### 功能备案规则
+
+新增功能完成时，至少更新以下内容：
+
+1. 本表中的功能名称、状态、呈现入口和责任边界；
+2. 对应的启动命令、配置前置条件和本地访问地址；
+3. 可复现的测试、构建或浏览器验证命令；
+4. 尚未完成的部分、延期原因和下一步，不用“待完善”代替具体说明；
+5. 涉及隐私、外部读取或外部写入时，记录数据范围、授权门和是否实际执行。
+
+README 只登记项目级事实；详细设计、决策和逐次验证记录分别放在 [`goal/`](goal/)、[`goal/decisions.md`](goal/decisions.md) 和 [`goal/implementation-log.md`](goal/implementation-log.md)。当 README 与 `goal.md` 冲突时，以 `goal.md` 为准。
 
 ## 当前状态
 
@@ -112,6 +146,29 @@ bun run tauri:build
 
 产物位于 `frontend/src-tauri/target/release/bundle/macos/MiniWorld Job Radar.app`。当前命令明确使用 `--no-sign`，用于本机 Demo，不构成签名或公证发布包。
 
+## 多端系统壳（unibest）
+
+新的 Web/Android/未来小程序统一入口位于 `apps/miniworld-shell/`。它与现有 React 看板和 Tauri Radar 并存，不替换已经验证的业务模块。
+
+```bash
+cd apps/miniworld-shell
+pnpm install --ignore-scripts --frozen-lockfile
+pnpm init-baseFiles
+pnpm dev:h5
+```
+
+Web 默认只监听 `http://127.0.0.1:9000/`，API 默认指向 `http://127.0.0.1:8000`。本阶段只验证 Web；微信小程序 AppID、构建和 Android/HBuilderX 出包暂缓。
+
+Fitness 从壳首页工具列表的 `04 健身记录` 进入，不占用主 TabBar。先确保本地 API 已迁移并运行，再启动 H5：
+
+```bash
+docker-compose up -d --build api db
+cd apps/miniworld-shell
+pnpm dev:h5
+```
+
+Demo 初始化“胸、背、肩、臀腿”四个计划，“胸”包含杠铃卧推和上斜哑铃卧推。正式历史保存在 PostgreSQL；浏览器 storage 只保存还没有提交成功的重量和次数草稿。
+
 ## Demo 操作路径
 
 1. 在“雷达总览”确认界面显示 `DEMO MODE · 本地确定性`；
@@ -155,7 +212,7 @@ bun run tauri:build
 ./scripts/test-local.sh
 ```
 
-当前证据：后端 22 项测试、Ruff、Mypy、Ty、前端生产构建和 Playwright 9 项 E2E 通过；Biome 无 error，保留 8 条 CSS 风格 warning；Tauri ARM64 debug 链接与未签名 release `.app` 打包通过，最终二进制为 Mach-O arm64。
+当前证据：后端 27 项测试、Ruff、Mypy、Ty、React 前端生产构建和 Playwright 9 项 E2E 通过；unibest Shell 27 项测试、TypeScript、限定范围 ESLint 和 H5 production build 通过；Biome 无 error，保留 8 条 CSS 风格 warning；Tauri ARM64 debug 链接与未签名 release `.app` 打包通过，最终二进制为 Mach-O arm64。
 
 一条命令构建、启动并执行完整容器验证：
 

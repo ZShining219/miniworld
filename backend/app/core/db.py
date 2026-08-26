@@ -3,6 +3,8 @@ from collections.abc import Generator
 from sqlmodel import Session, SQLModel, create_engine, select
 
 from app.core.config import settings
+from app.fitness import models as fitness_models  # noqa: F401
+from app.fitness.seed import seed_fitness_demo_data
 from app.models import ExternalLandmark, PrivateLocation, ScheduleConfig
 
 
@@ -59,6 +61,7 @@ def seed_demo_data() -> None:
                 )
             )
         session.commit()
+        seed_fitness_demo_data(session)
 
 
 def initialize_database() -> None:

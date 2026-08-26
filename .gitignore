@@ -2,6 +2,10 @@
 .env
 .env.*
 !.env.example
+!apps/miniworld-shell/env/.env
+!apps/miniworld-shell/env/.env.development
+!apps/miniworld-shell/env/.env.production
+!apps/miniworld-shell/env/.env.test
 *.pem
 *.key
 
@@ -39,6 +43,8 @@ test-results/
 # Containers and tooling
 .docker-data/
 .cache/
+.pnpm-store/
+.ai/runtime/windows/*.json
 .idea/
 .vscode/
 .DS_Store

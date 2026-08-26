@@ -2,6 +2,7 @@ from fastapi import APIRouter
 
 from app.api.routes.miniworld import router as miniworld_router
 from app.core.config import settings
+from app.fitness.router import router as fitness_router
 from app.schemas import HealthResponse
 
 api_router = APIRouter()
@@ -20,3 +21,4 @@ def health() -> HealthResponse:
 
 
 api_router.include_router(miniworld_router)
+api_router.include_router(fitness_router)

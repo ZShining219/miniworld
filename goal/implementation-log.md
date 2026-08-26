@@ -512,6 +512,133 @@
 
 ---
 
+## 2026-08-25 — unibest 多端系统壳本地配置（进行中）
+
+### 范围
+- 关联 `REQ-RUNTIME`、`REQ-JOB`、`REQ-PROFILE`、`REQ-WORK` 与 `REQ-PRIVACY`；
+- 只新增独立系统壳和 Web 配置，不迁移既有业务模块，不构建微信小程序或 Android 包。
+
+### 已完成
+- 固定并审查 unibest 4.4.1 `base` commit `a3bd15128c4f86bb0ce00723ec4cbf66d3932f1d`，保留 MIT 许可证；
+- 导入到 `apps/miniworld-shell/`，排除上游 `.git`、`AGENTS.md`、`.agents/`、`.cursor/`、`.vscode/`、`.github/`；
+- 移除示例远端 API/AppID、嵌套 `git init`、开发期远端 Eruda、构建自动打开分析页和 Android 默认敏感权限；开发服务器绑定 `127.0.0.1`，API 默认 `127.0.0.1:8000`；
+- 建立总览、岗位、档案、工作四入口的响应式空白系统壳，三个闭环保持独立并标明尚未接入。
+
+### 未完成
+- pnpm 依赖安装、类型检查、测试、H5 构建和浏览器验收尚未完成；用户明确授权后，两次相同的联网安装仍在进程启动前因审批服务 `503 auth_unavailable` 被拦截，离线缓存不足且未改用镜像或其他工具绕过审批。
+- 微信小程序和 Android/HBuilderX 按用户指令暂缓。
+
+### 验证
+- 固定提交、许可证、导入排除项、JSON 配置与敏感示例值已静态检查；完整运行证据等待依赖安装。
+
+### Git
+- 分支：`codex/bootstrap-langgraph`；未提交、未 tag、未 push。
+
+### 下一步
+- 在项目根目录执行 `cd apps/miniworld-shell && pnpm install --ignore-scripts --frozen-lockfile`，随后恢复类型/测试/构建与桌面/手机浏览器验收。
+
+---
+
+## 2026-08-25 — unibest Web 壳安装与本地验收完成
+
+### 范围
+- 续作 T-014，仅完成 `apps/miniworld-shell/` 的依赖安装、Web 构建和本地浏览器验收；未构建微信小程序或 Android 包。
+
+### 已完成
+- 从获批的 `registry.npmjs.org` 完成锁定依赖安装，共链接 2245 个包；生命周期脚本保持禁用，并在 `pnpm-workspace.yaml` 明确忽略上游 `@uni-helper/unocss-preset-uni` 构建脚本；
+- 将构建插件直接使用的 `fs-extra@10.1.0` 声明为开发依赖；
+- 修正标签栏类型引用，改用 `virtual:uni-pages` 导出的公开 `LocationUrl`，并将备用原生标签栏的已删除示例路径更新为现有档案页；
+- H5 开发服务已在 `http://127.0.0.1:9000/` 拉起并保持运行。
+
+### 验证
+- `pnpm install --ignore-scripts --frozen-lockfile`：通过；
+- `pnpm type-check`：通过；
+- `pnpm test:run`：4 个测试文件、21 项测试全部通过；
+- `pnpm build:h5`：H5 production 构建通过；
+- 应用内浏览器：`1440x900` 桌面总览与 `390x844` 手机视口通过；手机端真实点击总览、岗位、档案、工作四个入口，路由与占位内容正确，所有页面均无横向溢出；
+- 浏览器控制台无 warning/error；运行页只加载 `@vite/client`、本地 favicon 和本地 `src/main.ts`，没有非 localhost 页面资产请求或业务 API 请求。
+
+### 偏差与决策
+- pnpm 11 的脚本审批预检会把未明确处理的上游构建脚本视为错误；本轮按既定安全边界显式忽略该脚本，没有批准执行；
+- 首轮类型检查暴露两个上游遗留类型问题，均以现有生成路由类型为来源完成最小修正，没有放宽类型检查；
+- 微信小程序 AppID/构建和 Android/HBuilderX 出包继续延期。
+
+### Git
+- 分支：`codex/bootstrap-langgraph`；本轮未 commit、未 tag、未 push。
+
+### 下一步
+- 将现有 Demo 作为独立工具逐步接入四入口；接入前分别定义模块接口、数据边界与审批门，不在壳层内混合三个业务闭环。
+
+---
+
+## 2026-08-25 — 明确统一呈现平台与功能备案规则
+
+### 范围
+- 更新根目录 README 的项目定位和功能台账，不新增业务行为。
+
+### 已完成
+- 明确 `apps/miniworld-shell/` 中的 unibest 是统一呈现平台，现有 React、FastAPI、LangGraph 和 Tauri 能力继续作为可独立运行的工具；
+- 在 README 增加岗位发现、岗位雷达、个人档案、工作沉淀、Agent 运行、微信小程序和 Android/HBuilderX 的状态、入口、边界及验证说明；
+- 增加后续功能备案规则，要求记录状态、入口、启动方式、验证证据、延期事项和隐私/授权边界。
+
+### 验证
+- `git diff --check`：通过；
+- README 中的功能状态与 Phase 8 Web 验收记录、Goal v0.8 和现有实现日志一致。
+
+### Git
+- 未 commit、未 tag、未 push。
+
+---
+
+## 2026-08-25 — Fitness H5 Demo 实现与验收完成
+
+### 范围
+
+- 关联 `REQ-FITNESS` 与 D-023；
+- 在现有 unibest H5 壳和本地 FastAPI/PostgreSQL 中增加独立 Fitness 辅助工具，不接入 Jobs、Profile/Resume、Work、LangGraph 或模型 Provider。
+
+### 已完成
+
+- 数据库增加 `fitness_plan`、`fitness_exercise`、`fitness_session`、`fitness_set` 四张表和 Alembic migration `20260825_0003_fitness.py`；计划/动作使用归档删除，Session/Set 保存名称快照，Set 使用幂等标识，Active Session 和常用顺序/日期/进度查询均有约束或索引；
+- Demo seed 初始化“胸、背、肩、臀腿”，并为“胸”提供杠铃卧推和上斜哑铃卧推；按每年数百次训练、数千条 Set 估算，十年以上仍为数万行级别，继续使用现有 PostgreSQL 足够；
+- 后端建立独立 `backend/app/fitness/`，封装 models、schemas、repository、service、router 和 seed，通过 `/api/v1/fitness/*` 提供计划/动作、Session、Set、历史、日历和重量趋势接口；
+- service 集中实现单一 Active Session、同计划恢复、异计划冲突、后端生成 Set 顺序、Active-only 写入和 Completed-only 统计；
+- 首页增加静态模块注册表和 `04 健身记录 → /pages/fitness/index` 入口；Fitness 不进入主 TabBar；
+- 前端 `modules/fitness` 负责 API、类型、状态和未提交草稿，`pages/fitness` 提供首页、计划训练、动作记录、历史、统计和计划管理六个页面；
+- HTTP 封装新增 FastAPI 原始 JSON 模式且保留原业务信封模式；重量趋势使用 uni-app Canvas，不引入图表依赖；
+- 浏览器验收中修复 `2.5 kg` 步进被取整和保存成功后草稿残留两个问题，草稿键升级为 `miniworld-fitness-draft-v2:*`。
+
+### 验证
+
+- 新 SQLite 执行 Alembic `upgrade → downgrade → upgrade`：通过；现有 PostgreSQL 容器迁移：通过；API 容器重建并在 `127.0.0.1:8000` 健康运行；
+- `UV_CACHE_DIR=.cache/uv uv run --project backend pytest backend/tests -q`：27 passed；
+- Fitness 相关 Ruff、Mypy、Ty：通过。包含原模板 Alembic 文件的扩展 Ruff 命令仍会报告其既有未使用 `os` 导入，不属于 Fitness 代码回归；
+- `pnpm type-check`、`pnpm test:run`、Fitness/入口/HTTP 限定范围 ESLint、`pnpm build:h5`：通过；Shell 为 7 个测试文件、27 项测试；
+- 全仓 `pnpm lint` 仍受上游 Shell 的 `package.json`、旧脚本、旧组件/测试既有 lint 问题影响；本轮变更范围 lint 为零错误，没有借 Fitness 任务清理上游无关文件；
+- 浏览器实际录入杠铃卧推 `80×8、80×8、75×10`，上斜哑铃卧推 `25×10、25×10`；History 显示 2 个动作/5 组，2026-08-25 日历标记已训练，卧推进度最大 80 kg；
+- 下一次“胸”训练显示上次卧推三组并默认带出 `75 kg × 10`，Fitness 首页能恢复新的空 Active Session；
+- 桌面 `1440×900` 与手机 `390×844` 均无横向溢出，浏览器控制台无 warning/error，H5 当前可从 `http://127.0.0.1:9000/` 审阅。
+
+### 参考审计与许可
+
+- 只读审计 OpenWorkout `25e485766118fa0466cd6bdcaf9aeba3f629473f`（MIT）、Zenith Fitness `7b171a0ae73ce0d860dbaf1557002cae61c17694`（未发现根许可证）和 Forme `c1f583a76975521602136d38151f4666931ce345`（未发现根许可证）；
+- 只采用模型和交互思想，没有复制源码或资源。
+
+### 未完成
+
+- Android 与微信小程序只保留 uni-app 结构兼容性；本轮没有安装原生工具链、配置 AppID、构建包或做真机验收；
+- 本轮未创建 tag、未提交、未 push，也未操作真实个人材料或任何外部写入。
+
+### Git
+
+- 分支：`codex/bootstrap-langgraph`；T-015 工作树待用户决定提交边界；未 tag、未 push。
+
+### 下一步
+
+- 用户可在 `http://127.0.0.1:9000/` 从首页 `04 健身记录` 审阅 H5 Demo；跨端出包应作为独立任务分别补齐微信小程序和 Android 工具链及真机验收。
+
+---
+
 ## 后续记录模板
 
 ```md

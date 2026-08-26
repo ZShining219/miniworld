@@ -1,0 +1,233 @@
+.fitness-page {
+  min-height: 100vh;
+  box-sizing: border-box;
+  padding: 34rpx 32rpx 80rpx;
+  color: #1d2420;
+  background: #f4f3ee;
+  font-family: 'PingFang SC', 'Noto Sans CJK SC', sans-serif;
+}
+
+.fitness-shell {
+  width: 100%;
+  max-width: 760rpx;
+  margin: 0 auto;
+}
+
+.fitness-heading {
+  padding: 16rpx 0 34rpx;
+  border-bottom: 2rpx solid #1d2420;
+}
+
+.fitness-eyebrow,
+.fitness-meta,
+.fitness-link {
+  letter-spacing: 0;
+}
+
+.fitness-eyebrow {
+  display: block;
+  color: #cf533d;
+  font-size: 19rpx;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.fitness-title {
+  display: block;
+  margin-top: 14rpx;
+  font-family: 'Songti SC', 'Noto Serif CJK SC', serif;
+  font-size: 52rpx;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.fitness-subtitle {
+  display: block;
+  margin-top: 14rpx;
+  color: #6b6f68;
+  font-size: 24rpx;
+  line-height: 1.6;
+}
+
+.fitness-section {
+  padding: 38rpx 0;
+  border-bottom: 1rpx solid #c9c8c1;
+}
+
+.fitness-section-title {
+  display: block;
+  margin-bottom: 22rpx;
+  font-family: 'Songti SC', 'Noto Serif CJK SC', serif;
+  font-size: 31rpx;
+  font-weight: 700;
+}
+
+.fitness-row {
+  display: flex;
+  align-items: center;
+}
+
+.fitness-row-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20rpx;
+}
+
+.fitness-list-row {
+  display: flex;
+  min-height: 108rpx;
+  align-items: center;
+  gap: 20rpx;
+  border-top: 1rpx solid #d5d3cc;
+}
+
+.fitness-list-row:last-child {
+  border-bottom: 1rpx solid #d5d3cc;
+}
+
+.fitness-list-copy {
+  min-width: 0;
+  flex: 1;
+}
+
+.fitness-list-title {
+  display: block;
+  font-size: 29rpx;
+  font-weight: 650;
+}
+
+.fitness-meta {
+  display: block;
+  margin-top: 8rpx;
+  color: #777a73;
+  font-size: 20rpx;
+}
+
+.fitness-arrow {
+  color: #cf533d;
+  font-size: 32rpx;
+}
+
+.fitness-primary,
+.fitness-secondary,
+.fitness-danger,
+.fitness-icon-button {
+  box-sizing: border-box;
+  border-radius: 4rpx;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+.fitness-primary {
+  display: flex;
+  width: 100%;
+  min-height: 100rpx;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  color: #fff;
+  background: #cf533d;
+  font-size: 28rpx;
+}
+
+.fitness-primary[disabled] {
+  opacity: 0.5;
+}
+
+.fitness-secondary,
+.fitness-danger {
+  min-height: 72rpx;
+  padding: 0 24rpx;
+  border: 1rpx solid #9fa19a;
+  color: #1d2420;
+  background: transparent;
+  font-size: 22rpx;
+}
+
+.fitness-danger {
+  border-color: #cf533d;
+  color: #a43f2e;
+}
+
+.fitness-icon-button {
+  width: 66rpx;
+  height: 66rpx;
+  padding: 0;
+  border: 1rpx solid #aaa9a2;
+  color: #343a35;
+  background: transparent;
+  font-size: 28rpx;
+}
+
+.fitness-link {
+  color: #176b57;
+  font-size: 22rpx;
+  font-weight: 700;
+}
+
+.fitness-active {
+  padding: 28rpx;
+  border-left: 6rpx solid #176b57;
+  background: #ebece6;
+}
+
+.fitness-empty,
+.fitness-error {
+  display: block;
+  padding: 30rpx 0;
+  color: #777a73;
+  font-size: 23rpx;
+  line-height: 1.6;
+}
+
+.fitness-error {
+  color: #a43f2e;
+}
+
+.fitness-input {
+  min-height: 76rpx;
+  box-sizing: border-box;
+  padding: 0 20rpx;
+  border: 1rpx solid #aaa9a2;
+  border-radius: 2rpx;
+  color: #1d2420;
+  background: #fcfbf7;
+  font-size: 25rpx;
+}
+
+.fitness-chip-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+}
+
+.fitness-chip {
+  min-height: 64rpx;
+  padding: 0 22rpx;
+  border: 1rpx solid #aaa9a2;
+  border-radius: 2rpx;
+  color: #50544f;
+  background: transparent;
+  font-size: 21rpx;
+}
+
+.fitness-chip-active {
+  border-color: #176b57;
+  color: #fff;
+  background: #176b57;
+}
+
+@media (min-width: 900px) {
+  .fitness-page {
+    padding: 48px 32px 100px;
+  }
+
+  .fitness-shell {
+    max-width: 680px;
+  }
+
+  .fitness-title {
+    font-size: 42px;
+  }
+}
