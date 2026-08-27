@@ -200,3 +200,50 @@ def test_archiving_exercise_preserves_historical_sets(client: TestClient) -> Non
     history = client.get("/api/v1/fitness/history").json()
     assert history[0]["exercises"][0]["exerciseName"] == "杠铃卧推"
     assert history[0]["exercises"][0]["sets"][0]["weight"] == 80
+
+
+def test_create_exercise_after_archiving_uses_a_new_order(
+    client: TestClient,
+) -> None:
+    plan = client.post("/api/v1/fitness/plans", json={"name": "灵活训练"})
+    assert plan.status_code == 201
+    plan_id = plan.json()["id"]
+
+    archived = client.post(
+        "/api/v1/fitness/exercises",
+        json={
+            "plan_id": plan_id,
+            "name": "弹力带热身",
+            "default_weight": 0,
+            "default_reps": 15,
+        },
+    )
+    assert archived.status_code == 201
+    assert archived.json()["sortOrder"] == 0
+    assert (
+        client.delete(f"/api/v1/fitness/exercises/{archived.json()['id']}").status_code
+        == 204
+    )
+
+    replacement = client.post(
+        "/api/v1/fitness/exercises",
+        json={
+            "plan_id": plan_id,
+            "name": "哑铃热身",
+            "default_weight": 5,
+            "default_reps": 12,
+        },
+    )
+
+    assert replacement.status_code == 201
+    assert replacement.json()["sortOrder"] == 1
+    active = client.get(f"/api/v1/fitness/plans/{plan_id}/exercises").json()
+    assert [item["name"] for item in active] == ["哑铃热身"]
+
+    reordered = client.put(
+        f"/api/v1/fitness/plans/{plan_id}/exercises/order",
+        json={"ids": [replacement.json()["id"]]},
+    )
+    assert reordered.status_code == 200
+    assert [item["name"] for item in reordered.json()] == ["哑铃热身"]
+    assert reordered.json()[0]["sortOrder"] == 1

@@ -142,8 +142,12 @@ def create_exercise(db: Session, payload: ExerciseCreate) -> ExercisePublic:
         raise FitnessServiceError(404, "Fitness plan not found")
     sort_order = payload.sort_order
     if sort_order is None:
-        existing = repository.active_exercises(db, payload.plan_id)
-        sort_order = max((item.sort_order for item in existing), default=-1) + 1
+        current = db.exec(
+            select(func.max(FitnessExercise.sort_order)).where(
+                FitnessExercise.plan_id == payload.plan_id
+            )
+        ).one()
+        sort_order = (-1 if current is None else int(current)) + 1
     exercise = FitnessExercise(
         plan_id=payload.plan_id,
         name=payload.name.strip(),
@@ -205,7 +209,14 @@ def reorder_exercises(
         exercise.sort_order = -temporary_order
         db.add(exercise)
     db.flush()
-    for sort_order, exercise_id in enumerate(payload.ids):
+    archived_max = db.exec(
+        select(func.max(FitnessExercise.sort_order)).where(
+            FitnessExercise.plan_id == plan_id,
+            col(FitnessExercise.archived_at).is_not(None),
+        )
+    ).one()
+    first_active_order = (-1 if archived_max is None else int(archived_max)) + 1
+    for sort_order, exercise_id in enumerate(payload.ids, start=first_active_order):
         exercise = by_id[exercise_id]
         exercise.sort_order = sort_order
         exercise.updated_at = _now()

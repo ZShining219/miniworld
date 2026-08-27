@@ -1,23 +1,23 @@
 # Last Summary
 
 [Quick Link]
-- TASK: T-023 — Removed accidental saved-set deletion and deployed fix at `7a5934d`
-- TASK: T-022 — Fitness frontend optimization published and deployed to production at `d5a56e4`
-- TASK: T-021 — Fitness data-safe action labels and append-only active workout management completed
+- TASK: T-024 — Fixed and locally verified archived-exercise order conflicts
+- ISSUE: ISS-007 — Mobile add-action HTTP 409 reproduced and resolved in backend allocation logic
+- TASK: T-023 — Saved-set deletion safety fix remains deployed at `7a5934d`
 
 [Current Focus]
-- Fitness production runs the saved-set deletion safety fix at fixed SHA `7a5934db6a5d4382088cc3556c6719eace609edf`.
-- Production API, PostgreSQL and Caddy/H5 containers are healthy; local H5 dev server remains available at `http://127.0.0.1:9000/`.
+- T-024 is complete locally: creating and reordering an action after a prior action was archived no longer reuses an occupied sort order.
+- Production still runs fixed SHA `7a5934db6a5d4382088cc3556c6719eace609edf`; the T-024 backend fix has not been committed, pushed or deployed.
 
 [Active Locks]
-- None after T-018 handoff.
+- None after T-024 handoff.
 
 [Open Issues]
-- None identified after the regression fix and production deployment.
+- None identified after the local order-conflict regression fix.
 
 [Pending Review]
-- User review on the production phone endpoint confirming saved sets are read-only and new sets still save correctly.
-- Future history/statistics visual refinement remains deferred until the primary training flow is accepted.
+- Commit, push and deploy the verified T-024 backend fix only after explicit user authorization.
+- Recheck the original mobile add-action path after production deployment without creating disposable production data.
 
 [Next Step]
-- Collect mobile UX feedback after trying an in-progress workout with a newly added action.
+- If requested, create a fixed release commit, publish it, deploy through the production script, and verify server SHA and health before the user retries on mobile.

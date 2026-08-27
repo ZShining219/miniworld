@@ -841,4 +841,26 @@
 - 390×844 浏览器回归确认已保存组不再显示删除控件。
 - 提交 `7a5934db6a5d4382088cc3556c6719eace609edf` 已推送并通过生产部署脚本发布。
 - 服务器部署 SHA 与本地/远端一致；API、数据库、Caddy/H5 容器均 healthy；未认证根、Fitness API、文档均返回 `401`。
+
+## 2026-08-27 — T-024 Fitness 停用动作后新增冲突修复
+
+### 问题与复现
+- 生产手机请求已正常认证并到达 `POST /api/v1/fitness/exercises`，但在同一部位存在已停用动作时返回 `409 Exercise order already exists`。
+- 回归用例稳定复现“空部位新增动作 → 停用该动作 → 再新增动作”的冲突：停用记录仍保留并占用 `sort_order=0`，旧实现却只按有效动作计算下一个排序号，再次分配了 `0`。
+
+### 修复
+- 自动新增动作时按同一部位的全部动作（含已停用记录）计算历史最大排序号，从下一个未占用值继续分配。
+- 动作重新排序时将有效动作排在同一部位全部停用动作的最大排序号之后，避免管理页面重新排序时再次与历史记录冲突。
+- 不修改数据库结构，不删除、恢复或改写任何停用动作及历史训练组。
+
+### 验证
+- 修复前定向回归：第二次新增返回 `409`，用例按预期失败。
+- 修复后定向回归：`1 passed`；第二个动作以 `sort_order=1` 创建，并可正常重新排序。
+- `uv run pytest backend/tests/test_fitness.py -q`：`6 passed`。
+- `uv run pytest backend/tests -q`：`28 passed`。
+- `uv run ruff check backend/app/fitness backend/tests/test_fitness.py`：通过。
+- `uv run mypy backend/app/fitness backend/tests/test_fitness.py`：通过。
+
+### Git 与部署
+- 当前变更尚未提交、未 push、未部署；生产仍运行此前固定版本。
 ```
