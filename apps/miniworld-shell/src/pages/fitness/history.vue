@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import type { HistoryItem } from '@/modules/fitness'
 import { fitnessApi } from '@/modules/fitness'
+import FitnessPageShell from '@/modules/fitness/components/FitnessPageShell.vue'
 
 definePage({ style: { navigationBarTitleText: '训练历史' } })
 
@@ -28,41 +29,36 @@ function duration(seconds: number) {
 </script>
 
 <template>
-  <view class="fitness-page pt-safe">
-    <view class="fitness-shell">
-      <view class="fitness-heading">
-        <text class="fitness-eyebrow">FITNESS HISTORY</text>
-        <text class="fitness-title">训练历史</text>
-        <text class="fitness-subtitle">这里只统计已经结束的训练。</text>
-      </view>
-      <text v-if="error" class="fitness-error">{{ error }}</text>
-      <text v-if="loading" class="fitness-empty">正在读取…</text>
-      <text v-else-if="!items.length" class="fitness-empty">完成第一次训练后，记录会出现在这里。</text>
+  <FitnessPageShell
+    eyebrow="FITNESS HISTORY"
+    title="训练历史"
+    subtitle="这里只统计已经结束的训练。"
+    :error="error"
+  >
+    <text v-if="loading" class="fitness-empty">正在读取…</text>
+    <text v-else-if="!items.length" class="fitness-empty">完成第一次训练后，记录会出现在这里。</text>
 
-      <view v-for="item in items" :key="item.session.id" class="history-session">
-        <view class="fitness-row-between history-heading">
-          <view>
-            <text class="history-date">{{ item.session.workoutDate }}</text>
-            <text class="fitness-list-title">{{ item.session.planNameSnapshot }}</text>
-          </view>
-          <text class="fitness-meta">{{ duration(item.durationSeconds) }}</text>
+    <view v-for="item in items" :key="item.session.id" class="history-session">
+      <view class="fitness-row-between history-heading">
+        <view>
+          <text class="history-date">{{ item.session.workoutDate }}</text>
+          <text class="fitness-list-title">{{ item.session.planNameSnapshot }}</text>
         </view>
-        <view class="history-summary">
-          <text>{{ item.exerciseCount }} 个动作</text>
-          <text>{{ item.setCount }} 组</text>
-        </view>
-        <view v-for="exercise in item.exercises" :key="exercise.exerciseId" class="history-exercise">
-          <text class="fitness-list-title">{{ exercise.exerciseName }}</text>
-          <text v-for="set in exercise.sets" :key="set.id" class="history-set">{{ set.weight }} kg × {{ set.reps }}</text>
-        </view>
+        <text class="fitness-meta">{{ duration(item.durationSeconds) }}</text>
+      </view>
+      <view class="history-summary">
+        <text>{{ item.exerciseCount }} 个动作</text>
+        <text>{{ item.setCount }} 组</text>
+      </view>
+      <view v-for="exercise in item.exercises" :key="exercise.exerciseId" class="history-exercise">
+        <text class="fitness-list-title">{{ exercise.exerciseName }}</text>
+        <text v-for="set in exercise.sets" :key="set.id" class="history-set">{{ set.weight }} kg × {{ set.reps }}</text>
       </view>
     </view>
-  </view>
+  </FitnessPageShell>
 </template>
 
 <style scoped lang="scss">
-@import '@/modules/fitness/fitness.scss';
-
 .history-session {
   padding: 38rpx 0;
   border-bottom: 2rpx solid #1d2420;

@@ -1,7 +1,9 @@
 <script lang="ts" setup>
 import type { FitnessPlan } from '@/modules/fitness'
 import { useFitnessStore } from '@/modules/fitness'
+import FitnessPageShell from '@/modules/fitness/components/FitnessPageShell.vue'
 import ReorderablePlanList from '@/modules/fitness/components/ReorderablePlanList.vue'
+import FitnessSectionHeader from '@/modules/fitness/components/FitnessSectionHeader.vue'
 
 definePage({ style: { navigationBarTitleText: '健身记录' } })
 
@@ -46,12 +48,17 @@ function openPage(path: 'history' | 'stats' | 'settings') {
 </script>
 
 <template>
-  <view class="fitness-page pt-safe">
-    <view class="fitness-shell">
-      <view class="fitness-heading home-heading">
+  <FitnessPageShell
+    eyebrow="FITNESS / LOCAL"
+    title="今天练什么？"
+    subtitle="选择一个部位开始，训练过程中每一组都会立即保存。"
+    :error="error"
+    compact-heading
+  >
+    <template #heading>
+      <view>
         <view class="fitness-row-between home-heading-top">
           <view>
-            <text class="fitness-eyebrow">FITNESS / LOCAL</text>
             <text class="fitness-title">今天练什么？</text>
           </view>
           <view class="home-date">
@@ -61,70 +68,60 @@ function openPage(path: 'history' | 'stats' | 'settings') {
         </view>
         <text class="fitness-subtitle">选择一个部位开始，训练过程中每一组都会立即保存。</text>
       </view>
+    </template>
 
-      <text v-if="error" class="fitness-error">{{ error }}</text>
-
-      <view v-if="store.state.activeSession" class="fitness-section">
-        <view class="fitness-active" @click="continueWorkout">
-          <view class="fitness-row-between">
-            <view>
-              <text class="fitness-eyebrow">继续未结束训练</text>
-              <text class="fitness-list-title">{{ store.state.activeSession.planNameSnapshot }}</text>
-              <text class="fitness-meta">已完成 {{ store.state.activeSession.totalSetCount }} 组</text>
-            </view>
-            <text class="fitness-arrow">→</text>
-          </view>
-        </view>
-      </view>
-
-      <view class="fitness-section plan-section">
-        <view class="fitness-row-between section-heading-row">
+    <view v-if="store.state.activeSession" class="fitness-section">
+      <view class="fitness-active" @click="continueWorkout">
+        <view class="fitness-row-between">
           <view>
-            <text class="fitness-section-title">训练部位</text>
-            <text class="fitness-meta">自由选择 · 长按拖动调整</text>
-          </view>
-          <text class="fitness-count">{{ store.state.plans.length }} 个</text>
-        </view>
-        <ReorderablePlanList
-          ref="planList"
-          :plans="store.state.plans"
-          :disabled="store.state.reorderingPlans"
-          @select="openPlan"
-          @reorder="reorderPlans"
-        />
-        <text v-if="!store.state.loading && !store.state.plans.length" class="fitness-empty">还没有训练计划。</text>
-      </view>
-
-      <view class="fitness-section fitness-row-between">
-        <text class="fitness-section-title">记录</text>
-        <view class="fitness-row" style="gap: 28rpx;">
-          <text class="fitness-link" @click="openPage('history')">历史</text>
-          <text class="fitness-link" @click="openPage('stats')">统计</text>
-          <text class="fitness-link" @click="openPage('settings')">管理</text>
-        </view>
-      </view>
-
-      <view v-if="store.state.recentWorkout" class="fitness-section">
-        <text class="fitness-section-title">最近训练</text>
-        <view class="fitness-row-between" @click="openPage('history')">
-          <view>
-            <text class="fitness-list-title">{{ store.state.recentWorkout.session.workoutDate }} · {{ store.state.recentWorkout.session.planNameSnapshot }}</text>
-            <text class="fitness-meta">{{ store.state.recentWorkout.exerciseCount }} 个动作 · {{ store.state.recentWorkout.setCount }} 组</text>
+            <text class="fitness-eyebrow">继续未结束训练</text>
+            <text class="fitness-list-title">{{ store.state.activeSession.planNameSnapshot }}</text>
+            <text class="fitness-meta">已完成 {{ store.state.activeSession.totalSetCount }} 组</text>
           </view>
           <text class="fitness-arrow">→</text>
         </view>
       </view>
     </view>
-  </view>
+
+    <view class="fitness-section plan-section">
+      <FitnessSectionHeader title="训练部位" subtitle="自由选择 · 长按拖动调整" roomy>
+        <template #right>
+          <text class="fitness-count">{{ store.state.plans.length }} 个</text>
+        </template>
+      </FitnessSectionHeader>
+      <ReorderablePlanList
+        ref="planList"
+        :plans="store.state.plans"
+        :disabled="store.state.reorderingPlans"
+        @select="openPlan"
+        @reorder="reorderPlans"
+      />
+      <text v-if="!store.state.loading && !store.state.plans.length" class="fitness-empty">还没有训练计划。</text>
+    </view>
+
+    <view class="fitness-section fitness-row-between">
+      <text class="fitness-section-title">记录</text>
+      <view class="fitness-row" style="gap: 28rpx;">
+        <text class="fitness-link" @click="openPage('history')">历史</text>
+        <text class="fitness-link" @click="openPage('stats')">统计</text>
+        <text class="fitness-link" @click="openPage('settings')">管理</text>
+      </view>
+    </view>
+
+    <view v-if="store.state.recentWorkout" class="fitness-section">
+      <text class="fitness-section-title">最近训练</text>
+      <view class="fitness-row-between" @click="openPage('history')">
+        <view>
+          <text class="fitness-list-title">{{ store.state.recentWorkout.session.workoutDate }} · {{ store.state.recentWorkout.session.planNameSnapshot }}</text>
+          <text class="fitness-meta">{{ store.state.recentWorkout.exerciseCount }} 个动作 · {{ store.state.recentWorkout.setCount }} 组</text>
+        </view>
+        <text class="fitness-arrow">→</text>
+      </view>
+    </view>
+  </FitnessPageShell>
 </template>
 
 <style scoped lang="scss">
-@import '@/modules/fitness/fitness.scss';
-
-.home-heading {
-  padding-bottom: 28rpx;
-}
-
 .home-heading-top {
   align-items: flex-start;
 }
@@ -148,15 +145,6 @@ function openPage(path: 'history' | 'stats' | 'settings') {
   color: #777a73;
   font-size: 18rpx;
   text-transform: uppercase;
-}
-
-.section-heading-row {
-  align-items: flex-end;
-  margin-bottom: 22rpx;
-}
-
-.section-heading-row .fitness-section-title {
-  margin-bottom: 4rpx;
 }
 
 .fitness-count {

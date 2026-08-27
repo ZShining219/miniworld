@@ -1,5 +1,7 @@
 <script lang="ts" setup>
 import type { ExerciseProgress, FitnessExercise, FitnessPlan } from '@/modules/fitness'
+import FitnessChoiceChips from '@/modules/fitness/components/FitnessChoiceChips.vue'
+import FitnessPageShell from '@/modules/fitness/components/FitnessPageShell.vue'
 import ProgressChart from '@/modules/fitness/components/ProgressChart.vue'
 import { fitnessApi } from '@/modules/fitness'
 
@@ -61,66 +63,40 @@ function cellDate(day: number) {
 </script>
 
 <template>
-  <view class="fitness-page pt-safe">
-    <view class="fitness-shell">
-      <view class="fitness-heading">
-        <text class="fitness-eyebrow">TRAINING STATS</text>
-        <text class="fitness-title">训练统计</text>
-        <text class="fitness-subtitle">打卡按已结束训练计算；趋势显示每次训练的最大重量。</text>
+  <FitnessPageShell
+    eyebrow="TRAINING STATS"
+    title="训练统计"
+    subtitle="打卡按已结束训练计算；趋势显示每次训练的最大重量。"
+    :error="error"
+  >
+    <view class="fitness-section">
+      <text class="fitness-section-title">{{ year }} 年 {{ month + 1 }} 月</text>
+      <view class="calendar-week">
+        <text v-for="label in ['日', '一', '二', '三', '四', '五', '六']" :key="label">{{ label }}</text>
       </view>
-      <text v-if="error" class="fitness-error">{{ error }}</text>
-
-      <view class="fitness-section">
-        <text class="fitness-section-title">{{ year }} 年 {{ month + 1 }} 月</text>
-        <view class="calendar-week">
-          <text v-for="label in ['日', '一', '二', '三', '四', '五', '六']" :key="label">{{ label }}</text>
+      <view class="calendar-grid">
+        <view
+          v-for="(day, index) in calendarCells"
+          :key="index"
+          class="calendar-cell"
+          :class="{ 'calendar-trained': day && trainedDates.includes(cellDate(day)) }"
+        >
+          <text v-if="day">{{ day }}</text>
         </view>
-        <view class="calendar-grid">
-          <view
-            v-for="(day, index) in calendarCells"
-            :key="index"
-            class="calendar-cell"
-            :class="{ 'calendar-trained': day && trainedDates.includes(cellDate(day)) }"
-          >
-            <text v-if="day">{{ day }}</text>
-          </view>
-        </view>
-      </view>
-
-      <view class="fitness-section">
-        <text class="fitness-section-title">动作重量趋势</text>
-        <view class="fitness-chip-list plan-chips">
-          <button
-            v-for="plan in plans"
-            :key="plan.id"
-            class="fitness-chip"
-            :class="{ 'fitness-chip-active': selectedPlanId === plan.id }"
-            @click="selectPlan(plan.id)"
-          >
-            {{ plan.name }}
-          </button>
-        </view>
-        <view class="fitness-chip-list exercise-chips">
-          <button
-            v-for="exercise in exercises"
-            :key="exercise.id"
-            class="fitness-chip"
-            :class="{ 'fitness-chip-active': selectedExerciseId === exercise.id }"
-            @click="selectExercise(exercise.id)"
-          >
-            {{ exercise.name }}
-          </button>
-        </view>
-        <ProgressChart :points="progress?.points || []" />
-        <text v-if="progress?.points.length" class="fitness-meta">最近最大重量 {{ progress.points[progress.points.length - 1].maxWeight }} kg</text>
       </view>
     </view>
-  </view>
+
+    <view class="fitness-section">
+      <text class="fitness-section-title">动作重量趋势</text>
+      <FitnessChoiceChips class="plan-chips" :items="plans" :model-value="selectedPlanId" label="选择训练部位" @select="selectPlan" />
+      <FitnessChoiceChips class="exercise-chips" :items="exercises" :model-value="selectedExerciseId" label="选择训练动作" @select="selectExercise" />
+      <ProgressChart :points="progress?.points || []" />
+      <text v-if="progress?.points.length" class="fitness-meta">最近最大重量 {{ progress.points[progress.points.length - 1].maxWeight }} kg</text>
+    </view>
+  </FitnessPageShell>
 </template>
 
 <style scoped lang="scss">
-@import '@/modules/fitness/fitness.scss';
-
 .calendar-week,
 .calendar-grid {
   display: grid;

@@ -35,8 +35,6 @@ const emit = defineEmits<{ select: [] }>()
 </template>
 
 <style scoped lang="scss">
-@import '@/modules/fitness/fitness.scss';
-
 .plan-card {
   position: relative;
   display: flex;

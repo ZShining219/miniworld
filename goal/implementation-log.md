@@ -901,3 +901,24 @@
 - 部署后服务器记录 SHA 与仓库 HEAD 均为 `3264bbfb7511dad9787272bb638bf398aa33a9a4`；PostgreSQL、FastAPI、Caddy/H5 均为 `running/healthy`，内部健康检查返回 `ok`。
 - 生产数据只读计数在部署前后保持 4 个部位、2 个有效动作、1 个停用动作、3 次训练、8 个训练组；未通过生产 API 改动用户部位顺序。
 - 未认证根页面、Fitness API 和 docs 均返回 `401`；生产备份数量从 3 增至 4。
+
+## 2026-08-27 — T-027 Fitness 前端组件边界重构
+
+### 评估与边界
+- 抽取跨页面稳定且重复的展示职责：`FitnessPageShell`、`FitnessSectionHeader`、`ExerciseDefaultsFields`、`FitnessExerciseRow`、`WorkoutSetList`、`FitnessChoiceChips`、`FitnessPlanEditorRow` 和 `FitnessExerciseEditorRow`。
+- 首页日期、历史训练详情和统计日历属于单页语义，继续保留在对应页面；API、Store、训练状态、保存/归档编排和数据库均未进入展示组件。
+- 七个 Fitness 页面统一使用页面框架；部位页和进行中训练共用动作默认值表单与动作行；动作记录页共用训练组列表；统计页共用选择 chips；设置页计划/动作编辑行独立封装。
+- `FitnessPageShell` 统一加载 Fitness 全局设计样式，页面与子组件只保留自身 scoped 样式，避免组件拆分后重复复制整套 SCSS。
+
+### 可读性与数据安全
+- 设置页所有计划和动作字段明确显示“计划名称 / 动作名称 / 默认重量（kg）/ 默认次数（次）”；排序、保存、归档仍通过显式事件交给页面调用既有 API。
+- 展示组件不直接读取 API、不写 Store、不操作草稿或数据库；训练中追加动作、保存训练组、历史只读和部位排序语义保持不变。
+
+### 验证
+- `pnpm test:run`：11 个测试文件、47 项测试通过；新增 8 项组件契约测试，覆盖页面/区块标题、筛选状态、字段标签与数值回传、动作选择与独立停用事件、训练组格式、计划/动作编辑事件与排序边界。
+- `pnpm type-check`、限定 Fitness 页面/组件 ESLint、`pnpm build:h5` 和 `git diff --check` 通过。
+- 本地 H5 在 390×844 验证七个页面无横向溢出：首页 4 张部位卡、部位页 3 个动作、进行中训练 3 个动作并可展开管理、动作页 2 个步进器与训练组列表、统计 2 组选择器、历史 2 条记录、管理页 4 个计划与 3 个动作编辑器。
+- 管理页和训练中追加表单均显示完整字段标签；1440×900 下首页和管理页保持 680px 内容栏；浏览器控制台无 warning/error。
+
+### 发布状态
+- 本轮只做前端组件重构和本地验证；未修改后端/API/数据库，未 push，未部署生产。

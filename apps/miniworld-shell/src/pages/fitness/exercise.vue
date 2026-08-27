@@ -1,6 +1,9 @@
 <script lang="ts" setup>
 import type { ExerciseLog } from '@/modules/fitness'
+import FitnessPageShell from '@/modules/fitness/components/FitnessPageShell.vue'
+import FitnessSectionHeader from '@/modules/fitness/components/FitnessSectionHeader.vue'
 import NumberStepper from '@/modules/fitness/components/NumberStepper.vue'
+import WorkoutSetList from '@/modules/fitness/components/WorkoutSetList.vue'
 import {
   clearFitnessDraft,
   createRequestId,
@@ -73,70 +76,55 @@ async function completeSet() {
 </script>
 
 <template>
-  <view class="fitness-page pt-safe">
-    <view class="fitness-shell">
-      <view class="fitness-heading">
-        <text class="fitness-eyebrow">SET LOGGING</text>
-        <text class="fitness-title">{{ log?.exercise.name || '动作' }}</text>
-        <view class="fitness-row-between exercise-heading-meta">
-          <text class="fitness-subtitle">每组完成后立即保存到本地数据库，随时可以调整。</text>
-          <text class="exercise-set-count">{{ log?.currentSets.length || 0 }} 组</text>
-        </view>
+  <FitnessPageShell
+    eyebrow="SET LOGGING"
+    :title="log?.exercise.name || '动作'"
+    subtitle="每组完成后立即保存到本地数据库，随时可以调整。"
+  >
+    <template #heading>
+      <text class="fitness-title">{{ log?.exercise.name || '动作' }}</text>
+      <view class="fitness-row-between exercise-heading-meta">
+        <text class="fitness-subtitle">每组完成后立即保存到本地数据库，随时可以调整。</text>
+        <text class="exercise-set-count">{{ log?.currentSets.length || 0 }} 组</text>
       </view>
+    </template>
 
-      <view class="fitness-section">
-        <view class="fitness-row-between section-heading-row">
-          <view>
-            <text class="fitness-section-title">今天已完成</text>
-            <text class="fitness-meta">已保存的组只读保留，避免误操作清理训练数据</text>
-          </view>
+    <view class="fitness-section">
+      <FitnessSectionHeader title="今天已完成" subtitle="已保存的组只读保留，避免误操作清理训练数据">
+        <template #right>
           <text class="exercise-total-sets">{{ log?.currentSets.length || 0 }} 组</text>
-        </view>
-        <view v-if="log?.currentSets.length" class="completed-set-list">
-          <view v-for="set in log.currentSets" :key="set.id" class="set-line completed-set-line">
-            <text class="set-order">{{ String(set.setOrder).padStart(2, '0') }}</text>
-            <text class="set-value">{{ set.weight }} kg × {{ set.reps }} 次</text>
-          </view>
-        </view>
-        <text v-else class="fitness-empty compact-empty">完成第一组后会立即显示在这里；已保存记录只读保留。</text>
-      </view>
-
-      <view class="fitness-section current-section">
-        <view class="fitness-row-between section-heading-row">
-          <view>
-            <text class="fitness-section-title">当前调整</text>
-            <text class="fitness-meta">设置下一组的重量和次数</text>
-          </view>
-          <text class="current-marker">NEXT</text>
-        </view>
-        <view class="current-input-panel">
-          <NumberStepper v-model="weight" label="重量" unit="kg" :step="2.5" />
-          <NumberStepper v-model="reps" label="次数" unit="次" :step="1" />
-        </view>
-        <text v-if="error" class="fitness-error">{{ error }}</text>
-        <text v-if="savedNotice" class="saved-notice">{{ savedNotice }}</text>
-        <button class="fitness-primary" :disabled="saving || !log" @click="completeSet">
-          {{ saving ? '正在保存…' : '完成一组' }}
-        </button>
-      </view>
-
-      <view class="fitness-section previous-section">
-        <text class="fitness-section-title">上一次训练</text>
-        <view v-if="log?.previousSets.length">
-          <view v-for="set in log.previousSets" :key="set.id" class="set-line">
-            <text class="set-order">{{ String(set.setOrder).padStart(2, '0') }}</text>
-            <text>{{ set.weight }} kg × {{ set.reps }}</text>
-          </view>
-        </view>
-        <text v-else class="fitness-empty">还没有这个动作的历史记录。</text>
-      </view>
+        </template>
+      </FitnessSectionHeader>
+      <WorkoutSetList v-if="log?.currentSets.length" :sets="log.currentSets" show-reps-unit emphasized />
+      <text v-else class="fitness-empty compact-empty">完成第一组后会立即显示在这里；已保存记录只读保留。</text>
     </view>
-  </view>
+
+    <view class="fitness-section current-section">
+      <FitnessSectionHeader title="当前调整" subtitle="设置下一组的重量和次数">
+        <template #right>
+          <text class="current-marker">NEXT</text>
+        </template>
+      </FitnessSectionHeader>
+      <view class="current-input-panel">
+        <NumberStepper v-model="weight" label="重量" unit="kg" :step="2.5" />
+        <NumberStepper v-model="reps" label="次数" unit="次" :step="1" />
+      </view>
+      <text v-if="error" class="fitness-error">{{ error }}</text>
+      <text v-if="savedNotice" class="saved-notice">{{ savedNotice }}</text>
+      <button class="fitness-primary" :disabled="saving || !log" @click="completeSet">
+        {{ saving ? '正在保存…' : '完成一组' }}
+      </button>
+    </view>
+
+    <view class="fitness-section previous-section">
+      <text class="fitness-section-title">上一次训练</text>
+      <WorkoutSetList v-if="log?.previousSets.length" :sets="log.previousSets" />
+      <text v-else class="fitness-empty">还没有这个动作的历史记录。</text>
+    </view>
+  </FitnessPageShell>
 </template>
 
 <style scoped lang="scss">
-@import '@/modules/fitness/fitness.scss';
-
 .exercise-heading-meta {
   align-items: flex-end;
   gap: 16rpx;
@@ -153,25 +141,6 @@ async function completeSet() {
   font-family: Georgia, serif;
   font-size: 23rpx;
   font-weight: 700;
-}
-
-.section-heading-row {
-  align-items: flex-end;
-  margin-bottom: 18rpx;
-}
-
-.section-heading-row .fitness-section-title {
-  margin-bottom: 4rpx;
-}
-
-.completed-set-list {
-  border-top: 1rpx solid #d5d3cc;
-}
-
-.completed-set-line {
-  min-height: 82rpx;
-  border-top: 0;
-  border-bottom: 1rpx solid #d5d3cc;
 }
 
 .compact-empty {
@@ -228,37 +197,5 @@ async function completeSet() {
 
 .previous-section {
   padding-top: 30rpx;
-}
-
-.set-line {
-  display: grid;
-  grid-template-columns: 50rpx minmax(0, 1fr) 64rpx;
-  min-height: 72rpx;
-  align-items: center;
-  border-top: 1rpx solid #d5d3cc;
-  font-size: 25rpx;
-}
-
-.set-line:last-child {
-  border-bottom: 1rpx solid #d5d3cc;
-}
-
-.set-order {
-  color: #777a73;
-  font-family: Georgia, serif;
-}
-
-.set-value {
-  font-weight: 650;
-}
-
-.set-delete {
-  width: 56rpx;
-  height: 56rpx;
-  padding: 0;
-  border: 0;
-  color: #a43f2e;
-  background: transparent;
-  font-size: 32rpx;
 }
 </style>
