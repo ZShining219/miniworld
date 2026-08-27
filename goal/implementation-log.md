@@ -922,3 +922,18 @@
 
 ### 发布状态
 - 本地提交 `755b14de6577ce22911116bf5f87facd9140a9c1` 已形成；本轮只做前端组件重构和本地验证，未修改后端/API/数据库，未 push，未部署生产。
+
+## 2026-08-27 — T-028 Fitness 前端组件版生产发布
+
+### 发布前验证
+- `pnpm test:run`：11 个测试文件、47 项测试通过；`pnpm type-check`、限定 Fitness ESLint、`pnpm build:h5` 和生产部署契约检查通过。
+- `uv run pytest backend/tests/test_fitness.py -q`：6 passed，现有后端排序接口和历史保护继续通过。
+- 390×844 内置浏览器验收确认 4 张部位卡无数字编号、提示及可访问标签完整、轻点进入正确、无横向溢出且控制台无 warning/error。
+- 推送差异的文件范围、体积、secret/PII 与禁止文件类型检查通过。
+
+### Git 与部署
+- 前端重构提交 `755b14de6577ce22911116bf5f87facd9140a9c1` 及治理提交已推送，生产固定发布 SHA 为 `3d0e02a9c60d3743c308c91c56e1add431099bce`。
+- 部署脚本在切换前创建自动备份 `fitness-20260827T035941Z-3264bbfb7511.dump`，备份数从 5 增至 6。
+- 服务器记录 SHA 和仓库 HEAD 均为 `3d0e02a9c60d3743c308c91c56e1add431099bce`；PostgreSQL、FastAPI 和 Caddy/H5 均为 `running/healthy`。
+- 生产数据只读计数在发布前后保持 4 个部位、7 个有效动作、1 个停用动作、4 次训练和 8 个训练组；未通过生产 API 修改部位顺序或其他 Fitness 数据。
+- 未认证根页面、Fitness API 和 docs 均返回 `401`。

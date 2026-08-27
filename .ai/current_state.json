@@ -1,37 +1,14 @@
 {
   "schema_version": 1,
   "project_id": "miniworld",
-  "generated_at": "2026-08-27T11:55:00+08:00",
-  "summary_status": "fitness_frontend_release_in_progress",
+  "generated_at": "2026-08-27T12:01:12+08:00",
+  "summary_status": "fitness_frontend_production_deployed",
   "review_status": "reviewed",
   "checkpoint_id": null,
   "checkpoint_offsets": null,
-  "active_windows": {
-    "codex-fitness-frontend-release": {
-      "session_token": "A1054A55-6CF6-480C-A602-6DBB764FD4E0",
-      "task_id": "T-028",
-      "status": "in_progress"
-    }
-  },
-  "active_locks": [
-    {
-      "task_id": "T-028",
-      "window_id": "codex-fitness-frontend-release",
-      "lock_type": "exclusive",
-      "scope": [
-        ".ai/**",
-        "goal/implementation-log.md",
-        "Git governance commit and push",
-        "production backup, deployment and read-only verification"
-      ]
-    }
-  ],
-  "active_tasks": {
-    "T-028": {
-      "status": "in_progress",
-      "goal": "Publish and deploy the verified Fitness frontend HEAD, then perform read-only production verification."
-    }
-  },
+  "active_windows": {},
+  "active_locks": [],
+  "active_tasks": {},
   "open_issues": {},
   "key_logic": {
     "D-001": "Three independent demo loops: job distance, profile/resume, and daily/weekly work reports.",
@@ -78,12 +55,13 @@
     "T-024 fixes create and reorder conflicts with archived Fitness exercise sort orders; disposable regression tests passed and no history or production data was changed.",
     "T-025 deployed the order fix and repaired the production backup preflight at fixed SHA 80542f203d2637e39d353cc76f2cb0c550d331cd; automatic backup and unchanged data counts were verified.",
     "T-026 deployed reusable Fitness plan cards and rollback-safe long-press ordering at fixed SHA 3264bbfb7511dad9787272bb638bf398aa33a9a4; automatic backup, healthy services and unchanged production data counts were verified.",
-    "T-027 refactored all seven Fitness pages around shared presentation components at local commit 755b14de6577ce22911116bf5f87facd9140a9c1; 47 tests and responsive browser verification passed, with no push or production deployment."
+    "T-027 refactored all seven Fitness pages around shared presentation components at local commit 755b14de6577ce22911116bf5f87facd9140a9c1; 47 tests and responsive browser verification passed.",
+    "T-028 published and deployed the verified Fitness frontend at fixed SHA 3d0e02a9c60d3743c308c91c56e1add431099bce; automatic backup, healthy services, authentication boundaries and unchanged production counts were verified."
   ],
   "derived_from": {
-    "source": "T-028 Fitness frontend release claim and successful local regression at 2026-08-27T11:55:00+08:00.",
+    "source": "T-028 Fitness frontend production release completed and verified at 2026-08-27T12:01:12+08:00.",
     "pools": {
-      "task_pool.ndjson": 190,
+      "task_pool.ndjson": 193,
       "issue_pool.ndjson": 29,
       "logic_pool.ndjson": 25
     }
