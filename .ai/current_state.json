@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "project_id": "miniworld",
-  "generated_at": "2026-08-27T09:58:08+08:00",
-  "summary_status": "fitness_exercise_order_and_backup_preflight_fixed_production_deployed",
+  "generated_at": "2026-08-27T11:01:02+08:00",
+  "summary_status": "fitness_plan_drag_sort_production_deployed",
   "review_status": "reviewed",
   "checkpoint_id": null,
   "checkpoint_offsets": null,
@@ -33,7 +33,8 @@
     "D-020": "Use a minimal Tauri window capability set, persist only logical geometry, and keep scene/map data on configured localhost endpoints.",
     "D-021": "Preserve the jointly verified Phase 7.1 through 7.3 work as one truthful local checkpoint instead of creating synthetic historical splits.",
     "D-022": "Use a separate unibest/uni-app Vue 3 shell beside the existing React dashboard and Tauri Radar; verify Web now and defer WeChat and Android packaging.",
-    "D-023": "Implement Fitness as an independent uni-app module using the existing local FastAPI/PostgreSQL service as source of truth; use only a small cross-platform local draft cache for unsaved current inputs, and do not couple Fitness to Jobs, Profile/Resume, or Work Reporting."
+    "D-023": "Implement Fitness as an independent uni-app module using the existing local FastAPI/PostgreSQL service as source of truth; use only a small cross-platform local draft cache for unsaved current inputs, and do not couple Fitness to Jobs, Profile/Resume, or Work Reporting.",
+    "D-024": "Present Fitness body parts without sequence numbers; use whole-card short tap for entry and 350ms long-press drag ordering on the home page while retaining exercise ordering controls in settings."
   },
   "pending_review": [
     "Choose whether origin/codex/bootstrap-langgraph should become or merge into a future remote main branch",
@@ -51,14 +52,15 @@
     "T-022 deployed the frontend-only optimization at fixed SHA d5a56e4f3c7064b1e445965f12a153752dba8564; production API, database and web containers are healthy.",
     "T-023 removed saved-set deletion from the active logging view and deployed fixed SHA 7a5934db6a5d4382088cc3556c6719eace609edf.",
     "T-024 fixes create and reorder conflicts with archived Fitness exercise sort orders; disposable regression tests passed and no history or production data was changed.",
-    "T-025 deployed the order fix and repaired the production backup preflight at fixed SHA 80542f203d2637e39d353cc76f2cb0c550d331cd; automatic backup and unchanged data counts were verified."
+    "T-025 deployed the order fix and repaired the production backup preflight at fixed SHA 80542f203d2637e39d353cc76f2cb0c550d331cd; automatic backup and unchanged data counts were verified.",
+    "T-026 deployed reusable Fitness plan cards and rollback-safe long-press ordering at fixed SHA 3264bbfb7511dad9787272bb638bf398aa33a9a4; automatic backup, healthy services and unchanged production data counts were verified."
   ],
   "derived_from": {
-    "source": "T-025 Fitness order fix and production backup-preflight repair deployed and verified at 2026-08-27T09:58:08+08:00.",
+    "source": "T-026 Fitness plan card encapsulation and long-press ordering deployed and verified at 2026-08-27T11:01:02+08:00.",
     "pools": {
-      "task_pool.ndjson": 177,
-      "issue_pool.ndjson": 25,
-      "logic_pool.ndjson": 23
+      "task_pool.ndjson": 183,
+      "issue_pool.ndjson": 27,
+      "logic_pool.ndjson": 24
     }
   }
 }
