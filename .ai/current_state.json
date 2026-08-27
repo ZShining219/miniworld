@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "project_id": "miniworld",
-  "generated_at": "2026-08-27T09:27:05+08:00",
-  "summary_status": "fitness_exercise_order_bug_fixed_locally_awaiting_release",
+  "generated_at": "2026-08-27T09:58:08+08:00",
+  "summary_status": "fitness_exercise_order_and_backup_preflight_fixed_production_deployed",
   "review_status": "reviewed",
   "checkpoint_id": null,
   "checkpoint_offsets": null,
@@ -36,7 +36,6 @@
     "D-023": "Implement Fitness as an independent uni-app module using the existing local FastAPI/PostgreSQL service as source of truth; use only a small cross-platform local draft cache for unsaved current inputs, and do not couple Fitness to Jobs, Profile/Resume, or Work Reporting."
   },
   "pending_review": [
-    "Push the local runtime-registry checkpoint when a future remote write is requested",
     "Choose whether origin/codex/bootstrap-langgraph should become or merge into a future remote main branch",
     "Choose whether to create a release tag",
     "Android, WeChat Mini Program, optional remote Provider and real map/job-data phases"
@@ -51,13 +50,14 @@
     "T-021 makes active workout exercise management append-only and adds explicit save confirmation without backend changes.",
     "T-022 deployed the frontend-only optimization at fixed SHA d5a56e4f3c7064b1e445965f12a153752dba8564; production API, database and web containers are healthy.",
     "T-023 removed saved-set deletion from the active logging view and deployed fixed SHA 7a5934db6a5d4382088cc3556c6719eace609edf.",
-    "T-024 fixes create and reorder conflicts with archived Fitness exercise sort orders; disposable regression tests passed and no history or production data was changed."
+    "T-024 fixes create and reorder conflicts with archived Fitness exercise sort orders; disposable regression tests passed and no history or production data was changed.",
+    "T-025 deployed the order fix and repaired the production backup preflight at fixed SHA 80542f203d2637e39d353cc76f2cb0c550d331cd; automatic backup and unchanged data counts were verified."
   ],
   "derived_from": {
-    "source": "T-024 Fitness archived-exercise order conflict fixed and locally verified at 2026-08-27T09:27:05+08:00; release remains pending.",
+    "source": "T-025 Fitness order fix and production backup-preflight repair deployed and verified at 2026-08-27T09:58:08+08:00.",
     "pools": {
-      "task_pool.ndjson": 171,
-      "issue_pool.ndjson": 21,
+      "task_pool.ndjson": 177,
+      "issue_pool.ndjson": 25,
       "logic_pool.ndjson": 23
     }
   }
