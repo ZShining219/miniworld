@@ -17,6 +17,10 @@ compose_file="$repo/deploy/production/compose.yml"
 deployed_file=/srv/miniworld-deployed-sha
 previous_sha=$(cat "$deployed_file" 2>/dev/null || true)
 git_repo=(git -c "safe.directory=$repo" -C "$repo")
+running_sha=$target_sha
+if [[ $previous_sha =~ ^[0-9a-f]{40}$ ]]; then
+  running_sha=$previous_sha
+fi
 
 test -f "$env_file"
 test "$(stat -c '%a' "$env_file")" = 600
@@ -45,8 +49,9 @@ rollback() {
 }
 trap rollback EXIT
 
-if docker compose --env-file "$env_file" -f "$compose_file" ps -q db 2>/dev/null | grep -q .; then
-  RELEASE_SHA=${previous_sha:-$target_sha} PRODUCTION_ENV_FILE=$env_file \
+if RELEASE_SHA=$running_sha docker compose --env-file "$env_file" \
+  -f "$compose_file" ps -q db 2>/dev/null | grep -q .; then
+  RELEASE_SHA=$running_sha PRODUCTION_ENV_FILE=$env_file \
     "$repo/scripts/backup-production.sh"
 fi
 

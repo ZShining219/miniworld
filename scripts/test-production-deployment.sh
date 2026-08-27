@@ -14,5 +14,7 @@ grep -Fq "VITE_SERVER_BASEURL = '/fg-api'" apps/miniworld-shell/env/.env.product
 grep -Fq '@fitness_api path /fg-api/api/v1/fitness /fg-api/api/v1/fitness/*' deploy/production/Caddyfile
 grep -Fq '@blocked_api path /fg-api /fg-api/* /api /api/* /docs /docs/*' deploy/production/Caddyfile
 ! grep -Eq 'ports:.*(5432|8000)' deploy/production/compose.yml
+grep -Fq 'if RELEASE_SHA=$running_sha docker compose --env-file "$env_file"' scripts/deploy-production.sh
+grep -Fq 'RELEASE_SHA=$running_sha PRODUCTION_ENV_FILE=$env_file' scripts/deploy-production.sh
 
 echo "Production deployment static checks passed."
