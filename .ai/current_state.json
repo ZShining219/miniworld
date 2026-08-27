@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "project_id": "miniworld",
-  "generated_at": "2026-08-27T12:01:12+08:00",
-  "summary_status": "fitness_frontend_production_deployed",
+  "generated_at": "2026-08-27T12:42:03+08:00",
+  "summary_status": "fitness_mobile_render_fix_local_verified_pending_release",
   "review_status": "reviewed",
   "checkpoint_id": null,
   "checkpoint_offsets": null,
@@ -38,6 +38,7 @@
     "D-025": "Extract only stable repeated Fitness presentation contracts while keeping single-use page composition local and API/workflow orchestration in pages and Store."
   },
   "pending_review": [
+    "User confirmation to commit, push and deploy the T-029 Fitness mobile rendering fix",
     "Choose whether origin/codex/bootstrap-langgraph should become or merge into a future remote main branch",
     "Choose whether to create a release tag",
     "Android, WeChat Mini Program, optional remote Provider and real map/job-data phases"
@@ -56,13 +57,14 @@
     "T-025 deployed the order fix and repaired the production backup preflight at fixed SHA 80542f203d2637e39d353cc76f2cb0c550d331cd; automatic backup and unchanged data counts were verified.",
     "T-026 deployed reusable Fitness plan cards and rollback-safe long-press ordering at fixed SHA 3264bbfb7511dad9787272bb638bf398aa33a9a4; automatic backup, healthy services and unchanged production data counts were verified.",
     "T-027 refactored all seven Fitness pages around shared presentation components at local commit 755b14de6577ce22911116bf5f87facd9140a9c1; 47 tests and responsive browser verification passed.",
-    "T-028 published and deployed the verified Fitness frontend at fixed SHA 3d0e02a9c60d3743c308c91c56e1add431099bce; automatic backup, healthy services, authentication boundaries and unchanged production counts were verified."
+    "T-028 published and deployed the verified Fitness frontend at fixed SHA 3d0e02a9c60d3743c308c91c56e1add431099bce; automatic backup, healthy services, authentication boundaries and unchanged production counts were verified.",
+    "T-029 fixes the real-phone Fitness home layout locally; 360px and 390px browser regressions passed, but production remains on 3d0e02a until explicit release confirmation."
   ],
   "derived_from": {
-    "source": "T-028 Fitness frontend production release completed and verified at 2026-08-27T12:01:12+08:00.",
+    "source": "T-029 Fitness mobile rendering fix locally completed and verified at 2026-08-27T12:42:03+08:00; production release pending confirmation.",
     "pools": {
-      "task_pool.ndjson": 193,
-      "issue_pool.ndjson": 29,
+      "task_pool.ndjson": 198,
+      "issue_pool.ndjson": 31,
       "logic_pool.ndjson": 25
     }
   }

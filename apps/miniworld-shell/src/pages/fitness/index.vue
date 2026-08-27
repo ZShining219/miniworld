@@ -99,9 +99,9 @@ function openPage(path: 'history' | 'stats' | 'settings') {
       <text v-if="!store.state.loading && !store.state.plans.length" class="fitness-empty">还没有训练计划。</text>
     </view>
 
-    <view class="fitness-section fitness-row-between">
-      <text class="fitness-section-title">记录</text>
-      <view class="fitness-row" style="gap: 28rpx;">
+    <view class="fitness-section home-record-section">
+      <text class="fitness-section-title home-record-title">记录</text>
+      <view class="home-record-nav">
         <text class="fitness-link" @click="openPage('history')">历史</text>
         <text class="fitness-link" @click="openPage('stats')">统计</text>
         <text class="fitness-link" @click="openPage('settings')">管理</text>
@@ -151,5 +151,37 @@ function openPage(path: 'history' | 'stats' | 'settings') {
   color: #777a73;
   font-family: Georgia, serif;
   font-size: 20rpx;
+}
+
+.home-record-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24rpx;
+}
+
+.home-record-title {
+  flex: 0 0 auto;
+  margin-bottom: 0;
+}
+
+.home-record-nav {
+  display: flex;
+  min-width: 0;
+  flex: 1 1 auto;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 28rpx;
+  white-space: nowrap;
+}
+
+@media (max-width: 420px) {
+  .home-record-section {
+    gap: 16rpx;
+  }
+
+  .home-record-nav {
+    gap: 20rpx;
+  }
 }
 </style>

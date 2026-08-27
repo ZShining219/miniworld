@@ -18,7 +18,7 @@ const emit = defineEmits<{ select: [] }>()
     @click="emit('select')"
   >
     <view class="plan-card-accent" aria-hidden="true" />
-    <view class="fitness-list-copy">
+    <view class="fitness-list-copy plan-card-copy">
       <text class="fitness-list-title">{{ plan.name }}</text>
       <text class="fitness-meta">{{ plan.exerciseCount }} 个动作 · 点击查看并选择</text>
     </view>

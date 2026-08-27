@@ -1,22 +1,23 @@
 # Last Summary
 
 [Quick Link]
-- TASK: T-028 — Fitness frontend deployed and verified at `3d0e02a`
-- DECISION: D-025 — Extract stable presentation contracts; keep workflow orchestration in pages/store
-- ISSUE: ISS-012 — Refactor validation artifacts confirmed ignored and resolved
+- TASK: T-029 — Fitness 真实手机首页布局修复已在本地验证
+- ISSUE: ISS-013 — 窄屏记录导航与计划卡片挤压已修复
+- TASK: T-028 — 当前生产仍运行 `3d0e02a`
 
 [Current Focus]
-- Production runs fixed SHA `3d0e02a9c60d3743c308c91c56e1add431099bce` with rollback-safe plan-card drag ordering and the shared Fitness presentation components.
-- Automatic backup completed; PostgreSQL, FastAPI and Caddy/H5 are healthy, authentication boundaries passed and production Fitness counts were unchanged.
+- Fitness 首页记录导航和计划卡片的窄屏布局已修复；360px 与 390px H5 回归、47 项测试、TypeScript 和生产构建均通过。
+- 修复尚未 commit、push 或部署；生产仍运行 `3d0e02a9c60d3743c308c91c56e1add431099bce`。
 
 [Active Locks]
-- None after T-028 handoff.
+- None after T-029 handoff.
 
 [Open Issues]
-- None identified after the production release and read-only verification.
+- None in local implementation; production continues to exhibit the reported rendering until this patch is released.
 
 [Pending Review]
-- Physical-phone confirmation of long-press drag feel remains useful; automated touch tests cover conflicts and persistence.
+- User confirmation is required before committing, pushing and deploying the T-029 mobile rendering fix.
+- Physical-phone confirmation should be repeated after production release.
 
 [Next Step]
-- Use the production H5 on a physical phone to confirm the long-press feel; the implementation, persistence and rollback paths are already covered by automated tests.
+- After explicit user confirmation, commit and push the scoped patch, deploy the fixed SHA with automatic backup, then recheck the same phone layout.
