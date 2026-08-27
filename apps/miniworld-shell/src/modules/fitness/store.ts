@@ -2,6 +2,7 @@ import type { FitnessApi } from './api'
 import type { ExerciseLog, FitnessPlan, HistoryItem, SessionDetail } from './types'
 import { reactive } from 'vue'
 import { fitnessApi } from './api'
+import { hasSameOrder } from './components/planOrder'
 
 export function createFitnessStore(api: FitnessApi = fitnessApi) {
   const state = reactive<{
@@ -9,11 +10,13 @@ export function createFitnessStore(api: FitnessApi = fitnessApi) {
     activeSession: SessionDetail | null
     recentWorkout: HistoryItem | null
     loading: boolean
+    reorderingPlans: boolean
   }>({
     plans: [],
     activeSession: null,
     recentWorkout: null,
     loading: false,
+    reorderingPlans: false,
   })
 
   async function refreshHome() {
@@ -37,6 +40,32 @@ export function createFitnessStore(api: FitnessApi = fitnessApi) {
     const session = await api.startSession(planId)
     state.activeSession = session
     return session
+  }
+
+  async function reorderPlans(ids: string[]) {
+    const currentIds = state.plans.map(plan => plan.id)
+    if (state.reorderingPlans || hasSameOrder(currentIds, ids))
+      return false
+
+    const byId = new Map(state.plans.map(plan => [plan.id, plan]))
+    const reordered = ids.map(id => byId.get(id)).filter((plan): plan is FitnessPlan => Boolean(plan))
+    if (reordered.length !== state.plans.length)
+      return false
+
+    const previous = [...state.plans]
+    state.reorderingPlans = true
+    state.plans = reordered
+    try {
+      state.plans = await api.reorderPlans(ids)
+      return true
+    }
+    catch (error) {
+      state.plans = previous
+      throw error
+    }
+    finally {
+      state.reorderingPlans = false
+    }
   }
 
   async function loadSession(sessionId: string) {
@@ -65,7 +94,7 @@ export function createFitnessStore(api: FitnessApi = fitnessApi) {
     return set
   }
 
-  return { state, refreshHome, startSession, loadSession, finishSession, recordSet }
+  return { state, refreshHome, reorderPlans, startSession, loadSession, finishSession, recordSet }
 }
 
 const fitnessStore = createFitnessStore()

@@ -1,11 +1,13 @@
 <script lang="ts" setup>
 import type { FitnessPlan } from '@/modules/fitness'
 import { useFitnessStore } from '@/modules/fitness'
+import ReorderablePlanList from '@/modules/fitness/components/ReorderablePlanList.vue'
 
 definePage({ style: { navigationBarTitleText: '健身记录' } })
 
 const store = useFitnessStore()
 const error = ref('')
+const planList = ref<{ cancelDrag: () => void } | null>(null)
 
 onShow(async () => {
   error.value = ''
@@ -17,8 +19,20 @@ onShow(async () => {
   }
 })
 
+onHide(() => planList.value?.cancelDrag())
+
 function openPlan(plan: FitnessPlan) {
   uni.navigateTo({ url: `/pages/fitness/plan-preview?planId=${plan.id}` })
+}
+
+async function reorderPlans(ids: string[]) {
+  error.value = ''
+  try {
+    await store.reorderPlans(ids)
+  }
+  catch {
+    error.value = '排序保存失败，已恢复'
+  }
 }
 
 function continueWorkout() {
@@ -67,28 +81,17 @@ function openPage(path: 'history' | 'stats' | 'settings') {
         <view class="fitness-row-between section-heading-row">
           <view>
             <text class="fitness-section-title">训练部位</text>
-            <text class="fitness-meta">按今天的状态自由选择，不要求固定顺序</text>
+            <text class="fitness-meta">自由选择 · 长按拖动调整</text>
           </view>
           <text class="fitness-count">{{ store.state.plans.length }} 个</text>
         </view>
-        <view
-          v-for="plan in store.state.plans"
-          :key="plan.id"
-          class="plan-card"
-          @click="openPlan(plan)"
-        >
-          <view class="plan-card-index">
-            {{ String(plan.sortOrder + 1).padStart(2, '0') }}
-          </view>
-          <view class="fitness-list-copy">
-            <text class="fitness-list-title">{{ plan.name }}</text>
-            <text class="fitness-meta">{{ plan.exerciseCount }} 个动作 · 点击查看并选择</text>
-          </view>
-          <view class="plan-card-action">
-            <text class="plan-card-action-label">进入</text>
-            <text class="fitness-arrow">↗</text>
-          </view>
-        </view>
+        <ReorderablePlanList
+          ref="planList"
+          :plans="store.state.plans"
+          :disabled="store.state.reorderingPlans"
+          @select="openPlan"
+          @reorder="reorderPlans"
+        />
         <text v-if="!store.state.loading && !store.state.plans.length" class="fitness-empty">还没有训练计划。</text>
       </view>
 
@@ -160,46 +163,5 @@ function openPage(path: 'history' | 'stats' | 'settings') {
   color: #777a73;
   font-family: Georgia, serif;
   font-size: 20rpx;
-}
-
-.plan-card {
-  display: flex;
-  min-height: 132rpx;
-  align-items: center;
-  gap: 18rpx;
-  padding: 0 18rpx;
-  border-top: 1rpx solid #d5d3cc;
-  transition:
-    background-color 150ms ease,
-    transform 150ms ease;
-}
-
-.plan-card:last-child {
-  border-bottom: 1rpx solid #d5d3cc;
-}
-
-.plan-card:active {
-  background: #ebe9e2;
-  transform: translateX(4rpx);
-}
-
-.plan-card-index {
-  width: 54rpx;
-  color: #176b57;
-  font-family: Georgia, serif;
-  font-size: 24rpx;
-  font-weight: 700;
-}
-
-.plan-card-action {
-  display: flex;
-  align-items: center;
-  gap: 8rpx;
-  color: #cf533d;
-}
-
-.plan-card-action-label {
-  color: #777a73;
-  font-size: 18rpx;
 }
 </style>

@@ -96,15 +96,6 @@ function archiveExercise(exercise: FitnessExercise) {
   })
 }
 
-async function movePlan(index: number, direction: number) {
-  const target = index + direction
-  if (target < 0 || target >= plans.value.length)
-    return
-  const reordered = [...plans.value]
-  ;[reordered[index], reordered[target]] = [reordered[target], reordered[index]]
-  plans.value = await fitnessApi.reorderPlans(reordered.map(item => item.id))
-}
-
 async function moveExercise(index: number, direction: number) {
   const target = index + direction
   if (target < 0 || target >= exercises.value.length)
@@ -127,14 +118,8 @@ async function moveExercise(index: number, direction: number) {
 
       <view class="fitness-section">
         <text class="fitness-section-title">训练计划</text>
-        <view v-for="(plan, index) in plans" :key="plan.id" class="manage-row" :class="{ 'manage-selected': selectedPlanId === plan.id }">
+        <view v-for="plan in plans" :key="plan.id" class="manage-row" :class="{ 'manage-selected': selectedPlanId === plan.id }">
           <input v-model="plan.name" class="fitness-input manage-name" @focus="selectPlan(plan.id)">
-          <button class="fitness-icon-button" aria-label="上移" :disabled="index === 0" @click="movePlan(index, -1)">
-            ↑
-          </button>
-          <button class="fitness-icon-button" aria-label="下移" :disabled="index === plans.length - 1" @click="movePlan(index, 1)">
-            ↓
-          </button>
           <button class="fitness-secondary" @click="savePlan(plan)">
             保存
           </button>
@@ -202,7 +187,7 @@ async function moveExercise(index: number, direction: number) {
 }
 
 .manage-row {
-  grid-template-columns: minmax(0, 1fr) 66rpx 66rpx;
+  grid-template-columns: minmax(0, 1fr) auto auto;
 }
 
 .manage-row .fitness-secondary,
