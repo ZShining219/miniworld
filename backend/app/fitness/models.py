@@ -2,7 +2,15 @@ import uuid
 from datetime import date, datetime
 from decimal import Decimal
 
-from sqlalchemy import Column, DateTime, Index, Numeric, UniqueConstraint, text
+from sqlalchemy import (
+    CheckConstraint,
+    Column,
+    DateTime,
+    Index,
+    Numeric,
+    UniqueConstraint,
+    text,
+)
 from sqlmodel import Field, SQLModel
 
 from app.models import utc_now
@@ -29,6 +37,10 @@ class FitnessExercise(SQLModel, table=True):
     __tablename__ = "fitness_exercise"
     __table_args__ = (
         UniqueConstraint("plan_id", "sort_order", name="uq_fitness_exercise_order"),
+        CheckConstraint(
+            "weight_step IN (1.00, 2.00, 2.50, 5.00)",
+            name="ck_fitness_exercise_weight_step",
+        ),
     )
 
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
@@ -36,6 +48,12 @@ class FitnessExercise(SQLModel, table=True):
     name: str = Field(max_length=160)
     default_weight: Decimal = Field(
         default=Decimal("0"), sa_column=Column(Numeric(8, 2), nullable=False)
+    )
+    weight_step: Decimal = Field(
+        default=Decimal("2.5"),
+        sa_column=Column(
+            Numeric(4, 2), nullable=False, server_default=text("2.50")
+        ),
     )
     default_reps: int = Field(default=8)
     sort_order: int = Field(default=0)

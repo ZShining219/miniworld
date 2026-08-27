@@ -13,6 +13,7 @@ const exercise: FitnessExercise = {
   name: '杠铃卧推',
   defaultWeight: 80,
   defaultReps: 8,
+  weightStep: 2.5,
   sortOrder: 0,
   createdAt: '',
   updatedAt: '',

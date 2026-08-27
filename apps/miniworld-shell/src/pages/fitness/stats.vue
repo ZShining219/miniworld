@@ -3,7 +3,7 @@ import type { ExerciseProgress, FitnessExercise, FitnessPlan } from '@/modules/f
 import FitnessChoiceChips from '@/modules/fitness/components/FitnessChoiceChips.vue'
 import FitnessPageShell from '@/modules/fitness/components/FitnessPageShell.vue'
 import ProgressChart from '@/modules/fitness/components/ProgressChart.vue'
-import { fitnessApi } from '@/modules/fitness'
+import { fitnessApi, useFitnessWorkoutStatus } from '@/modules/fitness'
 
 definePage({ style: { navigationBarTitleText: '训练统计' } })
 
@@ -14,6 +14,7 @@ const selectedExerciseId = ref('')
 const trainedDates = ref<string[]>([])
 const progress = ref<ExerciseProgress | null>(null)
 const error = ref('')
+const { workoutStatus, workoutActionLabel, handleWorkoutAction } = useFitnessWorkoutStatus('other')
 
 const now = new Date()
 const year = now.getFullYear()
@@ -68,6 +69,9 @@ function cellDate(day: number) {
     title="训练统计"
     subtitle="打卡按已结束训练计算；趋势显示每次训练的最大重量。"
     :error="error"
+    :workout-status="workoutStatus"
+    :workout-action-label="workoutActionLabel"
+    @workout-action="handleWorkoutAction"
   >
     <view class="fitness-section">
       <text class="fitness-section-title">{{ year }} 年 {{ month + 1 }} 月</text>

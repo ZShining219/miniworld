@@ -951,3 +951,36 @@
 - 限定前端 ESLint 和 `git diff --check` 通过。
 - 390×844 与 360×800 H5 浏览器回归确认记录导航保持同一行；360px 下 `scrollWidth=innerWidth=360`，控制台无 warning/error。
 - 修复已提交为 `7ccb86e`，尚未 push 或部署；线上仍运行 `3d0e02a9c60d3743c308c91c56e1add431099bce`，需用户明确确认生产发布。
+
+## 2026-08-27 — T-031 Fitness 训练中交互增强
+
+### 数据库
+- 新增 Alembic migration `20260827_0004_fitness_weight_step.py`，为 `fitness_exercise` 增加 `NUMERIC(4,2) NOT NULL DEFAULT 2.50` 的 `weight_step`，并限制为 `1 / 2 / 2.5 / 5`。
+- SQLite 与 PostgreSQL 共用同一模型约束；一次性 SQLite 迁移验证确认旧动作回填 `2.5`、档位 `3` 被拒绝、downgrade 删除字段。
+- Session、Set 和历史表未改动；档位不写入 Set 快照，历史重量仍以 Set 实际值为准。
+
+### 后端
+- `backend/app/fitness/` 继续独立封装 Fitness；`FitnessExercise` 模型及 Create/Update/Public schema 新增 `weightStep`，创建默认 `2.5`，非法档位返回 `422`。
+- 复用现有动作更新接口持久化档位；SessionDetail 与 ExerciseLog 内的动作对象自动返回 `weightStep`。
+- Session、Set、历史、统计 API 和单 Active Session 约束均未改变。
+
+### 前端
+- 七个 Fitness H5 页面统一使用训练状态条，展示今日训练中、跨日未结束、今日已完成或今日未开始；首页旧的重复继续区块已移除。
+- 动作页新增同部位横向动作条，按计划顺序显示“今日 X 组”，使用 `redirectTo` 切换并在 Set/档位保存期间禁用。
+- 重量组件支持 `0–9999`、最多两位小数的手动输入，以及竖排 `1 / 2 / 2.5 / 5` 档位；加减采用整数化计算，次数组件继续使用固定步长 `1`。
+- 每个动作的未提交草稿独立保留重量、次数和失败请求 ID；同一幂等请求的返回 Set 不会在本地列表和计数重复追加。
+
+### 业务逻辑
+- 同部位动作可任意交替训练；切换只替换当前页面，不结束 Session、不创建 Set。
+- Active Session 优先于今日已完成状态；跨日 Active Session 明确标记为未结束旧训练。
+- 完成一组后同步当前动作、横向动作条、Session 总组数和全局状态条；档位保存失败时回滚 UI，不影响已保存 Set。
+
+### 验证结果
+- `uv run pytest backend/tests -q`：`28 passed`；Fitness 定向测试 `6 passed`。
+- Fitness Ruff 与 Mypy 通过；`pnpm test:run`：13 个文件、`62 passed`；TypeScript、Fitness ESLint 和 H5 production build 通过。
+- 360×800、390×844 与桌面视口验证七个 Fitness 页面无横向溢出、无控制台错误；档位触控区约 `45.75 × 44.64px`，手动输入 `82.25`、`1 kg` 档位的 `75 → 76` 和跨动作草稿恢复均通过。
+- 浏览器验收未新增 Set，动作档位已恢复为 `2.5`；本地正式训练记录未被测试改写。
+
+### 未完成事项
+- 本轮只完成 H5 实现与本地验收；Android 和微信小程序仍只具备结构兼容性。
+- 未 push、未部署生产；真实手机复测需在用户另行授权发布后进行。

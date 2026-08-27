@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import type { SessionDetail } from '@/modules/fitness'
-import { fitnessApi, useFitnessStore } from '@/modules/fitness'
+import { fitnessApi, useFitnessStore, useFitnessWorkoutStatus } from '@/modules/fitness'
 import ExerciseDefaultsFields from '@/modules/fitness/components/ExerciseDefaultsFields.vue'
 import FitnessExerciseRow from '@/modules/fitness/components/FitnessExerciseRow.vue'
 import FitnessPageShell from '@/modules/fitness/components/FitnessPageShell.vue'
@@ -18,6 +18,7 @@ const adding = ref(false)
 const newExerciseName = ref('')
 const newExerciseWeight = ref(0)
 const newExerciseReps = ref(8)
+const { workoutStatus, workoutActionLabel, handleWorkoutAction } = useFitnessWorkoutStatus('plan')
 
 onLoad((query) => {
   sessionId.value = String(query?.sessionId || '')
@@ -92,6 +93,9 @@ function requestFinish() {
     :subtitle="`已完成 ${session?.totalSetCount || 0} 组。可按任意顺序选择动作。`"
     :error="error"
     compact-heading
+    :workout-status="workoutStatus"
+    :workout-action-label="workoutActionLabel"
+    @workout-action="handleWorkoutAction"
   >
     <template #heading>
       <text class="fitness-title">{{ session?.planNameSnapshot || '训练' }}</text>

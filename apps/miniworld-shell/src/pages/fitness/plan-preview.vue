@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import type { FitnessExercise, FitnessPlan } from '@/modules/fitness'
-import { fitnessApi, useFitnessStore } from '@/modules/fitness'
+import { fitnessApi, useFitnessStore, useFitnessWorkoutStatus } from '@/modules/fitness'
 import ExerciseDefaultsFields from '@/modules/fitness/components/ExerciseDefaultsFields.vue'
 import FitnessExerciseRow from '@/modules/fitness/components/FitnessExerciseRow.vue'
 import FitnessPageShell from '@/modules/fitness/components/FitnessPageShell.vue'
@@ -18,6 +18,7 @@ const newExerciseReps = ref(8)
 const loading = ref(true)
 const saving = ref(false)
 const error = ref('')
+const { workoutStatus, workoutActionLabel, handleWorkoutAction } = useFitnessWorkoutStatus('other')
 
 onLoad((query) => {
   planId.value = String(query?.planId || '')
@@ -128,7 +129,10 @@ function removeExercise(exercise: FitnessExercise) {
     :title="plan?.name || '训练部位'"
     subtitle="自由选择动作，准备好后再开始今天的训练。"
     :error="error"
+    :workout-status="workoutStatus"
+    :workout-action-label="workoutActionLabel"
     compact-heading
+    @workout-action="handleWorkoutAction"
   >
     <template #heading>
       <view class="fitness-row-between preview-title-row">

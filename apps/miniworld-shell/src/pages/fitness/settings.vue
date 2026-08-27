@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import type { FitnessExercise, FitnessPlan } from '@/modules/fitness'
-import { fitnessApi } from '@/modules/fitness'
+import { fitnessApi, useFitnessWorkoutStatus } from '@/modules/fitness'
 import ExerciseDefaultsFields from '@/modules/fitness/components/ExerciseDefaultsFields.vue'
 import FitnessExerciseEditorRow from '@/modules/fitness/components/FitnessExerciseEditorRow.vue'
 import FitnessPageShell from '@/modules/fitness/components/FitnessPageShell.vue'
@@ -16,6 +16,7 @@ const newExerciseName = ref('')
 const newExerciseWeight = ref(0)
 const newExerciseReps = ref(8)
 const error = ref('')
+const { workoutStatus, workoutActionLabel, handleWorkoutAction } = useFitnessWorkoutStatus('other')
 
 onLoad(() => loadPlans())
 
@@ -116,6 +117,9 @@ async function moveExercise(index: number, direction: number) {
     title="计划与动作"
     subtitle="归档只影响今后的计划，过去的训练不会被删除。"
     :error="error"
+    :workout-status="workoutStatus"
+    :workout-action-label="workoutActionLabel"
+    @workout-action="handleWorkoutAction"
   >
     <view class="fitness-section">
       <text class="fitness-section-title">训练计划</text>

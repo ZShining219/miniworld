@@ -1,4 +1,4 @@
-import type { ExerciseLog, FitnessPlan, SessionDetail } from './types'
+import type { ExerciseLog, FitnessExercise, FitnessPlan, SessionDetail } from './types'
 import { describe, expect, it, vi } from 'vitest'
 import { createFitnessStore } from './store'
 
@@ -20,6 +20,18 @@ const plans: FitnessPlan[] = [
   { ...plan, id: 'plan-4', name: '臀腿', sortOrder: 3 },
 ]
 
+const exercise: FitnessExercise = {
+  id: 'exercise-1',
+  planId: plan.id,
+  name: '杠铃卧推',
+  defaultWeight: 80,
+  defaultReps: 8,
+  weightStep: 2.5,
+  sortOrder: 0,
+  createdAt: '',
+  updatedAt: '',
+}
+
 const session: SessionDetail = {
   id: 'session-1',
   planId: plan.id,
@@ -29,7 +41,7 @@ const session: SessionDetail = {
   startedAt: '',
   finishedAt: null,
   resumed: false,
-  exercises: [],
+  exercises: [{ exercise, completedSetCount: 0 }],
   totalSetCount: 0,
 }
 
@@ -66,19 +78,25 @@ describe('fitness store', () => {
     await store.refreshHome()
     expect(store.state.plans).toEqual(plans)
     expect(store.state.activeSession?.id).toBe(session.id)
+    expect(store.state.workoutStatus?.state).toBe('UNFINISHED_PREVIOUS_DAY')
   })
 
   it('only appends a set after the API persisted it', async () => {
     const api = mockApi()
-    const log = { session, exercise: { id: 'exercise-1' }, currentSets: [] } as unknown as ExerciseLog
+    const log = { session, exercise, currentSets: [] } as unknown as ExerciseLog
     api.addSet.mockRejectedValueOnce(new Error('offline'))
     const store = createFitnessStore(api)
     await expect(store.recordSet(log, 80, 8, 'request-1')).rejects.toThrow('offline')
     expect(log.currentSets).toHaveLength(0)
 
-    api.addSet.mockResolvedValueOnce({ id: 'set-1', weight: 80, reps: 8 })
+    api.addSet.mockResolvedValue({ id: 'set-1', weight: 80, reps: 8 })
+    await store.startSession(plan.id)
+    await store.recordSet(log, 80, 8, 'request-2')
     await store.recordSet(log, 80, 8, 'request-2')
     expect(log.currentSets).toHaveLength(1)
+    expect(store.state.activeSession?.totalSetCount).toBe(1)
+    expect(store.state.activeSession?.exercises[0].completedSetCount).toBe(1)
+    expect(store.state.workoutStatus?.totalSetCount).toBe(1)
   })
 
   it('clears active state after finishing the session', async () => {
@@ -88,6 +106,7 @@ describe('fitness store', () => {
     expect(store.state.activeSession?.id).toBe(session.id)
     await store.finishSession(session.id)
     expect(store.state.activeSession).toBeNull()
+    expect(store.state.workoutStatus?.state).toBe('NOT_STARTED')
   })
 
   it('optimistically reorders plans and accepts the persisted response', async () => {

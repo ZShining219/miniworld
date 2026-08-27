@@ -153,6 +153,7 @@ def create_exercise(db: Session, payload: ExerciseCreate) -> ExercisePublic:
         name=payload.name.strip(),
         default_weight=Decimal(str(payload.default_weight)),
         default_reps=payload.default_reps,
+        weight_step=Decimal(str(payload.weight_step)),
         sort_order=sort_order,
     )
     db.add(exercise)
@@ -176,6 +177,8 @@ def update_exercise(
         values["name"] = values["name"].strip()
     if "default_weight" in values:
         values["default_weight"] = Decimal(str(values["default_weight"]))
+    if "weight_step" in values:
+        values["weight_step"] = Decimal(str(values["weight_step"]))
     for key, value in values.items():
         setattr(exercise, key, value)
     exercise.updated_at = _now()

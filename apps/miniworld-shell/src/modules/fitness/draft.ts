@@ -4,7 +4,11 @@ const key = (exerciseId: string) => `miniworld-fitness-draft-v2:${exerciseId}`
 
 export function loadFitnessDraft(exerciseId: string): FitnessDraft | null {
   const value = uni.getStorageSync(key(exerciseId)) as FitnessDraft | null
-  return value && Number.isFinite(value.weight) && Number.isFinite(value.reps) ? value : null
+  if (!value || !Number.isFinite(value.weight) || !Number.isFinite(value.reps))
+    return null
+  if (value.clientRequestId !== undefined && typeof value.clientRequestId !== 'string')
+    return null
+  return value
 }
 
 export function saveFitnessDraft(exerciseId: string, draft: FitnessDraft) {

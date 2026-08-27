@@ -33,6 +33,27 @@ describe('fitness presentation primitives', () => {
     expect(wrapper.get('.manage').text()).toBe('管理')
   })
 
+  it('surfaces the active workout before page content and emits its action', async () => {
+    const wrapper = mount(FitnessPageShell, {
+      props: {
+        eyebrow: 'FITNESS HISTORY',
+        title: '训练历史',
+        workoutStatus: {
+          state: 'ACTIVE_TODAY',
+          sessionId: 'session-1',
+          planName: '胸',
+          workoutDate: '2026-08-27',
+          totalSetCount: 4,
+        },
+        workoutActionLabel: '继续训练',
+      },
+    })
+    expect(wrapper.get('.workout-status-label').text()).toBe('今日训练进行中')
+    expect(wrapper.get('.workout-status-detail').text()).toBe('胸 · 4 组')
+    await wrapper.get('.workout-status-action').trigger('click')
+    expect(wrapper.emitted('workoutAction')).toEqual([['ACTIVE_TODAY']])
+  })
+
   it('emits the selected chip id and exposes its pressed state', async () => {
     const wrapper = mount(FitnessChoiceChips, {
       props: {

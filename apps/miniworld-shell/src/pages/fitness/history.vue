@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import type { HistoryItem } from '@/modules/fitness'
-import { fitnessApi } from '@/modules/fitness'
+import { fitnessApi, useFitnessWorkoutStatus } from '@/modules/fitness'
 import FitnessPageShell from '@/modules/fitness/components/FitnessPageShell.vue'
 
 definePage({ style: { navigationBarTitleText: '训练历史' } })
@@ -8,6 +8,7 @@ definePage({ style: { navigationBarTitleText: '训练历史' } })
 const items = ref<HistoryItem[]>([])
 const loading = ref(true)
 const error = ref('')
+const { workoutStatus, workoutActionLabel, handleWorkoutAction } = useFitnessWorkoutStatus('history')
 
 onShow(async () => {
   loading.value = true
@@ -34,6 +35,9 @@ function duration(seconds: number) {
     title="训练历史"
     subtitle="这里只统计已经结束的训练。"
     :error="error"
+    :workout-status="workoutStatus"
+    :workout-action-label="workoutActionLabel"
+    @workout-action="handleWorkoutAction"
   >
     <text v-if="loading" class="fitness-empty">正在读取…</text>
     <text v-else-if="!items.length" class="fitness-empty">完成第一次训练后，记录会出现在这里。</text>

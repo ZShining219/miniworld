@@ -15,9 +15,14 @@ describe('fitness draft', () => {
   })
 
   it('restores and clears a valid draft', () => {
-    vi.mocked(uni.getStorageSync).mockReturnValue({ weight: 75, reps: 10 })
-    expect(loadFitnessDraft('exercise-1')).toEqual({ weight: 75, reps: 10 })
+    vi.mocked(uni.getStorageSync).mockReturnValue({ weight: 75, reps: 10, clientRequestId: 'request-retry-1' })
+    expect(loadFitnessDraft('exercise-1')).toEqual({ weight: 75, reps: 10, clientRequestId: 'request-retry-1' })
     clearFitnessDraft('exercise-1')
     expect(uni.removeStorageSync).toHaveBeenCalledWith('miniworld-fitness-draft-v2:exercise-1')
+  })
+
+  it('rejects a malformed persisted request id', () => {
+    vi.mocked(uni.getStorageSync).mockReturnValue({ weight: 75, reps: 10, clientRequestId: 123 })
+    expect(loadFitnessDraft('exercise-1')).toBeNull()
   })
 })

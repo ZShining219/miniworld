@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import type { FitnessPlan } from '@/modules/fitness'
-import { useFitnessStore } from '@/modules/fitness'
+import { useFitnessStore, useFitnessWorkoutStatus } from '@/modules/fitness'
 import FitnessPageShell from '@/modules/fitness/components/FitnessPageShell.vue'
 import ReorderablePlanList from '@/modules/fitness/components/ReorderablePlanList.vue'
 import FitnessSectionHeader from '@/modules/fitness/components/FitnessSectionHeader.vue'
@@ -10,6 +10,7 @@ definePage({ style: { navigationBarTitleText: '健身记录' } })
 const store = useFitnessStore()
 const error = ref('')
 const planList = ref<{ cancelDrag: () => void } | null>(null)
+const { workoutStatus, workoutActionLabel, handleWorkoutAction } = useFitnessWorkoutStatus('index', false)
 
 onShow(async () => {
   error.value = ''
@@ -37,11 +38,6 @@ async function reorderPlans(ids: string[]) {
   }
 }
 
-function continueWorkout() {
-  if (store.state.activeSession)
-    uni.navigateTo({ url: `/pages/fitness/plan?sessionId=${store.state.activeSession.id}` })
-}
-
 function openPage(path: 'history' | 'stats' | 'settings') {
   uni.navigateTo({ url: `/pages/fitness/${path}` })
 }
@@ -54,6 +50,9 @@ function openPage(path: 'history' | 'stats' | 'settings') {
     subtitle="选择一个部位开始，训练过程中每一组都会立即保存。"
     :error="error"
     compact-heading
+    :workout-status="workoutStatus"
+    :workout-action-label="workoutActionLabel"
+    @workout-action="handleWorkoutAction"
   >
     <template #heading>
       <view>
@@ -69,19 +68,6 @@ function openPage(path: 'history' | 'stats' | 'settings') {
         <text class="fitness-subtitle">选择一个部位开始，训练过程中每一组都会立即保存。</text>
       </view>
     </template>
-
-    <view v-if="store.state.activeSession" class="fitness-section">
-      <view class="fitness-active" @click="continueWorkout">
-        <view class="fitness-row-between">
-          <view>
-            <text class="fitness-eyebrow">继续未结束训练</text>
-            <text class="fitness-list-title">{{ store.state.activeSession.planNameSnapshot }}</text>
-            <text class="fitness-meta">已完成 {{ store.state.activeSession.totalSetCount }} 组</text>
-          </view>
-          <text class="fitness-arrow">→</text>
-        </view>
-      </view>
-    </view>
 
     <view class="fitness-section plan-section">
       <FitnessSectionHeader title="训练部位" subtitle="自由选择 · 长按拖动调整" roomy>

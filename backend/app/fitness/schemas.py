@@ -1,7 +1,9 @@
 import uuid
 from datetime import date, datetime
+from decimal import Decimal
+from typing import Annotated
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, BeforeValidator, ConfigDict, Field
 from pydantic.alias_generators import to_camel
 
 
@@ -11,6 +13,24 @@ class FitnessModel(BaseModel):
         alias_generator=to_camel,
         populate_by_name=True,
     )
+
+
+def _weight_step(value: object) -> float:
+    try:
+        normalized = Decimal(str(value))
+    except Exception as error:
+        raise ValueError("weightStep must be one of 1, 2, 2.5, 5") from error
+    if normalized not in {
+        Decimal("1"),
+        Decimal("2"),
+        Decimal("2.5"),
+        Decimal("5"),
+    }:
+        raise ValueError("weightStep must be one of 1, 2, 2.5, 5")
+    return float(normalized)
+
+
+WeightStep = Annotated[float, BeforeValidator(_weight_step)]
 
 
 class PlanCreate(FitnessModel):
@@ -41,6 +61,7 @@ class ExerciseCreate(FitnessModel):
     name: str = Field(min_length=1, max_length=160)
     default_weight: float = Field(default=0, ge=0, le=9999)
     default_reps: int = Field(default=8, ge=0, le=999)
+    weight_step: WeightStep = 2.5
     sort_order: int | None = Field(default=None, ge=0)
 
 
@@ -48,6 +69,7 @@ class ExerciseUpdate(FitnessModel):
     name: str | None = Field(default=None, min_length=1, max_length=160)
     default_weight: float | None = Field(default=None, ge=0, le=9999)
     default_reps: int | None = Field(default=None, ge=0, le=999)
+    weight_step: WeightStep | None = None
     sort_order: int | None = Field(default=None, ge=0)
 
 
@@ -57,6 +79,7 @@ class ExercisePublic(FitnessModel):
     name: str
     default_weight: float
     default_reps: int
+    weight_step: WeightStep
     sort_order: int
     created_at: datetime
     updated_at: datetime

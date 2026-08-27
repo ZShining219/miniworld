@@ -45,6 +45,7 @@
 | T-020 | Accepted | 使用独立 unibest/uni-app 工程建立多端系统壳，保留现有 React 看板和 Tauri Radar；本轮只完成 Web | 用户选择 unibest 并明确暂不考虑微信小程序构建；独立目录避免 Vue 工具链覆盖已验证资产，Android 只保留最小权限入口，出包暂缓 |
 | T-021 | Accepted | Fitness 作为独立辅助工具接入 unibest 首页，正式数据复用本地 PostgreSQL，后端封装在独立 Fitness 包 | 跨端历史必须有统一正式数据源；独立包和 `/api/v1/fitness/*` 路由能避免侵入 Jobs、Profile/Resume、Work、LangGraph 与模型 Provider |
 | T-022 | Accepted | Fitness 首版生产使用单机 Docker Compose、Caddy HTTPS/Basic Auth、FastAPI 和 PostgreSQL，固定 Git SHA 发布 | 用户要求次日开始手机使用；公网只允许 H5 与 `/api/v1/fitness/*`，Worker、React、Radar、其他 API、文档和远端模型不启动或不转发；生产库上线后成为训练记录唯一正式数据源 |
+| T-023 | Accepted | Fitness 训练中允许在同部位动作间任意切换；重量支持手动输入和按动作持久化的 `1 / 2 / 2.5 / 5 kg` 档位；所有 Fitness 页面统一显示当日训练状态 | 用户 2026-08-27 明确确认完整实施计划；切换不结束 Session 或自动创建 Set，未提交草稿按动作隔离，正式 Set 与历史仍以 PostgreSQL 为准，单 Active Session 规则不变 |
 
 ## 尚未锁定但已明确不阻塞 Demo
 

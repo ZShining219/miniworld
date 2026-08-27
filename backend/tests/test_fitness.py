@@ -21,6 +21,7 @@ def test_fitness_demo_seed_and_plan_exercise_crud(client: TestClient) -> None:
         "杠铃卧推",
         "上斜哑铃卧推",
     ]
+    assert [item["weightStep"] for item in chest_exercises] == [2.5, 2.5]
 
     plan = client.post("/api/v1/fitness/plans", json={"name": "核心"})
     assert plan.status_code == 201
@@ -40,6 +41,19 @@ def test_fitness_demo_seed_and_plan_exercise_crud(client: TestClient) -> None:
     )
     assert updated.json()["name"] == "负重平板支撑"
     assert updated.json()["defaultWeight"] == 10
+    assert updated.json()["weightStep"] == 2.5
+
+    updated_step = client.patch(
+        f"/api/v1/fitness/exercises/{exercise.json()['id']}",
+        json={"weightStep": 1},
+    )
+    assert updated_step.status_code == 200
+    assert updated_step.json()["weightStep"] == 1
+    invalid_step = client.patch(
+        f"/api/v1/fitness/exercises/{exercise.json()['id']}",
+        json={"weightStep": 3},
+    )
+    assert invalid_step.status_code == 422
 
     reordered_plans = client.put(
         "/api/v1/fitness/plans/order",
@@ -113,6 +127,7 @@ def test_sets_are_immediate_ordered_and_idempotent(client: TestClient) -> None:
         f"/api/v1/fitness/sessions/{workout['id']}/exercises/{bench_id}"
     ).json()
     assert len(log["currentSets"]) == 3
+    assert log["exercise"]["weightStep"] == 2.5
 
 
 def test_completed_workout_populates_history_calendar_progress_and_last_sets(

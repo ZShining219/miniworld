@@ -1,20 +1,35 @@
 <script setup lang="ts">
+import type { FitnessWorkoutStatus, WorkoutStatusState } from '@/modules/fitness'
+import FitnessWorkoutStatusBar from './FitnessWorkoutStatusBar.vue'
+
 withDefaults(defineProps<{
   eyebrow: string
   title: string
   subtitle?: string
   error?: string
   compactHeading?: boolean
+  workoutStatus?: FitnessWorkoutStatus | null
+  workoutActionLabel?: string
 }>(), {
   subtitle: '',
   error: '',
   compactHeading: false,
+  workoutStatus: null,
+  workoutActionLabel: '',
 })
+
+const emit = defineEmits<{ workoutAction: [state: WorkoutStatusState] }>()
 </script>
 
 <template>
   <view class="fitness-page pt-safe">
     <view class="fitness-shell">
+      <FitnessWorkoutStatusBar
+        v-if="workoutStatus"
+        :status="workoutStatus"
+        :action-label="workoutActionLabel"
+        @action="emit('workoutAction', $event)"
+      />
       <view class="fitness-heading" :class="{ 'fitness-heading-compact': compactHeading }">
         <text class="fitness-eyebrow">{{ eyebrow }}</text>
         <slot name="heading">

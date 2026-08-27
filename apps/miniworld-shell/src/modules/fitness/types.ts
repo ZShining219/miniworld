@@ -15,6 +15,7 @@ export interface FitnessExercise {
   name: string
   defaultWeight: number
   defaultReps: number
+  weightStep: number
   sortOrder: number
   createdAt: string
   updatedAt: string
@@ -94,4 +95,15 @@ export interface ExerciseProgress {
 export interface FitnessDraft {
   weight: number
   reps: number
+  clientRequestId?: string
+}
+
+export type WorkoutStatusState = 'ACTIVE_TODAY' | 'UNFINISHED_PREVIOUS_DAY' | 'COMPLETED_TODAY' | 'NOT_STARTED'
+
+export interface FitnessWorkoutStatus {
+  state: WorkoutStatusState
+  sessionId: string | null
+  planName: string | null
+  workoutDate: string | null
+  totalSetCount: number
 }

@@ -1,20 +1,23 @@
 import type { FitnessApi } from './api'
-import type { ExerciseLog, FitnessPlan, HistoryItem, SessionDetail } from './types'
+import type { ExerciseLog, FitnessPlan, FitnessWorkoutStatus, HistoryItem, SessionDetail } from './types'
 import { reactive } from 'vue'
 import { fitnessApi } from './api'
 import { hasSameOrder } from './components/planOrder'
+import { deriveWorkoutStatus, localDateKey } from './workoutStatus'
 
 export function createFitnessStore(api: FitnessApi = fitnessApi) {
   const state = reactive<{
     plans: FitnessPlan[]
     activeSession: SessionDetail | null
     recentWorkout: HistoryItem | null
+    workoutStatus: FitnessWorkoutStatus | null
     loading: boolean
     reorderingPlans: boolean
   }>({
     plans: [],
     activeSession: null,
     recentWorkout: null,
+    workoutStatus: null,
     loading: false,
     reorderingPlans: false,
   })
@@ -30,15 +33,28 @@ export function createFitnessStore(api: FitnessApi = fitnessApi) {
       state.plans = plans
       state.activeSession = active
       state.recentWorkout = history[0] || null
+      state.workoutStatus = deriveWorkoutStatus(active, state.recentWorkout)
     }
     finally {
       state.loading = false
     }
   }
 
+  async function refreshWorkoutStatus() {
+    const [active, history] = await Promise.all([
+      api.getActiveSession(),
+      api.history(1),
+    ])
+    state.activeSession = active
+    state.recentWorkout = history[0] || null
+    state.workoutStatus = deriveWorkoutStatus(active, state.recentWorkout)
+    return state.workoutStatus
+  }
+
   async function startSession(planId: string) {
     const session = await api.startSession(planId)
     state.activeSession = session
+    state.workoutStatus = deriveWorkoutStatus(session, state.recentWorkout)
     return session
   }
 
@@ -72,12 +88,23 @@ export function createFitnessStore(api: FitnessApi = fitnessApi) {
     const session = await api.getSession(sessionId)
     if (session.status === 'ACTIVE')
       state.activeSession = session
+    if (session.status === 'ACTIVE')
+      state.workoutStatus = deriveWorkoutStatus(session, state.recentWorkout)
     return session
   }
 
   async function finishSession(sessionId: string) {
     const session = await api.finishSession(sessionId)
     state.activeSession = null
+    state.workoutStatus = session.workoutDate === localDateKey()
+      ? {
+          state: 'COMPLETED_TODAY',
+          sessionId: session.id,
+          planName: session.planNameSnapshot,
+          workoutDate: session.workoutDate,
+          totalSetCount: session.totalSetCount,
+        }
+      : deriveWorkoutStatus(null, state.recentWorkout)
     return session
   }
 
@@ -88,13 +115,21 @@ export function createFitnessStore(api: FitnessApi = fitnessApi) {
       reps,
       clientRequestId,
     })
-    log.currentSets.push(set)
-    if (state.activeSession?.id === log.session.id)
-      state.activeSession.totalSetCount += 1
+    const isNewSet = !log.currentSets.some(item => item.id === set.id)
+    if (isNewSet) {
+      log.currentSets.push(set)
+      if (state.activeSession?.id === log.session.id)
+        state.activeSession.totalSetCount += 1
+      const exerciseSummary = state.activeSession?.exercises.find(item => item.exercise.id === log.exercise.id)
+      if (exerciseSummary)
+        exerciseSummary.completedSetCount += 1
+      if (state.workoutStatus?.sessionId === log.session.id)
+        state.workoutStatus.totalSetCount += 1
+    }
     return set
   }
 
-  return { state, refreshHome, reorderPlans, startSession, loadSession, finishSession, recordSet }
+  return { state, refreshHome, refreshWorkoutStatus, reorderPlans, startSession, loadSession, finishSession, recordSet }
 }
 
 const fitnessStore = createFitnessStore()
