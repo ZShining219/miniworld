@@ -950,4 +950,4 @@
 - `pnpm type-check` 通过；`pnpm test:run` 为 11 个文件、47 项测试通过；`pnpm build:h5` 通过。
 - 限定前端 ESLint 和 `git diff --check` 通过。
 - 390×844 与 360×800 H5 浏览器回归确认记录导航保持同一行；360px 下 `scrollWidth=innerWidth=360`，控制台无 warning/error。
-- 修复当前仅在本地工作区，尚未 commit、push 或部署；线上仍运行 `3d0e02a9c60d3743c308c91c56e1add431099bce`，需用户明确确认生产发布。
+- 修复已提交为 `7ccb86e`，尚未 push 或部署；线上仍运行 `3d0e02a9c60d3743c308c91c56e1add431099bce`，需用户明确确认生产发布。
