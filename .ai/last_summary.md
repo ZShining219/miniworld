@@ -1,23 +1,22 @@
 # Last Summary
 
 [Quick Link]
-- TASK: T-026 — Fitness plan cards and long-press ordering deployed at `3264bbf`
-- DECISION: D-024 — Body parts are freely selectable; ordering is a persisted display preference
-- ISSUE: ISS-011 — Validation artifact scope anomaly confirmed ignored and resolved
+- TASK: T-028 — Verified Fitness frontend release is being published and deployed
+- DECISION: D-025 — Extract stable presentation contracts; keep workflow orchestration in pages/store
+- ISSUE: ISS-012 — Refactor validation artifacts confirmed ignored and resolved
 
 [Current Focus]
-- Production runs fixed SHA `3264bbfb7511dad9787272bb638bf398aa33a9a4` with reusable Fitness plan cards, no sequence numbers and rollback-safe long-press ordering.
-- PostgreSQL, FastAPI and Caddy/H5 are healthy; deployment created an automatic backup and read-only Fitness counts remained unchanged.
+- T-026 plan-card drag ordering is already deployed; T-027 component refactor at `755b14d` is the current verified frontend source candidate.
+- T-028 reran 47 frontend tests, TypeScript, scoped ESLint, H5 build, six backend Fitness tests, deployment checks and 390x844 browser acceptance successfully.
 
 [Active Locks]
-- None after T-026 handoff.
+- `codex-fitness-frontend-release`: exclusive release lock for T-028 governance, Git publication, production backup/deploy and read-only acceptance.
 
 [Open Issues]
-- None identified after the production release and read-only verification.
+- None identified after the local component refactor and responsive verification.
 
 [Pending Review]
-- User should confirm the long-press drag feel on the physical phone; automated touch tests cover gesture conflicts and persistence behavior.
-- Future history/statistics visual refinement remains deferred.
+- Physical-phone confirmation of long-press drag feel remains useful; automated touch tests cover conflicts and persistence.
 
 [Next Step]
-- Use the production H5 on a physical phone to long-press a body-part card, move it across one neighbour and refresh once to confirm the preferred order remains.
+- Commit the verified governance state, run staged scope and secret/PII checks, push a fixed SHA, deploy it with automatic backup, then verify production without changing Fitness data.
