@@ -5,6 +5,7 @@ import type {
   FitnessExercise,
   FitnessPlan,
   HistoryItem,
+  ProgressMode,
   SessionDetail,
   WorkoutSet,
 } from './types'
@@ -37,7 +38,7 @@ export const fitnessApi = {
   deleteSet: (id: string) => request<void>(`/sets/${id}`, 'DELETE'),
   history: (limit = 100) => request<HistoryItem[]>('/history', 'GET', undefined, { limit }),
   calendar: (start: string, end: string) => request<CalendarStats>('/stats/calendar', 'GET', undefined, { start, end }),
-  progress: (exerciseId: string) => request<ExerciseProgress>(`/stats/exercises/${exerciseId}/progress`),
+  progress: (exerciseId: string, mode: ProgressMode = 'day') => request<ExerciseProgress>(`/stats/exercises/${exerciseId}/progress`, 'GET', undefined, { mode }),
 }
 
 export type FitnessApi = typeof fitnessApi

@@ -117,6 +117,7 @@
     "abortcontroller-polyfill": "^1.7.8",
     "alova": "^3.3.3",
     "dayjs": "1.11.10",
+    "echarts": "5.4.3",
     "pinia": "2.0.36",
     "pinia-plugin-persistedstate": "3.2.1",
     "vue": "^3.4.21",

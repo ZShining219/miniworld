@@ -984,3 +984,26 @@
 ### 未完成事项
 - 本轮只完成 H5 实现与本地验收；Android 和微信小程序仍只具备结构兼容性。
 - 未 push、未部署生产；真实手机复测需在用户另行授权发布后进行。
+
+## 2026-08-28 — T-032 Fitness 动作重量趋势图
+
+### 调研与依赖
+- 按用户确认接入成熟组件，采用 DCloud `lime-echart` 2.0.7；源码固定于 Gitee commit `88bdd1dd3ccc541c8d645e464ab04264dbd68ca1`，仅导入 `l-echart.vue`、`canvas.js` 和 `utils.js`。
+- 使用 npm Apache ECharts `5.4.3`，H5 Vue 3 采用官方预打包 `echarts/dist/echarts.esm.js` 入口以兼容 uni-app Rollup；来源和 MIT/Apache-2.0 归属追加到 `THIRD_PARTY_NOTICES.md`。
+
+### 数据库与后端
+- 未新增表或迁移；复用现有 Fitness Set/Completed Session 数据。
+- `GET /api/v1/fitness/stats/exercises/{exercise_id}/progress?mode=set` 返回完成组的日期、时间、组序、重量和次数，按远到近的时间顺序排列。
+- `mode=day` 按 `workout_date` 聚合平均、最低、最高重量、组数和训练次数，仅统计 Completed Session；不传 `mode` 保留旧的最大重量响应兼容。
+
+### 前端与业务
+- 新增 `FitnessProgressChart` 与纯函数 option builder，统计页增加按天/按次数和折线/柱状切换；默认按天折线。
+- 按次数横轴展示日期与组序，按天横轴展示日期；Tooltip 分别显示组重量×次数或日均/范围/组数；ECharts `dataZoom` 提供较多历史点的时间轴缩放。
+- 正式历史仍来自 PostgreSQL；图表组件只接收页面传入的数据，不读取 API、Store 或本地 storage。
+
+### 验证与边界
+- `uv run pytest backend/tests/test_fitness.py -q`: 6 passed；覆盖旧兼容响应、按组、按天聚合和非法 mode 422。
+- `uv run ruff check ...`、`uv run mypy ...`、`pnpm test:run`（14 文件、65 tests）、`pnpm type-check` 和 Fitness ESLint 全部通过。
+- `pnpm build:h5` 通过；初始 ECharts 源入口曾触发 zrender 解析错误，改用预打包 ESM 后构建成功。
+- 本地 API 写入临时 SQLite 演示数据后，浏览器统计页在桌面和 360×800 视口验证了真实 Canvas、按次/柱状切换、无横向溢出（Canvas 约 314px）和无控制台错误；临时数据库已移除，未修改正式训练库。
+- 本轮只完成 H5；Android 与微信小程序保持结构兼容，不宣称已验收；未 push、未部署生产。

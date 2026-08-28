@@ -15,9 +15,11 @@ from app.fitness.schemas import (
     ExercisePublic,
     ExerciseUpdate,
     HistoryItem,
+    LegacyExerciseProgress,
     PlanCreate,
     PlanPublic,
     PlanUpdate,
+    ProgressMode,
     ReorderInput,
     SessionDetail,
     SessionStart,
@@ -184,9 +186,12 @@ def get_calendar_stats(
 
 
 @router.get(
-    "/stats/exercises/{exercise_id}/progress", response_model=ExerciseProgress
+    "/stats/exercises/{exercise_id}/progress",
+    response_model=ExerciseProgress | LegacyExerciseProgress,
 )
 def get_exercise_progress(
-    exercise_id: uuid.UUID, db: Session = SessionDep
-) -> ExerciseProgress:
-    return _run(service.exercise_progress, db, exercise_id)
+    exercise_id: uuid.UUID,
+    mode: ProgressMode | None = Query(default=None),
+    db: Session = SessionDep,
+) -> ExerciseProgress | LegacyExerciseProgress:
+    return _run(service.exercise_progress, db, exercise_id, mode)

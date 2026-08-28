@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "project_id": "miniworld",
-  "generated_at": "2026-08-27T21:58:38+08:00",
-  "summary_status": "fitness_active_workout_ux_committed_pending_release",
+  "generated_at": "2026-08-28T14:22:06+08:00",
+  "summary_status": "fitness_progress_chart_committed_pending_release",
   "review_status": "reviewed",
   "checkpoint_id": null,
   "checkpoint_offsets": null,
@@ -36,10 +36,11 @@
     "D-023": "Implement Fitness as an independent uni-app module using the existing local FastAPI/PostgreSQL service as source of truth; use only a small cross-platform local draft cache for unsaved current inputs, and do not couple Fitness to Jobs, Profile/Resume, or Work Reporting.",
     "D-024": "Present Fitness body parts without sequence numbers; use whole-card short tap for entry and 350ms long-press drag ordering on the home page while retaining exercise ordering controls in settings.",
     "D-025": "Extract only stable repeated Fitness presentation contracts while keeping single-use page composition local and API/workflow orchestration in pages and Store.",
-    "D-026": "Allow arbitrary switching among exercises in one active Fitness plan, persist a per-exercise 1/2/2.5/5 kg weight step, retain retry IDs per draft, and derive a shared four-state workout banner from existing APIs."
+    "D-026": "Allow arbitrary switching among exercises in one active Fitness plan, persist a per-exercise 1/2/2.5/5 kg weight step, retain retry IDs per draft, and derive a shared four-state workout banner from existing APIs.",
+    "D-027": "Use lime-echart 2.0.7 with Apache ECharts 5.4.3 for Fitness action trends; expose set-level and day-average modes with line/bar presentation and inside time zoom."
   },
   "pending_review": [
-    "User confirmation to push and deploy the committed T-029 and T-031 Fitness changes, including the weight_step migration",
+    "User confirmation to push and deploy the committed T-029, T-031 and T-032 Fitness changes, including the weight_step migration",
     "Physical-phone confirmation of action switching, numeric keyboard, weight-step touch targets and workout status after production release",
     "Choose whether origin/codex/bootstrap-langgraph should become or merge into a future remote main branch",
     "Choose whether to create a release tag",

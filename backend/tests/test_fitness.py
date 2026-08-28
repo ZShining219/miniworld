@@ -179,6 +179,41 @@ def test_completed_workout_populates_history_calendar_progress_and_last_sets(
         }
     ]
 
+    set_progress = client.get(
+        f"/api/v1/fitness/stats/exercises/{bench_id}/progress",
+        params={"mode": "set"},
+    ).json()
+    assert set_progress["mode"] == "set"
+    assert [
+        (point["weight"], point["reps"], point["setOrder"])
+        for point in set_progress["points"]
+    ] == [(80, 8, 1), (80, 8, 2), (75, 10, 3)]
+
+    day_progress = client.get(
+        f"/api/v1/fitness/stats/exercises/{bench_id}/progress",
+        params={"mode": "day"},
+    ).json()
+    assert day_progress == {
+        "exerciseId": bench_id,
+        "exerciseName": "杠铃卧推",
+        "mode": "day",
+        "points": [
+            {
+                "workoutDate": workout_date,
+                "averageWeight": 235 / 3,
+                "minWeight": 75,
+                "maxWeight": 80,
+                "setCount": 3,
+                "sessionCount": 1,
+            }
+        ],
+    }
+    invalid_progress = client.get(
+        f"/api/v1/fitness/stats/exercises/{bench_id}/progress",
+        params={"mode": "week"},
+    )
+    assert invalid_progress.status_code == 422
+
     next_workout = client.post(
         "/api/v1/fitness/sessions", json={"plan_id": chest_id}
     ).json()

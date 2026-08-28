@@ -1,7 +1,7 @@
 import uuid
 from datetime import date, datetime
 from decimal import Decimal
-from typing import Annotated
+from typing import Annotated, Literal
 
 from pydantic import BaseModel, BeforeValidator, ConfigDict, Field
 from pydantic.alias_generators import to_camel
@@ -160,13 +160,41 @@ class CalendarStats(FitnessModel):
     dates: list[date]
 
 
+ProgressMode = Literal["set", "day"]
+
+
 class ProgressPoint(FitnessModel):
     workout_date: date
     session_id: uuid.UUID
     max_weight: float
 
 
+class ProgressSetPoint(FitnessModel):
+    workout_date: date
+    session_id: uuid.UUID
+    completed_at: datetime
+    set_order: int
+    weight: float
+    reps: int
+
+
+class ProgressDayPoint(FitnessModel):
+    workout_date: date
+    average_weight: float
+    min_weight: float
+    max_weight: float
+    set_count: int
+    session_count: int
+
+
 class ExerciseProgress(FitnessModel):
+    exercise_id: uuid.UUID
+    exercise_name: str
+    mode: ProgressMode
+    points: list[ProgressSetPoint | ProgressDayPoint]
+
+
+class LegacyExerciseProgress(FitnessModel):
     exercise_id: uuid.UUID
     exercise_name: str
     points: list[ProgressPoint]

@@ -31,3 +31,10 @@ The radar never uses the OpenStreetMap Foundation standard tile service. It read
 - Local license copy: `apps/miniworld-shell/LICENSE`
 
 The import excludes upstream Git history, Agent/editor instructions and example remote-service credentials. Local MiniWorld changes remain subject to this repository's privacy and approval boundaries.
+
+## Fitness Progress Charts
+
+- `lime-echart` 2.0.7 (DCloud plugin) — <https://ext.dcloud.net.cn/plugin?id=4899> — MIT.
+- Source snapshot: <https://gitee.com/liangei/lime-echart>, pinned commit `88bdd1dd3ccc541c8d645e464ab04264dbd68ca1`.
+- Imported paths: `apps/miniworld-shell/src/uni_modules/lime-echart/components/l-echart/{l-echart.vue,canvas.js,utils.js}` only; demos, bundled ECharts assets and upstream metadata are excluded.
+- Apache ECharts `5.4.3` is installed from npm and remains under its Apache-2.0 license.

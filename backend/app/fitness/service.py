@@ -22,10 +22,14 @@ from app.fitness.schemas import (
     ExerciseUpdate,
     HistoryExercise,
     HistoryItem,
+    LegacyExerciseProgress,
     PlanCreate,
     PlanPublic,
     PlanUpdate,
+    ProgressDayPoint,
+    ProgressMode,
     ProgressPoint,
+    ProgressSetPoint,
     ReorderInput,
     SessionDetail,
     SessionExerciseSummary,
@@ -423,34 +427,84 @@ def calendar_stats(db: Session, start: date, end: date) -> CalendarStats:
     return CalendarStats(dates=dates)
 
 
-def exercise_progress(db: Session, exercise_id: uuid.UUID) -> ExerciseProgress:
+def exercise_progress(
+    db: Session, exercise_id: uuid.UUID, mode: ProgressMode | None = None
+) -> ExerciseProgress | LegacyExerciseProgress:
     exercise = _get(db, FitnessExercise, exercise_id)
-    rows = db.exec(
-        select(
-            col(FitnessSession.workout_date),
-            col(FitnessSession.id),
-            func.max(FitnessSet.weight),
+    if mode is None:
+        legacy_rows = db.exec(
+            select(
+                col(FitnessSession.workout_date),
+                col(FitnessSession.id),
+                func.max(FitnessSet.weight),
+            )
+            .join(FitnessSet, col(FitnessSet.session_id) == col(FitnessSession.id))
+            .where(
+                FitnessSet.exercise_id == exercise_id,
+                FitnessSession.status == "COMPLETED",
+            )
+            .group_by(col(FitnessSession.workout_date), col(FitnessSession.id))
+            .order_by(col(FitnessSession.workout_date), col(FitnessSession.id))
+        ).all()
+        return LegacyExerciseProgress(
+            exercise_id=exercise.id,
+            exercise_name=exercise.name,
+            points=[
+                ProgressPoint(
+                    workout_date=workout_date,
+                    session_id=session_id,
+                    max_weight=float(max_weight),
+                )
+                for workout_date, session_id, max_weight in legacy_rows
+            ],
         )
-        .join(
-            FitnessSet,
-            col(FitnessSet.session_id) == col(FitnessSession.id),
-        )
+
+    set_rows = db.exec(
+        select(FitnessSet, col(FitnessSession.workout_date))
+        .join(FitnessSession, col(FitnessSet.session_id) == col(FitnessSession.id))
         .where(
             FitnessSet.exercise_id == exercise_id,
             FitnessSession.status == "COMPLETED",
         )
-        .group_by(col(FitnessSession.workout_date), col(FitnessSession.id))
-        .order_by(col(FitnessSession.workout_date))
+        .order_by(
+            col(FitnessSession.workout_date),
+            col(FitnessSet.completed_at),
+            col(FitnessSet.set_order),
+        )
     ).all()
+    progress_points: list[ProgressSetPoint | ProgressDayPoint]
+    if mode == "set":
+        progress_points = [
+            ProgressSetPoint(
+                workout_date=workout_date,
+                session_id=fitness_set.session_id,
+                completed_at=fitness_set.completed_at,
+                set_order=fitness_set.set_order,
+                weight=float(fitness_set.weight),
+                reps=fitness_set.reps,
+            )
+            for fitness_set, workout_date in set_rows
+        ]
+    else:
+        grouped: OrderedDict[date, list[FitnessSet]] = OrderedDict()
+        for fitness_set, workout_date in set_rows:
+            grouped.setdefault(workout_date, []).append(fitness_set)
+        progress_points = []
+        for workout_date, day_sets in grouped.items():
+            weights = [float(item.weight) for item in day_sets]
+            progress_points.append(
+                ProgressDayPoint(
+                    workout_date=workout_date,
+                    average_weight=sum(weights) / len(weights),
+                    min_weight=min(weights),
+                    max_weight=max(weights),
+                    set_count=len(day_sets),
+                    session_count=len({item.session_id for item in day_sets}),
+                )
+            )
     return ExerciseProgress(
         exercise_id=exercise.id,
         exercise_name=exercise.name,
-        points=[
-            ProgressPoint(
-                workout_date=workout_date,
-                session_id=session_id,
-                max_weight=float(max_weight),
-            )
-            for workout_date, session_id, max_weight in rows
-        ],
+        mode=mode,
+        points=progress_points,
     )

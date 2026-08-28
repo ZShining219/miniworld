@@ -80,16 +80,38 @@ export interface CalendarStats {
   dates: string[]
 }
 
+export type ProgressMode = 'set' | 'day'
+
+/** Legacy response shape kept for callers that omit the mode query. */
 export interface ProgressPoint {
   workoutDate: string
   sessionId: string
   maxWeight: number
 }
 
+export interface ProgressSetPoint {
+  workoutDate: string
+  sessionId: string
+  completedAt: string
+  setOrder: number
+  weight: number
+  reps: number
+}
+
+export interface ProgressDayPoint {
+  workoutDate: string
+  averageWeight: number
+  minWeight: number
+  maxWeight: number
+  setCount: number
+  sessionCount: number
+}
+
 export interface ExerciseProgress {
   exerciseId: string
   exerciseName: string
-  points: ProgressPoint[]
+  mode: ProgressMode
+  points: ProgressSetPoint[] | ProgressDayPoint[]
 }
 
 export interface FitnessDraft {
