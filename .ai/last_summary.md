@@ -12,7 +12,7 @@
 - T-035 已完成 Fitness 七页、共享组件、主题令牌、Wot UI resolver 和状态一致性重构；未修改 API、数据库或生产服务器。
 
 [Active Locks]
-- T-035 lock remains active until local commit and governance closeout.
+- No active lock after T-035 local closeout.
 
 [Open Issues]
 - ISS-016: `mitigated_pending_physical_validation`；本地多状态浏览器预检通过，真实手机验收仍未完成。
@@ -22,4 +22,4 @@
 - Android and WeChat Mini Program remain structure-compatible only and are not acceptance-complete.
 
 [Next Step]
-- Finish T-035 local governance closeout, then obtain physical-device evidence before any production release; do not push or deploy this UI-only checkpoint yet.
+- T-035 feature commit: `a0c3df0` (`refactor: rebuild fitness mobile presentation system`). Obtain physical-device evidence before any production release; do not push or deploy this UI-only checkpoint yet.
