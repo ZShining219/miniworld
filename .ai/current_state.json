@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "project_id": "miniworld",
-  "generated_at": "2026-09-04T00:13:51+08:00",
-  "summary_status": "fitness_coach_api_only_deployment_complete",
+  "generated_at": "2026-09-04T03:06:00+08:00",
+  "summary_status": "fitness_coach_api_only_deployment_and_ci_verified",
   "review_status": "reviewed",
   "checkpoint_id": null,
   "checkpoint_offsets": null,
@@ -67,7 +67,8 @@
     "T-028 published and deployed the verified Fitness frontend at fixed SHA 3d0e02a9c60d3743c308c91c56e1add431099bce; automatic backup, healthy services, authentication boundaries and unchanged production counts were verified.",
     "T-029 fixes the real-phone Fitness home layout; 360px and 390px browser regressions passed and the change is included in production release 6708dfecc757738976079c81c50fea7213973452.",
     "T-031 and T-032 add the Fitness weight_step migration, active-workout UX and progress charts; they are included in production release 6708dfecc757738976079c81c50fea7213973452 and await physical-phone acceptance.",
-    "T-036 deployed the server-side Fitness Coach API at 824060dbbe736b63486c8ea5195260b3b9c7b083 while preserving the existing 6095d7a web image; DeepSeek deepseek-chat is selected but no key or real model request is present."
+    "T-036 deployed the server-side Fitness Coach API at 824060dbbe736b63486c8ea5195260b3b9c7b083 while preserving the existing 6095d7a web image; DeepSeek deepseek-chat is selected but no key or real model request is present.",
+    "T-038 fixed clean-runner CI assumptions and commit 27b59f76d4dd4b143509dc4c272a203c8a488bd2 passed GitHub Actions run 33794008116 across all five jobs."
   ],
   "derived_from": {
     "source": "T-036 completed the server-side Fitness Coach implementation, controlled tests, API-only production deployment and no-key verification; T-037 completed gated GitHub Actions CI.",
