@@ -211,9 +211,13 @@ if [[ "$checkpoint_count" -lt 1 ]]; then
   echo "verification failed: no persisted LangGraph checkpoints" >&2
   exit 1
 fi
+expected_migration="${EXPECTED_ALEMBIC_VERSION:-$(rg -o 'revision: str = "[^"]+"' backend/app/alembic/versions \
+  | sed -E 's/.*"([^"]+)"/\1/' \
+  | sort \
+  | tail -1)}"
 migration="$(docker-compose exec -T db psql -U miniworld -d miniworld -Atc "select version_num from alembic_version")"
-if [[ "$migration" != "20260818_0002" ]]; then
-  echo "verification failed: unexpected Alembic version ${migration}" >&2
+if [[ "$migration" != "$expected_migration" ]]; then
+  echo "verification failed: unexpected Alembic version ${migration} (expected ${expected_migration})" >&2
   exit 1
 fi
 

@@ -87,6 +87,7 @@ Radar 首次运行前执行 `./scripts/fetch-radar-demo-map.sh`。该脚本只�
 | 验证 ID | 覆盖内容 | 命令 | 前置条件/副作用 |
 | --- | --- | --- | --- |
 | `VERIFY-LOCAL` | 后端 Pytest/Ruff/Mypy/Ty，以及 React build/lint/test | `./scripts/test-local.sh` | 不要求 Compose；生成的缓存和构建目录被 Git 忽略 |
+| `VERIFY-CI-SENSITIVE` | Git 跟踪文件中的运行数据、私钥和非占位凭据扫描 | `scripts/ci/check-sensitive-files.sh` | 不访问网络；只检查当前 Git 索引 |
 | `VERIFY-FITNESS-BACKEND` | Fitness 与共享后端回归 | `UV_CACHE_DIR=.cache/uv uv run --project backend pytest backend/tests -q` | 使用测试数据库，不写正式 PostgreSQL |
 | `VERIFY-H5` | Shell TypeScript、27 项单测和 H5 production build | `cd apps/miniworld-shell && pnpm type-check && pnpm test:run && pnpm build:h5` | 需要已安装锁定的 pnpm 依赖；生成 `dist/` |
 | `VERIFY-DEMO` | 四服务、三 Graph、Worker、checkpoint、持久性和隐私端到端验证 | `./scripts/verify-demo.sh` | 要求完整 Compose 已运行；只写入明确的虚构 Demo 数据 |
@@ -271,6 +272,20 @@ Demo 初始化“胸、背、肩、臀腿”四个计划，“胸”包含杠铃
 ```bash
 ./scripts/test.sh
 ```
+
+### GitHub Actions CI
+
+`.github/workflows/ci.yml` 在每个分支 push、Pull Request 和手动触发时运行五道门：后端测试与静态检查、React 构建与 Playwright、unibest H5 类型/单测/构建、敏感文件扫描，以及依赖前四道门的 Docker Compose Demo 验收。所有 Action 均固定到 commit SHA，checkout 不持久化 GitHub 凭据，CI 只使用 `demo` 模式和虚构数据，不调用远端模型、真实个人材料或外部写入。
+
+本地可用同一条链路复现集成门：
+
+```bash
+scripts/ci/docker-compose up -d --build
+PATH="$PWD/scripts/ci:$PATH" ./scripts/verify-demo.sh
+scripts/ci/docker-compose down --remove-orphans
+```
+
+`scripts/ci/docker-compose` 会兼容本机旧版 `docker-compose` 和 GitHub Runner 的 `docker compose` 插件。生产发布仍保持单独的人工审批、备份、迁移和回滚流程，不由该 CI 自动触发。
 
 ## 运行模式
 

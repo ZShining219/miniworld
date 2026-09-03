@@ -1064,3 +1064,56 @@
 ### 未完成与发布边界
 - 本轮达到“本地实现完成，等待真实手机视觉验收”；尚未完成真实 iOS/Android 手机、系统字体放大、浏览器底栏收缩、虚拟键盘和实际触控验收，因此 ISS-016 仅缓解，不能标记为移动端最终验证。
 - 未 push、未部署生产；生产仍保持 T-033 固定 SHA。后续发布必须在真实手机证据和用户明确发布授权后另行执行。
+
+## 2026-09-03 — T-036 Fitness Coach Agent 最小服务器纵切面
+
+### 范围
+
+- 关联 `REQ-FITNESS`、T-036 与 T-027；
+- 在现有 Fitness 后端增加独立 `FitnessCoachGraph`、DeepSeek Provider 配置入口、只读分析工具、结构化建议表和 API；不改 Jobs、Profile/Resume、Work 的业务数据或 Graph。
+
+### 已完成
+
+- 新增 `backend/app/fitness/coach/`：Provider、工具、Graph、Schema 和 Service；Graph 节点为 `load_fitness_context` → `agent_select_tools` → `execute_read_only_tools` → `agent_recommend`；
+- DeepSeek 使用 OpenAI-compatible Chat Completions JSON 输出，Provider 默认模型为 `deepseek-chat`，密钥只从 `FITNESS_AGENT_API_KEY` 读取，未配置时运行状态为 `awaiting_configuration`；
+- 训练完成接口后台触发一次 Agent；同时提供 `POST /api/v1/fitness/coach/analyze` 手动入口和 `GET /api/v1/fitness/coach/recommendations` 查询入口；
+- 新增 `fitness_coach_recommendation` 表和 Alembic migration `20260903_0005_fitness_coach.py`；建议只保存结构化动作、原因、证据、置信度、Provider/模型和复核时机；
+- Agent 只能执行 `completed_session` 与 `exercise_history` 两个 Fitness 只读工具；目标动作越界、非法结构化结果或 Provider 配置缺失均不会写入 Recommendation；
+
+### 受控验证
+
+- `cd backend && uv run pytest tests/test_fitness_coach.py -q`：3 passed；
+- 测试覆盖自动触发并保存 Agent Run/Recommendation/ModelCallAudit、无 DeepSeek Key 的 `awaiting_configuration`、越界动作建议的安全拒绝；测试 Provider 为明确标记的受控替身，不发起外部网络请求；
+- `cd backend && uv run ruff check app/fitness app/core/config.py tests/test_fitness_coach.py`：通过；`uv run mypy app/fitness app/core/config.py tests/test_fitness_coach.py`：通过；
+- 原有 `tests/test_fitness.py`：6 passed；训练 Session/Set 数量在 Agent 分析前后保持不变；
+
+### 未完成与下一步
+
+- 未配置真实 DeepSeek Key，未执行真实模型调用；Provider 具体质量、延迟和成本留待用户明日确认后验证；
+- 本轮未修改前端呈现，建议卡片接入待 Fitness UI 重构任务完成后单独实施；
+
+## 2026-09-03 — T-037 GitHub Actions CI 与本地链路验证
+
+### 范围与实现
+
+- 新增 `.github/workflows/ci.yml`，覆盖分支 push、Pull Request 和手动触发；工作流拆分为 Backend、React、H5 Shell、Sensitive File Scan 和 Compose Integration 五个 Job，集成门通过 `needs` 等待前四道门完成后再执行。
+- Backend Job 复用 `uv.lock` 和现有 `pytest`、Ruff、Mypy、Ty 命令；React Job 固定 Bun 1.3.13，执行构建、Biome 和 9 项 Playwright；H5 Job 固定 pnpm 10.10.0/Node 20，执行类型检查、65 项测试和 H5 production build。
+- 所有第三方 Action 固定到已解析的 commit SHA，checkout 设置 `persist-credentials: false`，工作流权限仅保留 `contents: read`，并使用并发取消避免旧提交占用 Runner。
+- 新增 `scripts/ci/check-sensitive-files.sh`，阻断 Git 索引中的运行数据/环境文件、私钥和非占位凭据格式；新增 `scripts/ci/docker-compose`，兼容本机旧版 `docker-compose` 与 GitHub Runner 的 `docker compose` 插件。
+- `scripts/verify-demo.sh` 的 Alembic 检查改为默认读取源码中的最新 revision，同时保留 `EXPECTED_ALEMBIC_VERSION` 覆盖入口，避免新增合法迁移后 CI 固定比较旧版本。
+- CI 不包含生产部署；真实模型、个人材料、精确住址和外部写入仍不进入自动化链路。生产发布继续使用独立的人工确认、备份、迁移、健康检查和回滚流程。
+
+### 验证证据
+
+- `scripts/ci/check-sensitive-files.sh`：通过；未发现被 Git 跟踪的运行数据、私钥或非占位 token。
+- `UV_CACHE_DIR=.cache/uv uvx --from zizmor==1.28.0 zizmor .github/workflows/ci.yml`：通过，`No findings to report`。
+- H5：`pnpm type-check`、`pnpm test:run`（14 个测试文件、65 项）和 `pnpm build:h5` 通过。
+- React：生产构建、Biome（保留仓库既有 8 条 CSS warning）和 Playwright 9 项 E2E 通过。
+- Compose 集成：`scripts/ci/docker-compose up -d --build` 后执行 `PATH="$PWD/scripts/ci:$PATH" ./scripts/verify-demo.sh` 通过；输出为 `jobs=3 facts=110 reports=25 checkpoints=788`，包含三 Graph、Worker 定时、checkpoint 恢复、重启持久性、回环端口和位置隐私检查。
+- 后端完整 `./scripts/test-local.sh` 在当前工作树的 `ty check` 阶段仍有两条来自并行 T-036 `backend/app/fitness/coach/graph.py` 与 `tools.py` 的字典索引类型错误；pytest 31 项、Ruff 和 Mypy 已通过。T-036 修复该独立问题后，CI 五道门可达到全绿，T-037 不绕过 Ty 门。
+- `git diff --check`、Shell 语法检查和工作流 YAML 解析通过。
+
+### Git 与边界
+
+- T-037 仅修改 CI 工作流、CI 辅助脚本、Demo 验收脚本、README、实施日志和治理池；未暂存或提交 T-036 的后端、Goal、生产部署和环境配置改动。
+- 未执行 GitHub push、生产部署或任何外部写入；本地 Compose 临时数据在验证后按 CI 等价流程清理。

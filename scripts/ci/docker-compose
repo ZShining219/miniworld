@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+wrapper_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+IFS=: read -r -a path_entries <<< "${PATH}"
+for path_entry in "${path_entries[@]}"; do
+  [[ "$path_entry" == "$wrapper_dir" ]] && continue
+  if [[ -x "$path_entry/docker-compose" ]]; then
+    exec "$path_entry/docker-compose" "$@"
+  fi
+done
+
+exec docker compose "$@"

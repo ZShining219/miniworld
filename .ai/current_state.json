@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "project_id": "miniworld",
-  "generated_at": "2026-09-03T21:31:11+08:00",
-  "summary_status": "frontend_presentation_rules_accepted_refactor_pending",
+  "generated_at": "2026-09-03T23:58:30+08:00",
+  "summary_status": "ci_implemented_pending_t037_t036_ty_fix",
   "review_status": "reviewed",
   "checkpoint_id": null,
   "checkpoint_offsets": null,
@@ -10,7 +10,8 @@
   "active_locks": [],
   "active_tasks": {},
   "open_issues": {
-    "ISS-016": "Fitness production mobile presentation does not satisfy the new component, state, responsive and physical-device gates"
+    "ISS-016": "Fitness production mobile presentation does not satisfy the new component, state, responsive and physical-device gates",
+    "ISS-017": "T-036 Coach dynamic dictionary indexing fails the full Ty CI gate"
   },
   "key_logic": {
     "D-001": "Three independent demo loops: job distance, profile/resume, and daily/weekly work reports.",

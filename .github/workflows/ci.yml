@@ -1,0 +1,151 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - '**'
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  FORCE_COLOR: '1'
+  UV_CACHE_DIR: ${{ github.workspace }}/.cache/uv
+
+jobs:
+  backend:
+    name: Backend checks
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@d4b2f3b6ecc6e67c4457f6d3e41ec42d3d0fcb86 # v5
+        with:
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+
+      - name: Set up Python
+        run: uv python install 3.14
+
+      - name: Run backend tests and static checks
+        run: |
+          uv run --locked --package app pytest backend/tests -q
+          uv run --locked --package app ruff check backend/app backend/tests
+          uv run --locked --package app mypy backend/app
+          uv run --locked --package app ty check backend/app
+
+  react:
+    name: React checks
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+        with:
+          bun-version: 1.3.13
+
+      - name: Install frontend dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Install Playwright browser
+        working-directory: frontend
+        run: bun x playwright install --with-deps chromium
+
+      - name: Build, lint and test React dashboard
+        run: |
+          bun run --filter frontend build
+          bun run --filter frontend lint
+          bun run --filter frontend test
+
+  shell:
+    name: H5 shell checks
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+        with:
+          version: 10.10.0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 20
+          cache: pnpm
+          cache-dependency-path: apps/miniworld-shell/pnpm-lock.yaml
+
+      - name: Install H5 shell dependencies
+        working-directory: apps/miniworld-shell
+        run: pnpm install --frozen-lockfile --ignore-scripts
+
+      - name: Generate local shell base files
+        working-directory: apps/miniworld-shell
+        run: pnpm init-baseFiles
+
+      - name: Type-check, test and build H5 shell
+        working-directory: apps/miniworld-shell
+        run: |
+          pnpm type-check
+          pnpm test:run
+          pnpm build:h5
+
+  sensitive-files:
+    name: Sensitive file scan
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - name: Scan tracked files
+        run: scripts/ci/check-sensitive-files.sh
+
+  integration:
+    name: Compose demo verification
+    needs: [backend, react, shell, sensitive-files]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - name: Start the local demo stack
+        run: scripts/ci/docker-compose up -d --build
+
+      - name: Run the complete demo verification chain
+        run: |
+          export PATH="$GITHUB_WORKSPACE/scripts/ci:$PATH"
+          ./scripts/verify-demo.sh
+
+      - name: Collect service logs on failure
+        if: failure()
+        run: scripts/ci/docker-compose logs --no-color --tail=200
+
+      - name: Tear down the ephemeral stack
+        if: always()
+        run: scripts/ci/docker-compose down -v --remove-orphans
