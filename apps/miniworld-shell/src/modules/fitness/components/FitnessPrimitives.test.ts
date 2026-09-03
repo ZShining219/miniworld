@@ -18,7 +18,7 @@ describe('fitness presentation primitives', () => {
 
     expect(wrapper.get('.fitness-eyebrow').text()).toBe('FITNESS HISTORY')
     expect(wrapper.get('.fitness-title').text()).toBe('训练历史')
-    expect(wrapper.get('[role="alert"]').text()).toBe('暂时无法读取训练历史。')
+    expect(wrapper.get('[role="alert"]').text()).toContain('暂时无法读取训练历史。')
     expect(wrapper.get('.page-content').text()).toBe('内容')
   })
 

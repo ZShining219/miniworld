@@ -134,9 +134,10 @@ async function completeSet() {
 
 <template>
   <FitnessPageShell
-    eyebrow="SET LOGGING"
+    eyebrow="动作记录"
     :title="log?.exercise.name || '动作'"
-    subtitle="每组完成后立即保存到本地数据库，随时可以调整。"
+    subtitle="调整下一组数据，完成后立即保存。"
+    :error="error"
     :workout-status="workoutStatus"
     :workout-action-label="workoutActionLabel"
     @workout-action="handleWorkoutAction"
@@ -144,8 +145,8 @@ async function completeSet() {
     <template #heading>
       <text class="fitness-title">{{ log?.exercise.name || '动作' }}</text>
       <view class="fitness-row-between exercise-heading-meta">
-        <text class="fitness-subtitle">每组完成后立即保存到本地数据库，随时可以调整。</text>
-        <text class="exercise-set-count">{{ log?.currentSets.length || 0 }} 组</text>
+        <text class="fitness-subtitle">调整下一组数据，完成后立即保存。</text>
+        <text class="exercise-set-count">已完成 {{ log?.currentSets.length || 0 }} 组</text>
       </view>
     </template>
 
@@ -157,20 +158,10 @@ async function completeSet() {
       @select="switchExercise"
     />
 
-    <view class="fitness-section">
-      <FitnessSectionHeader title="今天已完成" subtitle="已保存的组只读保留，避免误操作清理训练数据">
-        <template #right>
-          <text class="exercise-total-sets">{{ log?.currentSets.length || 0 }} 组</text>
-        </template>
-      </FitnessSectionHeader>
-      <WorkoutSetList v-if="log?.currentSets.length" :sets="log.currentSets" show-reps-unit emphasized />
-      <text v-else class="fitness-empty compact-empty">完成第一组后会立即显示在这里；已保存记录只读保留。</text>
-    </view>
-
     <view class="fitness-section current-section">
-      <FitnessSectionHeader title="当前调整" subtitle="设置下一组的重量和次数">
+      <FitnessSectionHeader title="下一组" subtitle="重量可直接输入，也可用两侧按钮调整">
         <template #right>
-          <text class="current-marker">NEXT</text>
+          <text class="current-marker">待完成</text>
         </template>
       </FitnessSectionHeader>
       <view class="current-input-panel">
@@ -188,17 +179,33 @@ async function completeSet() {
         />
         <NumberStepper v-model="reps" label="次数" unit="次" :step="1" :min="0" :max="999" />
       </view>
-      <text v-if="error" class="fitness-error">{{ error }}</text>
-      <text v-if="savedNotice" class="saved-notice">{{ savedNotice }}</text>
-      <button class="fitness-primary" :disabled="saving || !log" @click="completeSet">
-        {{ saving ? '正在保存…' : '完成一组' }}
-      </button>
+      <text v-if="savedNotice" class="saved-notice" role="status">✓ {{ savedNotice }}</text>
+      <view class="fitness-primary-bar set-action-bar">
+        <wd-button class="fitness-primary" type="primary" size="large" block :loading="saving" :disabled="saving || !log" @click="completeSet">
+          完成并保存这一组
+        </wd-button>
+      </view>
+    </view>
+
+    <view class="fitness-section">
+      <FitnessSectionHeader title="今天已完成" subtitle="已保存到本地数据库，只读保留">
+        <template #right>
+          <text class="exercise-total-sets">{{ log?.currentSets.length || 0 }} 组</text>
+        </template>
+      </FitnessSectionHeader>
+      <WorkoutSetList v-if="log?.currentSets.length" :sets="log.currentSets" show-reps-unit emphasized />
+      <view v-else class="fitness-empty-state compact-empty">
+        <wd-empty tip="还没有完成的组" icon-size="56" />
+        <text class="fitness-note">完成第一组后会立即显示在这里。</text>
+      </view>
     </view>
 
     <view class="fitness-section previous-section">
       <text class="fitness-section-title">上一次训练</text>
       <WorkoutSetList v-if="log?.previousSets.length" :sets="log.previousSets" />
-      <text v-else class="fitness-empty">还没有这个动作的历史记录。</text>
+      <view v-else class="fitness-empty-state compact-empty">
+        <wd-empty tip="暂无历史记录" icon-size="56" />
+      </view>
     </view>
   </FitnessPageShell>
 </template>
@@ -206,7 +213,7 @@ async function completeSet() {
 <style scoped lang="scss">
 .exercise-heading-meta {
   align-items: flex-end;
-  gap: 16rpx;
+  gap: var(--mw-space-4);
 }
 
 .exercise-heading-meta .fitness-subtitle {
@@ -216,73 +223,58 @@ async function completeSet() {
 .exercise-set-count,
 .exercise-total-sets {
   flex: none;
-  color: #176b57;
-  font-family: Georgia, serif;
-  font-size: 23rpx;
+  color: var(--mw-color-primary);
+  font-size: var(--mw-font-body);
   font-weight: 700;
 }
 
 .compact-empty {
-  padding: 14rpx 0 4rpx;
+  padding: var(--mw-space-3) 0 var(--mw-space-1);
 }
 
 .current-section {
-  padding-top: 34rpx;
-  padding-bottom: 34rpx;
-  border-bottom: 2rpx solid #1d2420;
+  padding-top: var(--mw-space-5);
 }
 
 .current-marker {
-  padding: 7rpx 10rpx;
-  color: #fff;
-  background: #cf533d;
-  font-size: 17rpx;
+  padding: var(--mw-space-1) var(--mw-space-2);
+  border-radius: var(--mw-radius-pill);
+  color: var(--mw-color-primary-strong);
+  background: var(--mw-color-primary-soft);
+  font-size: var(--mw-font-auxiliary);
   font-weight: 700;
   letter-spacing: 0;
 }
 
 .current-input-panel {
-  padding: 4rpx 20rpx 14rpx;
-  border: 1rpx solid #c8c8c0;
-  background: #ebece6;
+  padding: var(--mw-space-2) var(--mw-space-3) var(--mw-space-3);
+  border: 1px solid var(--mw-color-border);
+  border-radius: var(--mw-radius-md);
+  background: var(--mw-color-surface-muted);
 }
 
 .current-input-panel :deep(.stepper) {
-  padding: 18rpx 0;
-}
-
-.current-input-panel :deep(.stepper-control) {
-  min-height: 112rpx;
-}
-
-.current-input-panel :deep(.stepper-number) {
-  font-size: 58rpx;
-}
-
-.current-input-panel :deep(.stepper-button) {
-  border-color: #777a73;
-  background: #fcfbf7;
-}
-
-.current-input-panel :deep(.stepper-control-options .stepper-button) {
-  min-height: 336rpx;
-}
-
-.current-input-panel :deep(.stepper-control-options .stepper-number),
-.current-input-panel :deep(.stepper-control-options .stepper-input) {
-  font-size: 58rpx;
+  padding: var(--mw-space-3) 0;
 }
 
 .saved-notice {
   display: block;
-  margin: 12rpx 0 4rpx;
-  color: #176b57;
-  font-size: 20rpx;
+  margin: var(--mw-space-3) 0 var(--mw-space-1);
+  color: var(--mw-color-success);
+  font-size: var(--mw-font-body);
   font-weight: 700;
   text-align: center;
 }
 
 .previous-section {
-  padding-top: 30rpx;
+  padding-top: var(--mw-space-5);
+}
+
+.set-action-bar {
+  margin-top: var(--mw-space-2);
+  margin-right: 0;
+  margin-left: 0;
+  padding-right: 0;
+  padding-left: 0;
 }
 </style>

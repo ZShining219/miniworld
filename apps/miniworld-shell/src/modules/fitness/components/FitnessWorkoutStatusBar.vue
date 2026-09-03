@@ -28,32 +28,40 @@ const copy = computed(() => {
       <text class="workout-status-label">{{ copy.label }}</text>
       <text class="workout-status-detail">{{ copy.detail }}</text>
     </view>
-    <button v-if="actionLabel" class="workout-status-action" @click="emit('action', status.state)">
+    <wd-button
+      v-if="actionLabel"
+      class="workout-status-action"
+      type="primary"
+      variant="soft"
+      size="medium"
+      @click="emit('action', status.state)"
+    >
       {{ actionLabel }}
-    </button>
+    </wd-button>
   </view>
 </template>
 
 <style scoped lang="scss">
 .workout-status {
   display: grid;
-  min-height: 78rpx;
+  min-height: 76px;
   box-sizing: border-box;
-  grid-template-columns: 14rpx minmax(0, 1fr) auto;
+  grid-template-columns: 10px minmax(0, 1fr) auto;
   align-items: center;
-  gap: 14rpx;
-  margin-bottom: 18rpx;
-  padding: 14rpx 16rpx;
-  border: 1rpx solid #c7cbc4;
-  border-left: 5rpx solid #176b57;
-  background: #ebece6;
+  gap: var(--mw-space-3);
+  margin-bottom: var(--mw-space-3);
+  padding: var(--mw-space-3) var(--mw-space-4);
+  border: 1px solid var(--mw-color-border);
+  border-radius: var(--mw-radius-lg);
+  background: var(--mw-color-primary-soft);
 }
 
 .workout-status-dot {
-  width: 12rpx;
-  height: 12rpx;
+  width: 9px;
+  height: 9px;
   border-radius: 50%;
-  background: #176b57;
+  background: var(--mw-color-primary);
+  box-shadow: 0 0 0 4px var(--mw-color-primary-soft);
 }
 
 .workout-status-copy {
@@ -67,49 +75,53 @@ const copy = computed(() => {
 }
 
 .workout-status-label {
-  font-size: 21rpx;
+  font-size: var(--mw-font-strong);
   font-weight: 700;
 }
 
 .workout-status-detail {
-  margin-top: 3rpx;
+  margin-top: var(--mw-space-1);
   overflow: hidden;
-  color: #6b6f68;
-  font-size: 18rpx;
+  color: var(--mw-color-text-secondary);
+  font-size: var(--mw-font-body);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .workout-status-action {
-  min-height: 84rpx;
-  padding: 0 16rpx;
-  border: 1rpx solid #176b57;
-  border-radius: 2rpx;
-  color: #176b57;
-  background: #f4f3ee;
-  font-size: 19rpx;
-  line-height: 82rpx;
+  min-width: 96px;
 }
 
 .workout-status-unfinished_previous_day {
-  border-left-color: #cf533d;
-  background: #f1e9e4;
+  background: var(--mw-color-danger-soft);
 }
 
 .workout-status-unfinished_previous_day .workout-status-dot {
-  background: #cf533d;
+  background: var(--mw-color-danger);
+  box-shadow: 0 0 0 4px var(--mw-color-danger-soft);
 }
 
 .workout-status-completed_today {
-  background: #e7eee9;
+  background: var(--mw-color-primary-soft);
 }
 
 .workout-status-not_started {
-  border-left-color: #8d9089;
-  background: transparent;
+  background: var(--mw-color-surface);
 }
 
 .workout-status-not_started .workout-status-dot {
-  background: #8d9089;
+  background: var(--mw-color-text-muted);
+  box-shadow: 0 0 0 4px var(--mw-color-surface-muted);
+}
+
+@media (max-width: 359px) {
+  .workout-status {
+    grid-template-columns: 8px minmax(0, 1fr);
+  }
+
+  .workout-status-action {
+    grid-column: 2;
+    width: 100%;
+  }
 }
 </style>

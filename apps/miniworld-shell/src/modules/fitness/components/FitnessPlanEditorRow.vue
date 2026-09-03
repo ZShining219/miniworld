@@ -18,20 +18,21 @@ const emit = defineEmits<{
   <view class="plan-editor-row" :class="{ 'plan-editor-row-selected': selected }">
     <view class="plan-editor-field">
       <text class="plan-editor-label">计划名称</text>
-      <input
+      <wd-input
         class="fitness-input"
-        :value="plan.name"
+        :model-value="plan.name"
+        clearable
         @focus="emit('select')"
-        @input="emit('update:name', $event.detail.value)"
-      >
+        @update:model-value="emit('update:name', String($event))"
+      />
     </view>
     <view class="plan-editor-actions">
-      <button class="fitness-secondary" @click="emit('save')">
+      <wd-button class="fitness-secondary" type="primary" variant="soft" size="medium" @click="emit('save')">
         保存
-      </button>
-      <button class="fitness-danger" @click="emit('archive')">
+      </wd-button>
+      <wd-button class="fitness-danger" type="danger" variant="text" size="medium" @click="emit('archive')">
         归档
-      </button>
+      </wd-button>
     </view>
   </view>
 </template>
@@ -40,37 +41,37 @@ const emit = defineEmits<{
 .plan-editor-row {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
-  gap: 12rpx;
-  padding: 22rpx 0;
-  border-top: 1rpx solid #d5d3cc;
+  gap: var(--mw-space-3);
+  padding: var(--mw-space-4) 0;
+  border-top: 1px solid var(--mw-color-border);
 }
 
 .plan-editor-row-selected {
-  border-left: 5rpx solid #176b57;
-  padding-left: 16rpx;
+  padding-left: var(--mw-space-3);
+  border-left: 4px solid var(--mw-color-primary);
 }
 
 .plan-editor-label {
   display: block;
-  margin-bottom: 8rpx;
-  color: #626760;
-  font-size: 19rpx;
+  margin-bottom: var(--mw-space-2);
+  color: var(--mw-color-text-secondary);
+  font-size: var(--mw-font-body);
   font-weight: 700;
 }
 
 .plan-editor-actions {
   display: flex;
   align-items: end;
-  gap: 10rpx;
+  gap: var(--mw-space-2);
 }
 
-.plan-editor-actions button {
-  padding: 0 18rpx;
-}
-
-@media (max-width: 360px) {
+@media (max-width: 430px) {
   .plan-editor-row {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  .plan-editor-actions {
+    justify-content: flex-end;
   }
 }
 </style>

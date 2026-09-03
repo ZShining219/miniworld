@@ -63,23 +63,24 @@ watch(() => props.points, () => nextTick(draw), { deep: true, immediate: true })
 }
 
 .chart {
-  width: 640rpx;
+  width: 100%;
   max-width: 100%;
-  height: 280rpx;
+  height: 280px;
+  min-height: 260px;
 }
 
 .chart-labels {
   display: flex;
   justify-content: space-between;
-  padding: 0 22rpx;
-  color: #777a73;
-  font-size: 19rpx;
+  padding: 0 var(--mw-space-3);
+  color: var(--mw-color-text-muted);
+  font-size: var(--mw-font-auxiliary);
 }
 
 .chart-empty {
   display: block;
-  padding: 36rpx 0;
-  color: #777a73;
-  font-size: 22rpx;
+  padding: var(--mw-space-6) 0;
+  color: var(--mw-color-text-muted);
+  font-size: var(--mw-font-body);
 }
 </style>

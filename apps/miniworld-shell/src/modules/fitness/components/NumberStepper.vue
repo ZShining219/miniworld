@@ -41,8 +41,8 @@ function startEditing() {
   editing.value = true
 }
 
-function updateInput(event: { detail: { value: string } }) {
-  inputValue.value = event.detail.value
+function updateInput(value: string | number) {
+  inputValue.value = String(value)
 }
 
 function commitInput() {
@@ -62,21 +62,22 @@ function commitInput() {
   <view class="stepper">
     <text class="stepper-label">{{ label }}</text>
     <view class="stepper-control" :class="{ 'stepper-control-options': stepOptions.length }">
-      <button class="stepper-button" :aria-label="`减少${label}`" @click="change(-1)">
+      <wd-button class="stepper-button" type="info" variant="soft" size="large" :aria-label="`减少${label}`" @click="change(-1)">
         −
-      </button>
+      </wd-button>
       <view class="stepper-value">
-        <input
+        <wd-input
           v-if="editing"
           class="stepper-input"
           type="digit"
-          :value="inputValue"
+          inputmode="decimal"
+          :model-value="inputValue"
           :focus="editing"
           :aria-label="`输入${label}`"
-          @input="updateInput"
+          @update:model-value="updateInput"
           @blur="commitInput"
           @confirm="commitInput"
-        >
+        />
         <text
           v-else
           class="stepper-number"
@@ -89,22 +90,24 @@ function commitInput() {
         </text>
         <text v-if="unit" class="stepper-unit">{{ unit }}</text>
       </view>
-      <button class="stepper-button" :aria-label="`增加${label}`" @click="change(1)">
+      <wd-button class="stepper-button" type="info" variant="soft" size="large" :aria-label="`增加${label}`" @click="change(1)">
         +
-      </button>
+      </wd-button>
       <view v-if="stepOptions.length" class="stepper-options" :aria-label="`${label}增减档位`">
-        <button
+        <wd-button
           v-for="option in stepOptions"
           :key="option"
           class="stepper-option"
-          :class="{ 'stepper-option-active': option === step }"
+          type="primary"
+          :variant="option === step ? 'base' : 'soft'"
+          size="medium"
           :aria-label="`${label}每次增减${option}`"
           :aria-pressed="option === step"
           :disabled="stepOptionsDisabled"
           @click="emit('update:step', option)"
         >
           {{ option }}
-        </button>
+        </wd-button>
       </view>
     </view>
   </view>
@@ -112,124 +115,92 @@ function commitInput() {
 
 <style scoped lang="scss">
 .stepper {
-  padding: 22rpx 0;
+  padding: var(--mw-space-3) 0;
 }
 
 .stepper-label {
   display: block;
-  margin-bottom: 14rpx;
-  color: #6f736c;
-  font-size: 21rpx;
+  margin-bottom: var(--mw-space-2);
+  color: var(--mw-color-text-secondary);
+  font-size: var(--mw-font-body);
+  font-weight: 650;
 }
 
 .stepper-control {
   display: grid;
-  grid-template-columns: 96rpx minmax(0, 1fr) 96rpx;
-  min-height: 100rpx;
-  align-items: stretch;
+  grid-template-columns: var(--mw-touch-size) minmax(0, 1fr) var(--mw-touch-size);
+  align-items: center;
+  gap: var(--mw-space-2);
 }
 
 .stepper-control-options {
-  grid-template-columns: 96rpx minmax(0, 1fr) 96rpx 88rpx;
-  min-height: 336rpx;
+  grid-template-columns: var(--mw-touch-size) minmax(0, 1fr) var(--mw-touch-size);
 }
 
 .stepper-button {
-  display: flex;
-  width: 100%;
-  height: 100%;
-  box-sizing: border-box;
-  align-items: center;
-  justify-content: center;
-  margin: 0;
+  width: var(--mw-touch-size);
+  min-width: var(--mw-touch-size);
   padding: 0;
-  border: 1rpx solid #92958e;
-  border-radius: 2rpx;
-  color: #1d2420;
-  background: #ebeae4;
-  font-size: 45rpx;
+  font-size: var(--mw-font-stepper-control);
 }
 
 .stepper-value {
   display: flex;
+  min-height: 52px;
   align-items: baseline;
   justify-content: center;
-  gap: 10rpx;
-  border-top: 1rpx solid #92958e;
-  border-bottom: 1rpx solid #92958e;
-  background: #fcfbf7;
+  gap: var(--mw-space-2);
+  border: 1px solid var(--mw-color-border-strong);
+  border-radius: var(--mw-radius-md);
+  background: var(--mw-color-surface);
 }
 
 .stepper-number {
-  font-family: Georgia, serif;
-  font-size: 48rpx;
+  font-size: var(--mw-font-stepper-value);
   font-weight: 700;
+  font-variant-numeric: tabular-nums;
 }
 
 .stepper-number-editable {
-  min-width: 96rpx;
-  padding: 8rpx 10rpx 6rpx;
-  border-bottom: 2rpx solid #176b57;
+  min-width: 64px;
+  padding: var(--mw-space-1) var(--mw-space-2);
+  border-bottom: 2px solid var(--mw-color-primary);
   text-align: center;
 }
 
 .stepper-input {
-  width: 176rpx;
-  max-width: 70%;
-  height: 76rpx;
+  width: 96px;
+  max-width: 68%;
+  min-height: var(--mw-touch-size);
   box-sizing: border-box;
-  padding: 0 8rpx;
+  padding: 0 var(--mw-space-2);
   border: 0;
-  border-bottom: 2rpx solid #176b57;
-  color: #1d2420;
+  border-bottom: 2px solid var(--mw-color-primary);
+  border-radius: 0;
+  color: var(--mw-color-text-primary);
   background: transparent;
-  font-family: Georgia, serif;
-  font-size: 48rpx;
+  font-size: var(--mw-font-stepper-value);
   font-weight: 700;
-  line-height: 76rpx;
   text-align: center;
 }
 
 .stepper-unit {
-  color: #6f736c;
-  font-size: 21rpx;
+  color: var(--mw-color-text-secondary);
+  font-size: var(--mw-font-body);
 }
 
 .stepper-options {
-  display: grid;
+  display: flex;
   width: 100%;
-  height: 100%;
-  grid-template-rows: repeat(4, minmax(0, 1fr));
+  grid-column: 1 / -1;
+  flex-wrap: wrap;
   min-width: 0;
+  gap: var(--mw-space-2);
+  padding-top: var(--mw-space-2);
 }
 
 .stepper-option {
-  display: flex;
-  width: 100%;
-  height: 100%;
-  min-width: 0;
-  min-height: 84rpx;
-  box-sizing: border-box;
-  align-items: center;
-  justify-content: center;
-  margin: 0;
-  padding: 0;
-  border: 1rpx solid #92958e;
-  border-left: 0;
-  border-radius: 0;
-  color: #555a54;
-  background: #ebeae4;
-  font-size: 20rpx;
-  line-height: 82rpx;
-}
-
-.stepper-option + .stepper-option {
-  border-top: 0;
-}
-
-.stepper-option-active {
-  color: #fff;
-  background: #176b57;
-  font-weight: 700;
+  min-width: var(--mw-touch-size);
+  flex: 1;
 }
 </style>

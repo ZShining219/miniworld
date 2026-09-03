@@ -3,6 +3,7 @@ import type { ExerciseProgress, FitnessExercise, FitnessPlan, ProgressMode } fro
 import FitnessChoiceChips from '@/modules/fitness/components/FitnessChoiceChips.vue'
 import FitnessPageShell from '@/modules/fitness/components/FitnessPageShell.vue'
 import FitnessProgressChart from '@/modules/fitness/components/FitnessProgressChart.vue'
+import FitnessSectionHeader from '@/modules/fitness/components/FitnessSectionHeader.vue'
 import type { ProgressChartType } from '@/modules/fitness/components/progressChart'
 import { fitnessApi, useFitnessWorkoutStatus } from '@/modules/fitness'
 
@@ -17,7 +18,17 @@ const progress = ref<ExerciseProgress | null>(null)
 const progressMode = ref<ProgressMode>('day')
 const chartType = ref<ProgressChartType>('line')
 const error = ref('')
+const loading = ref(true)
 const { workoutStatus, workoutActionLabel, handleWorkoutAction } = useFitnessWorkoutStatus('other')
+
+const progressModeItems = [
+  { id: 'day', name: '按训练日' },
+  { id: 'set', name: '按每组' },
+]
+const chartTypeItems = [
+  { id: 'line', name: '折线' },
+  { id: 'bar', name: '柱状' },
+]
 
 const now = new Date()
 const year = now.getFullYear()
@@ -29,6 +40,7 @@ const leading = new Date(year, month, 1).getDay()
 const calendarCells = Array.from({ length: leading + endDate.getDate() }, (_, index) => index < leading ? null : index - leading + 1)
 
 onLoad(async () => {
+  loading.value = true
   try {
     const [planValues, calendar] = await Promise.all([
       fitnessApi.listPlans(),
@@ -42,29 +54,49 @@ onLoad(async () => {
   catch {
     error.value = '暂时无法读取训练统计。'
   }
+  finally {
+    loading.value = false
+  }
 })
 
 async function selectPlan(planId: string) {
-  selectedPlanId.value = planId
-  exercises.value = await fitnessApi.listExercises(planId)
-  if (exercises.value[0]) {
-    await selectExercise(exercises.value[0].id)
+  error.value = ''
+  try {
+    selectedPlanId.value = planId
+    exercises.value = await fitnessApi.listExercises(planId)
+    if (exercises.value[0]) {
+      await selectExercise(exercises.value[0].id)
+    }
+    else {
+      selectedExerciseId.value = ''
+      progress.value = null
+    }
   }
-  else {
-    selectedExerciseId.value = ''
-    progress.value = null
+  catch {
+    error.value = '动作统计读取失败，请稍后重试。'
   }
 }
 
 async function selectExercise(exerciseId: string) {
-  selectedExerciseId.value = exerciseId
-  progress.value = await fitnessApi.progress(exerciseId, progressMode.value)
+  error.value = ''
+  try {
+    selectedExerciseId.value = exerciseId
+    progress.value = await fitnessApi.progress(exerciseId, progressMode.value)
+  }
+  catch {
+    error.value = '重量趋势读取失败，请稍后重试。'
+  }
 }
 
-async function selectProgressMode(mode: ProgressMode) {
-  progressMode.value = mode
+async function selectProgressMode(mode: string) {
+  const selectedMode = mode as ProgressMode
+  progressMode.value = selectedMode
   if (selectedExerciseId.value)
-    progress.value = await fitnessApi.progress(selectedExerciseId.value, mode)
+    progress.value = await fitnessApi.progress(selectedExerciseId.value, selectedMode)
+}
+
+function selectChartType(type: string) {
+  chartType.value = type as ProgressChartType
 }
 
 function cellDate(day: number) {
@@ -74,7 +106,7 @@ function cellDate(day: number) {
 
 <template>
   <FitnessPageShell
-    eyebrow="TRAINING STATS"
+    eyebrow="训练数据"
     title="训练统计"
     subtitle="打卡按已结束训练计算；趋势可按训练日或每组查看。"
     :error="error"
@@ -82,8 +114,17 @@ function cellDate(day: number) {
     :workout-action-label="workoutActionLabel"
     @workout-action="handleWorkoutAction"
   >
-    <view class="fitness-section">
-      <text class="fitness-section-title">{{ year }} 年 {{ month + 1 }} 月</text>
+    <view v-if="loading" class="fitness-card fitness-loading-state">
+      <wd-loading size="22px" />
+      <text class="fitness-meta">正在整理训练数据</text>
+    </view>
+
+    <view v-else class="fitness-section">
+      <FitnessSectionHeader :title="`${year} 年 ${month + 1} 月`" subtitle="仅统计已经结束的训练">
+        <template #right>
+          <text class="calendar-count">{{ trainedDates.length }}<text> 天</text></text>
+        </template>
+      </FitnessSectionHeader>
       <view class="calendar-week">
         <text v-for="label in ['日', '一', '二', '三', '四', '五', '六']" :key="label">{{ label }}</text>
       </view>
@@ -99,25 +140,19 @@ function cellDate(day: number) {
       </view>
     </view>
 
-    <view class="fitness-section">
-      <text class="fitness-section-title">动作重量趋势</text>
+    <view v-if="!loading" class="fitness-section">
+      <FitnessSectionHeader title="动作重量趋势" subtitle="选择部位、动作和统计方式" />
       <FitnessChoiceChips class="plan-chips" :items="plans" :model-value="selectedPlanId" label="选择训练部位" @select="selectPlan" />
       <FitnessChoiceChips class="exercise-chips" :items="exercises" :model-value="selectedExerciseId" label="选择训练动作" @select="selectExercise" />
-      <view class="chart-controls" role="group" aria-label="趋势粒度">
-        <button class="chart-control" :class="{ 'chart-control-active': progressMode === 'day' }" :aria-pressed="progressMode === 'day'" @click="selectProgressMode('day')">
-          按天
-        </button>
-        <button class="chart-control" :class="{ 'chart-control-active': progressMode === 'set' }" :aria-pressed="progressMode === 'set'" @click="selectProgressMode('set')">
-          按次数
-        </button>
-      </view>
-      <view class="chart-controls" role="group" aria-label="图表类型">
-        <button class="chart-control" :class="{ 'chart-control-active': chartType === 'line' }" :aria-pressed="chartType === 'line'" @click="chartType = 'line'">
-          折线
-        </button>
-        <button class="chart-control" :class="{ 'chart-control-active': chartType === 'bar' }" :aria-pressed="chartType === 'bar'" @click="chartType = 'bar'">
-          柱状
-        </button>
+      <view class="chart-options">
+        <view>
+          <text class="chart-option-label">统计方式</text>
+          <FitnessChoiceChips :items="progressModeItems" :model-value="progressMode" label="趋势粒度" @select="selectProgressMode" />
+        </view>
+        <view>
+          <text class="chart-option-label">图表样式</text>
+          <FitnessChoiceChips :items="chartTypeItems" :model-value="chartType" label="图表类型" @select="selectChartType" />
+        </view>
       </view>
       <FitnessProgressChart :progress="progress" :mode="progressMode" :chart-type="chartType" />
       <text v-if="progress?.points.length" class="fitness-meta">{{ progressMode === 'day' ? '按训练日显示平均重量' : '按完成顺序显示每组重量' }}</text>
@@ -133,9 +168,9 @@ function cellDate(day: number) {
 }
 
 .calendar-week {
-  padding-bottom: 12rpx;
-  color: #777a73;
-  font-size: 18rpx;
+  padding-bottom: var(--mw-space-2);
+  color: var(--mw-color-text-muted);
+  font-size: var(--mw-font-auxiliary);
   text-align: center;
 }
 
@@ -144,45 +179,50 @@ function cellDate(day: number) {
   aspect-ratio: 1;
   align-items: center;
   justify-content: center;
-  border-top: 1rpx solid #d5d3cc;
-  color: #555a54;
-  font-family: Georgia, serif;
-  font-size: 21rpx;
+  color: var(--mw-color-text-secondary);
+  font-size: var(--mw-font-body);
+  font-variant-numeric: tabular-nums;
 }
 
 .calendar-trained {
-  color: #fff;
-  background: #176b57;
+  border-radius: var(--mw-radius-pill);
+  color: var(--mw-color-surface);
+  background: var(--mw-color-primary);
+  box-shadow: inset 0 0 0 var(--mw-space-1) var(--mw-color-surface);
 }
 
 .plan-chips {
-  margin-bottom: 16rpx;
+  margin-bottom: var(--mw-space-3);
 }
 
 .exercise-chips {
-  margin-bottom: 30rpx;
+  margin-bottom: var(--mw-space-5);
 }
 
-.chart-controls {
-  display: flex;
-  gap: 12rpx;
-  margin-bottom: 14rpx;
+.chart-options {
+  display: grid;
+  gap: var(--mw-space-4);
+  margin-bottom: var(--mw-space-5);
+  padding: var(--mw-space-4);
+  border-radius: var(--mw-radius-md);
+  background: var(--mw-color-surface-muted);
 }
 
-.chart-control {
-  min-width: 112rpx;
-  min-height: 64rpx;
-  padding: 0 20rpx;
-  border: 1rpx solid #aaa9a2;
-  border-radius: 2rpx;
-  color: #50544f;
-  background: transparent;
-  font-size: 21rpx;
+.chart-option-label {
+  display: block;
+  margin-bottom: var(--mw-space-2);
+  color: var(--mw-color-text-secondary);
+  font-size: var(--mw-font-body);
+  font-weight: 650;
 }
 
-.chart-control-active {
-  border-color: #176b57;
-  color: #fff;
-  background: #176b57;
+.calendar-count {
+  color: var(--mw-color-primary);
+  font-size: var(--mw-font-section);
+  font-weight: 700;
+}
+
+.calendar-count text {
+  font-size: var(--mw-font-auxiliary);
 }
 </style>

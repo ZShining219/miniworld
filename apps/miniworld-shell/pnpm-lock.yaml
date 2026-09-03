@@ -69,6 +69,9 @@ importers:
       '@dcloudio/uni-quickapp-webview':
         specifier: 3.0.0-4070620250821001
         version: 3.0.0-4070620250821001(postcss@8.5.6)(rollup@4.50.0)(supports-color@8.1.1)(vue@3.4.21(typescript@5.8.3))
+      '@wot-ui/ui':
+        specifier: 2.3.2
+        version: 2.3.2(vue@3.4.21(typescript@5.8.3))
       abortcontroller-polyfill:
         specifier: ^1.7.8
         version: 1.7.8
@@ -3703,6 +3706,12 @@ packages:
     peerDependenciesMeta:
       '@types/node':
         optional: true
+
+  '@wot-ui/ui@2.3.2':
+    resolution: {integrity: sha512-voPLlAsSh9mWASqYXXiYMSp8Rc9aZ3HBEYh7kAuxrADtbwtL+D+gbofUL5hd2SnSIbRVaweVD5Bb+MicZ6jIlw==}
+    engines: {HBuilderX: ^3.8.7}
+    peerDependencies:
+      vue: '>=3.2.47'
 
   '@xmldom/xmldom@0.8.11':
     resolution: {integrity: sha512-cQzWCtO6C8TQiYl1ruKNn2U6Ao4o4WBBcbL61yJl84x+j5sOWWFU9X7DpND8XZG3daDppSsigMdfAIl2upQBRw==}
@@ -15078,6 +15087,10 @@ snapshots:
   '@vue/tsconfig@0.1.3(@types/node@20.19.11)':
     optionalDependencies:
       '@types/node': 20.19.11
+
+  '@wot-ui/ui@2.3.2(vue@3.4.21(typescript@5.8.3))':
+    dependencies:
+      vue: 3.4.21(typescript@5.8.3)
 
   '@xmldom/xmldom@0.8.11': {}
 

@@ -21,12 +21,12 @@ withDefaults(defineProps<{
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  gap: 20rpx;
-  margin-bottom: 18rpx;
+  gap: var(--mw-space-3);
+  margin-bottom: var(--mw-space-4);
 }
 
 .fitness-section-heading-roomy {
-  margin-bottom: 22rpx;
+  margin-bottom: var(--mw-space-5);
 }
 
 .fitness-section-heading-copy {
@@ -35,6 +35,6 @@ withDefaults(defineProps<{
 }
 
 .fitness-section-title {
-  margin-bottom: 4rpx;
+  margin-bottom: var(--mw-space-1);
 }
 </style>

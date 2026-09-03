@@ -1,8 +1,4 @@
 <script setup lang="ts">
-interface InputEventLike {
-  detail: { value: string }
-}
-
 withDefaults(defineProps<{
   name: string
   weight: number
@@ -16,8 +12,8 @@ const emit = defineEmits<{
   'update:reps': [value: number]
 }>()
 
-function numberValue(event: InputEventLike): number {
-  const value = Number(event.detail.value)
+function numberValue(input: string | number): number {
+  const value = Number(input)
   return Number.isFinite(value) ? value : 0
 }
 </script>
@@ -26,32 +22,37 @@ function numberValue(event: InputEventLike): number {
   <view class="exercise-default-fields">
     <view class="exercise-default-name">
       <text class="exercise-field-label">动作名称</text>
-      <input
+      <wd-input
         class="fitness-input"
-        :value="name"
+        :model-value="name"
         :placeholder="namePlaceholder"
-        @input="emit('update:name', $event.detail.value)"
-      >
+        clearable
+        @update:model-value="emit('update:name', String($event))"
+      />
     </view>
     <view class="exercise-default-row">
       <view class="exercise-default-field">
         <text class="exercise-field-label">默认重量（kg）</text>
-        <input
+        <wd-input
           class="fitness-input exercise-numeric-input"
           type="digit"
-          :value="String(weight)"
-          @input="emit('update:weight', numberValue($event))"
-        >
+          inputmode="decimal"
+          :model-value="String(weight)"
+          @update:model-value="emit('update:weight', numberValue($event))"
+        />
       </view>
       <view class="exercise-default-field">
         <text class="exercise-field-label">默认次数（次）</text>
-        <input
+        <wd-input
           class="fitness-input exercise-numeric-input"
           type="number"
-          :value="String(reps)"
-          @input="emit('update:reps', numberValue($event))"
-        >
+          inputmode="numeric"
+          :model-value="String(reps)"
+          @update:model-value="emit('update:reps', numberValue($event))"
+        />
       </view>
+    </view>
+    <view v-if="$slots.action" class="exercise-default-action">
       <slot name="action" />
     </view>
   </view>
@@ -65,18 +66,18 @@ function numberValue(event: InputEventLike): number {
 
 .exercise-field-label {
   display: block;
-  margin: 0 0 8rpx;
-  color: #626760;
-  font-size: 19rpx;
+  margin: 0 0 var(--mw-space-2);
+  color: var(--mw-color-text-secondary);
+  font-size: var(--mw-font-body);
   font-weight: 700;
 }
 
 .exercise-default-row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   align-items: end;
-  gap: 12rpx;
-  margin-top: 16rpx;
+  gap: var(--mw-space-3);
+  margin-top: var(--mw-space-4);
 }
 
 .fitness-input {
@@ -87,13 +88,8 @@ function numberValue(event: InputEventLike): number {
   text-align: center;
 }
 
-@media (max-width: 360px) {
-  .exercise-default-row {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  }
-
-  .exercise-default-row :deep(button) {
-    grid-column: 1 / -1;
-  }
+.exercise-default-action {
+  display: grid;
+  margin-top: var(--mw-space-4);
 }
 </style>

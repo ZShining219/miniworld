@@ -1,4 +1,20 @@
 // 全局要用的类型放到这里
+import type { DefineComponent } from 'vue'
+
+type WotUiComponent = DefineComponent<any, any, any>
+
+// Wot UI 2 currently publishes global declarations that force vue-tsc to
+// inspect every upstream SFC. Limit type loading to the components used here;
+// runtime resolution still comes from the official unibest resolver.
+declare module 'vue' {
+  interface GlobalComponents {
+    WdButton: WotUiComponent
+    WdEmpty: WotUiComponent
+    WdIcon: WotUiComponent
+    WdInput: WotUiComponent
+    WdLoading: WotUiComponent
+  }
+}
 
 declare global {
   interface IResData<T> {

@@ -14,7 +14,9 @@ import { httpRaw } from '@/http/http'
 const base = '/api/v1/fitness'
 
 function request<T>(url: string, method: UniApp.RequestOptions['method'] = 'GET', data?: Record<string, unknown>, query?: Record<string, unknown>) {
-  return httpRaw<T>({ url: `${base}${url}`, method, data, query })
+  // Fitness pages render actionable inline errors; a global toast would cover
+  // the empty/error state and make retry context disappear on small screens.
+  return httpRaw<T>({ url: `${base}${url}`, method, data, query, hideErrorToast: true })
 }
 
 export const fitnessApi = {

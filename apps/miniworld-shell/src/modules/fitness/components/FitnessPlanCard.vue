@@ -38,13 +38,16 @@ const emit = defineEmits<{ select: [] }>()
 .plan-card {
   position: relative;
   display: flex;
-  min-height: 132rpx;
+  min-height: 88px;
   box-sizing: border-box;
   align-items: center;
-  gap: 20rpx;
-  padding: 0 18rpx 0 24rpx;
-  border-top: 1rpx solid #d5d3cc;
-  background: #f4f3ee;
+  gap: var(--mw-space-3);
+  margin-bottom: var(--mw-space-3);
+  padding: var(--mw-space-4);
+  border: 1px solid var(--mw-color-border);
+  border-radius: var(--mw-radius-lg);
+  background: var(--mw-color-surface);
+  box-shadow: var(--mw-shadow-card);
   cursor: grab;
   user-select: none;
   -webkit-touch-callout: none;
@@ -53,23 +56,13 @@ const emit = defineEmits<{ select: [] }>()
     box-shadow 180ms ease;
 }
 
-.plan-card::after {
-  position: absolute;
-  right: 18rpx;
-  bottom: 0;
-  left: 24rpx;
-  height: 1rpx;
-  background: transparent;
-  content: '';
-}
-
 .plan-card-accent {
-  width: 5rpx;
-  height: 50rpx;
+  width: 4px;
+  height: 40px;
   flex: 0 0 auto;
-  border-radius: 999rpx;
-  background: #176b57;
-  opacity: 0.26;
+  border-radius: var(--mw-radius-pill);
+  background: var(--mw-color-primary);
+  opacity: 0.72;
   transition:
     height 180ms ease,
     opacity 180ms ease;
@@ -79,48 +72,48 @@ const emit = defineEmits<{ select: [] }>()
   display: flex;
   flex: 0 0 auto;
   align-items: center;
-  gap: 20rpx;
+  gap: var(--mw-space-4);
 }
 
 .plan-card-enter {
   display: flex;
   align-items: center;
-  gap: 8rpx;
-  color: #cf533d;
+  gap: var(--mw-space-1);
+  color: var(--mw-color-primary);
 }
 
 .plan-card-action-label {
-  color: #777a73;
-  font-size: 18rpx;
+  color: var(--mw-color-text-secondary);
+  font-size: var(--mw-font-auxiliary);
 }
 
 .plan-card-grip {
   display: grid;
-  width: 22rpx;
-  grid-template-columns: repeat(2, 5rpx);
-  gap: 5rpx;
-  opacity: 0.42;
+  width: 14px;
+  grid-template-columns: repeat(2, 3px);
+  gap: 3px;
+  opacity: 0.5;
 }
 
 .plan-card-grip-dot {
-  width: 5rpx;
-  height: 5rpx;
+  width: 3px;
+  height: 3px;
   border-radius: 50%;
-  background: #565b55;
+  background: var(--mw-color-text-muted);
 }
 
 .plan-card:active,
 .plan-card-dragging {
-  background: #ebece6;
+  background: var(--mw-color-primary-soft);
 }
 
 .plan-card-dragging {
   cursor: grabbing;
-  box-shadow: 0 18rpx 44rpx rgba(29, 36, 32, 0.16);
+  box-shadow: var(--mw-shadow-raised);
 }
 
 .plan-card-dragging .plan-card-accent {
-  height: 72rpx;
+  height: 56px;
   opacity: 1;
 }
 

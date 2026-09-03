@@ -7,11 +7,13 @@ withDefaults(defineProps<{
   index?: number
   actionLabel?: string
   actionAriaLabel?: string
+  actionTone?: 'primary' | 'danger'
   disabled?: boolean
 }>(), {
   index: undefined,
   actionLabel: '',
   actionAriaLabel: '',
+  actionTone: 'danger',
   disabled: false,
 })
 
@@ -34,15 +36,18 @@ const emit = defineEmits<{
       <text class="fitness-list-title">{{ exercise.name }}</text>
       <text class="fitness-meta">{{ meta }}</text>
     </view>
-    <button
+    <wd-button
       v-if="actionLabel"
       class="fitness-exercise-action"
+      :type="actionTone"
+      variant="text"
+      size="medium"
       :aria-label="actionAriaLabel || `${actionLabel}${exercise.name}`"
       :disabled="disabled"
       @click.stop="emit('action')"
     >
       {{ actionLabel }}
-    </button>
+    </wd-button>
     <text v-else class="fitness-arrow" aria-hidden="true">→</text>
   </view>
 </template>
@@ -50,14 +55,14 @@ const emit = defineEmits<{
 <style scoped lang="scss">
 .fitness-exercise-row {
   display: flex;
-  min-height: 116rpx;
+  min-height: 72px;
   align-items: center;
-  gap: 18rpx;
-  border-top: 1rpx solid #d5d3cc;
+  gap: var(--mw-space-3);
+  border-top: 1px solid var(--mw-color-border);
 }
 
 .fitness-exercise-row:last-child {
-  border-bottom: 1rpx solid #d5d3cc;
+  border-bottom: 1px solid var(--mw-color-border);
 }
 
 .fitness-exercise-row-disabled {
@@ -65,22 +70,14 @@ const emit = defineEmits<{
 }
 
 .fitness-exercise-index {
-  width: 46rpx;
+  width: 28px;
   flex: none;
-  color: #cf533d;
-  font-family: Georgia, serif;
-  font-size: 22rpx;
+  color: var(--mw-color-accent);
+  font-size: var(--mw-font-auxiliary);
+  font-weight: 700;
 }
 
 .fitness-exercise-action {
-  min-width: 74rpx;
-  height: 58rpx;
-  padding: 0 12rpx;
-  border: 1rpx solid #d5b2a9;
-  border-radius: 2rpx;
-  color: #a43f2e;
-  background: transparent;
-  font-size: 19rpx;
-  line-height: 54rpx;
+  min-width: var(--mw-touch-size);
 }
 </style>

@@ -15,15 +15,17 @@ const emit = defineEmits<{ select: [id: string] }>()
 
 <template>
   <view class="fitness-chip-list" role="group" :aria-label="label">
-    <button
+    <wd-button
       v-for="item in items"
       :key="item.id"
       class="fitness-chip"
-      :class="{ 'fitness-chip-active': modelValue === item.id }"
+      type="primary"
+      :variant="modelValue === item.id ? 'base' : 'soft'"
+      size="medium"
       :aria-pressed="modelValue === item.id"
       @click="emit('select', item.id)"
     >
       {{ item.name }}
-    </button>
+    </wd-button>
   </view>
 </template>

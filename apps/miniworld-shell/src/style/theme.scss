@@ -1,0 +1,115 @@
+@use '@wot-ui/ui/styles/theme/index.scss';
+
+:root,
+page {
+  --mw-color-primary: #1f6b54;
+  --mw-color-primary-strong: #15503e;
+  --mw-color-primary-soft: #e6f0eb;
+  --mw-color-on-primary-muted: #d9ebe2;
+  --mw-color-accent: #c86f3f;
+  --mw-color-success: #1f6b54;
+  --mw-color-warning: #9a6325;
+  --mw-color-danger: #b4433c;
+  --mw-color-danger-soft: #f9ece9;
+  --mw-color-danger-border: #e7b8b3;
+  --mw-color-text-primary: #18211d;
+  --mw-color-text-secondary: #5d6862;
+  --mw-color-text-muted: #76817b;
+  --mw-color-surface: #ffffff;
+  --mw-color-surface-raised: #fbfcfa;
+  --mw-color-surface-muted: #eef1ed;
+  --mw-color-background: #f3f4f0;
+  --mw-color-border: #d9dfd9;
+  --mw-color-border-strong: #bbc5be;
+  --mw-space-1: 4px;
+  --mw-space-2: 8px;
+  --mw-space-3: 12px;
+  --mw-space-4: 16px;
+  --mw-space-5: 20px;
+  --mw-space-6: 24px;
+  --mw-space-8: 32px;
+  --mw-space-10: 40px;
+  --mw-radius-sm: 8px;
+  --mw-radius-md: 12px;
+  --mw-radius-lg: 18px;
+  --mw-radius-pill: 999px;
+  --mw-font-auxiliary: 13px;
+  --mw-font-body: 15px;
+  --mw-font-input: 16px;
+  --mw-font-strong: 17px;
+  --mw-font-section: 20px;
+  --mw-font-title: 30px;
+  --mw-font-title-compact: 28px;
+  --mw-font-data: 36px;
+  --mw-font-stepper-control: 24px;
+  --mw-font-stepper-value: 28px;
+  --mw-line-body: 1.6;
+  --mw-touch-size: 44px;
+  --mw-shadow-card: 0 8px 24px rgb(24 33 29 / 7%);
+  --mw-shadow-raised: 0 16px 38px rgb(24 33 29 / 12%);
+  --mw-font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
+    'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+
+  --wot-primary-1: #eef6f2;
+  --wot-primary-2: #d9ebe2;
+  --wot-primary-3: #b8d9c9;
+  --wot-primary-4: #8fc2aa;
+  --wot-primary-5: #5f9f83;
+  --wot-primary-6: var(--mw-color-primary);
+  --wot-primary-7: var(--mw-color-primary-strong);
+  --wot-primary-8: #103f31;
+  --wot-primary-9: #0b3025;
+  --wot-primary-10: #07251c;
+  --wot-text-main: var(--mw-color-text-primary);
+  --wot-text-secondary: var(--mw-color-text-secondary);
+  --wot-text-auxiliary: var(--mw-color-text-muted);
+  --wot-border-main: var(--mw-color-border);
+  --wot-border-strong: var(--mw-color-border-strong);
+  --wot-filled-content: var(--mw-color-surface-muted);
+  --wot-filled-bottom: var(--mw-color-background);
+  --wot-filled-oppo: var(--mw-color-surface);
+  --wot-danger-main: var(--mw-color-danger);
+  --wot-danger-surface: var(--mw-color-danger-soft);
+  --wot-button-primary-bg: var(--mw-color-primary);
+  --wot-button-primary-bg-active: var(--mw-color-primary-strong);
+  --wot-button-primary-color: var(--mw-color-primary);
+  --wot-button-height-large: 48px;
+  --wot-button-height-medium: 44px;
+  --wot-button-font-size-large: 16px;
+  --wot-button-font-size-medium: 15px;
+  --wot-button-radius-main: var(--mw-radius-md);
+  --wot-input-inner-height: 28px;
+  --wot-input-inner-font-size: var(--mw-font-input);
+  --wot-empty-text-font-size: var(--mw-font-body);
+
+  color: var(--mw-color-text-primary);
+  background: var(--mw-color-background);
+  font-family: var(--mw-font-family);
+  text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+}
+
+body,
+uni-page-body,
+page,
+view,
+text,
+input,
+textarea,
+button {
+  font-family: var(--mw-font-family);
+}
+
+body,
+uni-page-body {
+  min-height: 100%;
+  margin: 0;
+  background: var(--mw-color-background);
+}
+
+button,
+input,
+textarea {
+  text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+}

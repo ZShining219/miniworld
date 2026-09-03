@@ -29,32 +29,32 @@ const emit = defineEmits<{
       @update:reps="emit('update:reps', $event)"
     />
     <view class="exercise-editor-actions">
-      <button class="fitness-icon-button" aria-label="上移" :disabled="first" @click="emit('move', -1)">
+      <wd-button class="fitness-icon-button" type="info" variant="soft" size="medium" aria-label="上移" :disabled="first" @click="emit('move', -1)">
         ↑
-      </button>
-      <button class="fitness-icon-button" aria-label="下移" :disabled="last" @click="emit('move', 1)">
+      </wd-button>
+      <wd-button class="fitness-icon-button" type="info" variant="soft" size="medium" aria-label="下移" :disabled="last" @click="emit('move', 1)">
         ↓
-      </button>
-      <button class="fitness-secondary" @click="emit('save')">
+      </wd-button>
+      <wd-button class="fitness-secondary" type="primary" variant="soft" size="medium" @click="emit('save')">
         保存
-      </button>
-      <button class="fitness-danger" @click="emit('archive')">
+      </wd-button>
+      <wd-button class="fitness-danger" type="danger" variant="text" size="medium" @click="emit('archive')">
         归档
-      </button>
+      </wd-button>
     </view>
   </view>
 </template>
 
 <style scoped lang="scss">
 .exercise-editor-row {
-  padding: 24rpx 0;
-  border-top: 1rpx solid #d5d3cc;
+  padding: var(--mw-space-5) 0;
+  border-top: 1px solid var(--mw-color-border);
 }
 
 .exercise-editor-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 12rpx;
-  margin-top: 16rpx;
+  gap: var(--mw-space-2);
+  margin-top: var(--mw-space-4);
 }
 </style>

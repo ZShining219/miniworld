@@ -1,5 +1,81 @@
 import { createPinia, setActivePinia } from 'pinia'
+import { config } from '@vue/test-utils'
+import { defineComponent, h } from 'vue'
 import { beforeEach, vi } from 'vitest'
+
+const WdButtonStub = defineComponent({
+  name: 'WdButton',
+  inheritAttrs: false,
+  props: {
+    disabled: Boolean,
+    loading: Boolean,
+  },
+  emits: ['click'],
+  setup(props, { attrs, emit, slots }) {
+    return () => h('button', {
+      ...attrs,
+      disabled: props.disabled || props.loading || undefined,
+      onClick: (event: Event) => emit('click', event),
+    }, slots.default?.())
+  },
+})
+
+const WdInputStub = defineComponent({
+  name: 'WdInput',
+  inheritAttrs: false,
+  props: {
+    modelValue: { type: [String, Number], default: '' },
+    disabled: Boolean,
+    focus: Boolean,
+    type: { type: String, default: 'text' },
+    placeholder: { type: String, default: '' },
+  },
+  emits: ['update:modelValue', 'input', 'focus', 'blur', 'confirm'],
+  setup(props, { attrs, emit }) {
+    function eventValue(event: Event) {
+      const detail = (event as Event & { detail?: { value?: string } }).detail
+      return detail?.value ?? (event.target as HTMLInputElement | null)?.value ?? ''
+    }
+    return () => h('input', {
+      ...attrs,
+      value: props.modelValue,
+      disabled: props.disabled || undefined,
+      autofocus: props.focus || undefined,
+      type: props.type === 'digit' ? 'text' : props.type,
+      placeholder: props.placeholder,
+      onInput: (event: Event) => {
+        const value = eventValue(event)
+        emit('update:modelValue', value)
+        emit('input', { value })
+      },
+      onFocus: (event: FocusEvent) => emit('focus', event),
+      onBlur: (event: FocusEvent) => emit('blur', event),
+      onKeyup: (event: KeyboardEvent) => event.key === 'Enter' && emit('confirm', event),
+    })
+  },
+})
+
+const WdEmptyStub = defineComponent({
+  name: 'WdEmpty',
+  props: { tip: { type: String, default: '' } },
+  setup(props, { slots }) {
+    return () => h('div', { class: 'wd-empty-stub' }, [props.tip, slots.default?.()])
+  },
+})
+
+const WdLoadingStub = defineComponent({
+  name: 'WdLoading',
+  setup() {
+    return () => h('span', { class: 'wd-loading-stub' }, '加载中')
+  },
+})
+
+config.global.components = {
+  WdButton: WdButtonStub,
+  WdEmpty: WdEmptyStub,
+  WdInput: WdInputStub,
+  WdLoading: WdLoadingStub,
+}
 
 // 每个测试前重置 Pinia 实例，避免状态在测试间泄漏
 beforeEach(() => {

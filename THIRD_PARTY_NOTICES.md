@@ -38,3 +38,9 @@ The import excludes upstream Git history, Agent/editor instructions and example 
 - Source snapshot: <https://gitee.com/liangei/lime-echart>, pinned commit `88bdd1dd3ccc541c8d645e464ab04264dbd68ca1`.
 - Imported paths: `apps/miniworld-shell/src/uni_modules/lime-echart/components/l-echart/{l-echart.vue,canvas.js,utils.js}` only; demos, bundled ECharts assets and upstream metadata are excluded.
 - Apache ECharts `5.4.3` is installed from npm and remains under its Apache-2.0 license.
+
+## Wot UI 2
+
+- `@wot-ui/ui` `2.3.2` — <https://github.com/wot-ui/wot-ui> — MIT.
+- Installed from npm as the shared mobile presentation component library for the uni-app shell.
+- The local resolver follows the output of `create-unibest@4.0.16` for the `wot-ui-v2` option; MiniWorld pins the resolved component-library version instead of using `latest`.

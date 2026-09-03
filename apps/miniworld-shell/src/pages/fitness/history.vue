@@ -12,6 +12,7 @@ const { workoutStatus, workoutActionLabel, handleWorkoutAction } = useFitnessWor
 
 onShow(async () => {
   loading.value = true
+  error.value = ''
   try {
     items.value = await fitnessApi.history()
   }
@@ -31,7 +32,7 @@ function duration(seconds: number) {
 
 <template>
   <FitnessPageShell
-    eyebrow="FITNESS HISTORY"
+    eyebrow="训练记录"
     title="训练历史"
     subtitle="这里只统计已经结束的训练。"
     :error="error"
@@ -39,10 +40,16 @@ function duration(seconds: number) {
     :workout-action-label="workoutActionLabel"
     @workout-action="handleWorkoutAction"
   >
-    <text v-if="loading" class="fitness-empty">正在读取…</text>
-    <text v-else-if="!items.length" class="fitness-empty">完成第一次训练后，记录会出现在这里。</text>
+    <view v-if="loading" class="fitness-card fitness-loading-state">
+      <wd-loading size="22px" />
+      <text class="fitness-meta">正在读取训练历史</text>
+    </view>
+    <view v-else-if="!items.length && !error" class="fitness-card fitness-empty-state">
+      <wd-empty tip="还没有已完成的训练" icon-size="72" />
+      <text class="fitness-note">结束第一次训练后，动作和组记录会出现在这里。</text>
+    </view>
 
-    <view v-for="item in items" :key="item.session.id" class="history-session">
+    <view v-for="item in items" :key="item.session.id" class="fitness-card history-session">
       <view class="fitness-row-between history-heading">
         <view>
           <text class="history-date">{{ item.session.workoutDate }}</text>
@@ -64,8 +71,7 @@ function duration(seconds: number) {
 
 <style scoped lang="scss">
 .history-session {
-  padding: 38rpx 0;
-  border-bottom: 2rpx solid #1d2420;
+  padding: var(--mw-space-5) var(--mw-space-4);
 }
 
 .history-heading {
@@ -74,30 +80,36 @@ function duration(seconds: number) {
 
 .history-date {
   display: block;
-  margin-bottom: 10rpx;
-  color: #cf533d;
-  font-family: Georgia, serif;
-  font-size: 21rpx;
+  margin-bottom: var(--mw-space-2);
+  color: var(--mw-color-accent);
+  font-size: var(--mw-font-body);
   font-weight: 700;
 }
 
 .history-summary {
   display: flex;
-  gap: 24rpx;
-  margin: 20rpx 0 28rpx;
-  color: #777a73;
-  font-size: 20rpx;
+  gap: var(--mw-space-2);
+  margin: var(--mw-space-4) 0 var(--mw-space-5);
+  color: var(--mw-color-text-secondary);
+  font-size: var(--mw-font-body);
+}
+
+.history-summary text {
+  padding: var(--mw-space-1) var(--mw-space-2);
+  border-radius: var(--mw-radius-pill);
+  background: var(--mw-color-surface-muted);
 }
 
 .history-exercise {
-  padding: 22rpx 0;
-  border-top: 1rpx solid #d5d3cc;
+  padding: var(--mw-space-4) 0;
+  border-top: 1px solid var(--mw-color-border);
 }
 
 .history-set {
   display: block;
-  margin-top: 9rpx;
-  color: #555a54;
-  font-size: 23rpx;
+  margin-top: var(--mw-space-2);
+  color: var(--mw-color-text-secondary);
+  font-size: var(--mw-font-body);
+  font-variant-numeric: tabular-nums;
 }
 </style>

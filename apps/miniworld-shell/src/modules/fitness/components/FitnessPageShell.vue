@@ -37,7 +37,10 @@ const emit = defineEmits<{ workoutAction: [state: WorkoutStatusState] }>()
           <text v-if="subtitle" class="fitness-subtitle">{{ subtitle }}</text>
         </slot>
       </view>
-      <text v-if="error" class="fitness-error" role="alert">{{ error }}</text>
+      <view v-if="error" class="fitness-error" role="alert">
+        <text aria-hidden="true">!</text>
+        <text>{{ error }}</text>
+      </view>
       <slot />
     </view>
   </view>
@@ -49,6 +52,6 @@ const emit = defineEmits<{ workoutAction: [state: WorkoutStatusState] }>()
 
 <style scoped lang="scss">
 .fitness-heading-compact {
-  padding-bottom: 28rpx;
+  padding-bottom: var(--mw-space-5);
 }
 </style>

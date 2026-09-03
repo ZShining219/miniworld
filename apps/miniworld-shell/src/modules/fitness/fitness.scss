@@ -1,65 +1,64 @@
 .fitness-page {
   min-height: 100vh;
   box-sizing: border-box;
-  padding: 34rpx 32rpx 80rpx;
-  color: #1d2420;
-  background: #f4f3ee;
-  font-family: 'PingFang SC', 'Noto Sans CJK SC', sans-serif;
+  padding: var(--mw-space-4) var(--mw-space-4) calc(var(--mw-space-10) + env(safe-area-inset-bottom));
+  color: var(--mw-color-text-primary);
+  background: var(--mw-color-background);
+  font-family: var(--mw-font-family);
 }
 
 .fitness-shell {
   width: 100%;
-  max-width: 760rpx;
+  max-width: 680px;
   margin: 0 auto;
 }
 
 .fitness-heading {
-  padding: 16rpx 0 34rpx;
-  border-bottom: 2rpx solid #1d2420;
-}
-
-.fitness-eyebrow,
-.fitness-meta,
-.fitness-link {
-  letter-spacing: 0;
+  padding: var(--mw-space-5) var(--mw-space-1) var(--mw-space-6);
 }
 
 .fitness-eyebrow {
   display: block;
-  color: #cf533d;
-  font-size: 19rpx;
+  color: var(--mw-color-primary);
+  font-size: var(--mw-font-auxiliary);
   font-weight: 700;
-  text-transform: uppercase;
+  line-height: 1.4;
 }
 
 .fitness-title {
   display: block;
-  margin-top: 14rpx;
-  font-family: 'Songti SC', 'Noto Serif CJK SC', serif;
-  font-size: 52rpx;
-  font-weight: 700;
-  line-height: 1.25;
+  margin-top: var(--mw-space-2);
+  font-size: var(--mw-font-title);
+  font-weight: 760;
+  line-height: 1.22;
+  letter-spacing: 0;
 }
 
 .fitness-subtitle {
   display: block;
-  margin-top: 14rpx;
-  color: #6b6f68;
-  font-size: 24rpx;
-  line-height: 1.6;
+  margin-top: var(--mw-space-2);
+  color: var(--mw-color-text-secondary);
+  font-size: var(--mw-font-body);
+  line-height: var(--mw-line-body);
 }
 
-.fitness-section {
-  padding: 38rpx 0;
-  border-bottom: 1rpx solid #c9c8c1;
+.fitness-section,
+.fitness-card {
+  box-sizing: border-box;
+  margin-bottom: var(--mw-space-4);
+  padding: var(--mw-space-5) var(--mw-space-4);
+  border: 1px solid var(--mw-color-border);
+  border-radius: var(--mw-radius-lg);
+  background: var(--mw-color-surface);
+  box-shadow: var(--mw-shadow-card);
 }
 
 .fitness-section-title {
   display: block;
-  margin-bottom: 22rpx;
-  font-family: 'Songti SC', 'Noto Serif CJK SC', serif;
-  font-size: 31rpx;
-  font-weight: 700;
+  margin-bottom: var(--mw-space-3);
+  font-size: var(--mw-font-section);
+  font-weight: 720;
+  line-height: 1.35;
 }
 
 .fitness-row {
@@ -69,21 +68,22 @@
 
 .fitness-row-between {
   display: flex;
+  min-width: 0;
   align-items: center;
   justify-content: space-between;
-  gap: 20rpx;
+  gap: var(--mw-space-3);
 }
 
 .fitness-list-row {
   display: flex;
-  min-height: 108rpx;
+  min-height: 72px;
   align-items: center;
-  gap: 20rpx;
-  border-top: 1rpx solid #d5d3cc;
+  gap: var(--mw-space-3);
+  border-top: 1px solid var(--mw-color-border);
 }
 
 .fitness-list-row:last-child {
-  border-bottom: 1rpx solid #d5d3cc;
+  border-bottom: 1px solid var(--mw-color-border);
 }
 
 .fitness-list-copy {
@@ -95,147 +95,183 @@
 .fitness-list-title {
   display: block;
   min-width: 0;
-  overflow: hidden;
-  line-height: 1.35;
-  text-overflow: ellipsis;
-  white-space: normal;
   overflow-wrap: anywhere;
-  font-size: 29rpx;
-  font-weight: 650;
+  font-size: var(--mw-font-strong);
+  font-weight: 680;
+  line-height: 1.4;
 }
 
 .fitness-meta {
   display: block;
-  margin-top: 8rpx;
-  color: #777a73;
-  font-size: 20rpx;
-  line-height: 1.4;
+  margin-top: var(--mw-space-1);
+  color: var(--mw-color-text-secondary);
+  font-size: var(--mw-font-body);
+  line-height: 1.5;
 }
 
 .fitness-arrow {
-  color: #cf533d;
-  font-size: 32rpx;
+  flex: none;
+  color: var(--mw-color-primary);
+  font-size: var(--mw-font-section);
+  font-weight: 700;
 }
 
 .fitness-primary,
 .fitness-secondary,
 .fitness-danger,
-.fitness-icon-button {
-  box-sizing: border-box;
-  border-radius: 4rpx;
-  font-weight: 700;
-  letter-spacing: 0;
+.fitness-icon-button,
+.fitness-text-button {
+  min-height: var(--mw-touch-size);
+  font-weight: 650;
 }
 
 .fitness-primary {
-  display: flex;
   width: 100%;
-  min-height: 100rpx;
-  align-items: center;
-  justify-content: center;
-  border: 0;
-  color: #fff;
-  background: #cf533d;
-  font-size: 28rpx;
 }
 
-.fitness-primary[disabled] {
-  opacity: 0.5;
-}
-
-.fitness-secondary,
-.fitness-danger {
-  min-height: 72rpx;
-  padding: 0 24rpx;
-  border: 1rpx solid #9fa19a;
-  color: #1d2420;
-  background: transparent;
-  font-size: 22rpx;
+.fitness-secondary {
+  --wot-button-info-bg: var(--mw-color-surface-muted);
+  --wot-button-info-color: var(--mw-color-text-primary);
 }
 
 .fitness-danger {
-  border-color: #cf533d;
-  color: #a43f2e;
+  --wot-button-danger-color: var(--mw-color-danger);
+  --wot-button-danger-plain-border: var(--mw-color-danger);
 }
 
 .fitness-icon-button {
-  width: 66rpx;
-  height: 66rpx;
+  min-width: var(--mw-touch-size);
   padding: 0;
-  border: 1rpx solid #aaa9a2;
-  color: #343a35;
-  background: transparent;
-  font-size: 28rpx;
 }
 
 .fitness-link {
-  color: #176b57;
-  font-size: 22rpx;
-  font-weight: 700;
+  display: inline-flex;
+  min-height: var(--mw-touch-size);
+  align-items: center;
+  color: var(--mw-color-primary);
+  font-size: var(--mw-font-body);
+  font-weight: 680;
 }
 
-.fitness-active {
-  padding: 28rpx;
-  border-left: 6rpx solid #176b57;
-  background: #ebece6;
+.fitness-empty-state,
+.fitness-loading-state {
+  padding: var(--mw-space-8) var(--mw-space-4);
+  text-align: center;
 }
 
-.fitness-empty,
-.fitness-error {
+.fitness-empty {
   display: block;
-  padding: 30rpx 0;
-  color: #777a73;
-  font-size: 23rpx;
-  line-height: 1.6;
+  padding: var(--mw-space-5) 0;
+  color: var(--mw-color-text-secondary);
+  font-size: var(--mw-font-body);
+  line-height: var(--mw-line-body);
 }
 
 .fitness-error {
-  color: #a43f2e;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--mw-space-2);
+  margin-bottom: var(--mw-space-4);
+  padding: var(--mw-space-3) var(--mw-space-4);
+  border: 1px solid var(--mw-color-danger-border);
+  border-radius: var(--mw-radius-md);
+  color: var(--mw-color-danger);
+  background: var(--mw-color-danger-soft);
+  font-size: var(--mw-font-body);
+  line-height: 1.5;
 }
 
 .fitness-input {
-  min-height: 76rpx;
+  width: 100%;
+  min-height: var(--mw-touch-size);
   box-sizing: border-box;
-  padding: 0 20rpx;
-  border: 1rpx solid #aaa9a2;
-  border-radius: 2rpx;
-  color: #1d2420;
-  background: #fcfbf7;
-  font-size: 25rpx;
+  padding: var(--mw-space-2) var(--mw-space-3);
+  border: 1px solid var(--mw-color-border-strong);
+  border-radius: var(--mw-radius-md);
+  background: var(--mw-color-surface-raised);
+}
+
+.fitness-input:focus-within {
+  border-color: var(--mw-color-primary);
+  box-shadow: 0 0 0 3px var(--mw-color-primary-soft);
 }
 
 .fitness-chip-list {
   display: flex;
   flex-wrap: wrap;
-  gap: 12rpx;
+  gap: var(--mw-space-2);
 }
 
 .fitness-chip {
-  min-height: 64rpx;
-  padding: 0 22rpx;
-  border: 1rpx solid #aaa9a2;
-  border-radius: 2rpx;
-  color: #50544f;
-  background: transparent;
-  font-size: 21rpx;
+  min-height: var(--mw-touch-size);
 }
 
-.fitness-chip-active {
-  border-color: #176b57;
-  color: #fff;
-  background: #176b57;
+.fitness-actions,
+.fitness-action-stack {
+  display: flex;
+  gap: var(--mw-space-3);
 }
 
-@media (min-width: 900px) {
+.fitness-action-stack {
+  flex-direction: column;
+}
+
+.fitness-primary-bar {
+  position: sticky;
+  z-index: 4;
+  bottom: 0;
+  margin: var(--mw-space-4) calc(-1 * var(--mw-space-1)) 0;
+  padding: var(--mw-space-3) var(--mw-space-1) calc(var(--mw-space-3) + env(safe-area-inset-bottom));
+  background: var(--mw-color-background);
+  border-top: 1px solid var(--mw-color-border);
+}
+
+.fitness-danger-zone {
+  margin-top: var(--mw-space-8);
+  padding-top: var(--mw-space-5);
+  border-top: 1px solid var(--mw-color-border);
+}
+
+.fitness-danger-label {
+  display: block;
+  margin-bottom: var(--mw-space-2);
+  color: var(--mw-color-danger);
+  font-size: var(--mw-font-auxiliary);
+  font-weight: 700;
+}
+
+.fitness-note {
+  display: block;
+  color: var(--mw-color-text-muted);
+  font-size: var(--mw-font-auxiliary);
+  line-height: 1.55;
+}
+
+.fitness-data {
+  color: var(--mw-color-primary);
+  font-size: var(--mw-font-data);
+  font-weight: 760;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (min-width: 720px) {
   .fitness-page {
-    padding: 48px 32px 100px;
+    padding: var(--mw-space-8) var(--mw-space-6) calc(var(--mw-space-10) + env(safe-area-inset-bottom));
   }
 
-  .fitness-shell {
-    max-width: 680px;
+  .fitness-heading {
+    padding-top: var(--mw-space-8);
+  }
+}
+
+@media (max-width: 359px) {
+  .fitness-page {
+    padding-right: var(--mw-space-3);
+    padding-left: var(--mw-space-3);
   }
 
   .fitness-title {
-    font-size: 42px;
+    font-size: var(--mw-font-title-compact);
   }
 }

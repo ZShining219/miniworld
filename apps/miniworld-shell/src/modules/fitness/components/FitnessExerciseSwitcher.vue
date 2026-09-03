@@ -28,19 +28,21 @@ function select(exerciseId: string) {
       :show-scrollbar="false"
     >
       <view class="exercise-switcher-track">
-        <button
+        <wd-button
           v-for="item in exercises"
           :id="`exercise-switch-${item.exercise.id}`"
           :key="item.exercise.id"
           class="exercise-switcher-item"
-          :class="{ 'exercise-switcher-item-active': item.exercise.id === currentId }"
+          type="primary"
+          :variant="item.exercise.id === currentId ? 'base' : 'soft'"
+          size="medium"
           :disabled="disabled"
           :aria-current="item.exercise.id === currentId ? 'page' : undefined"
           @click="select(item.exercise.id)"
         >
           <text class="exercise-switcher-name">{{ item.exercise.name }}</text>
           <text class="exercise-switcher-count">今日 {{ item.completedSetCount }} 组</text>
-        </button>
+        </wd-button>
       </view>
     </scroll-view>
   </view>
@@ -48,25 +50,29 @@ function select(exerciseId: string) {
 
 <style scoped lang="scss">
 .exercise-switcher {
-  padding: 24rpx 0 22rpx;
-  border-bottom: 1rpx solid #c9c8c1;
+  margin-bottom: var(--mw-space-4);
+  padding: var(--mw-space-4);
+  border: 1px solid var(--mw-color-border);
+  border-radius: var(--mw-radius-lg);
+  background: var(--mw-color-surface);
+  box-shadow: var(--mw-shadow-card);
 }
 
 .exercise-switcher-heading {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
-  margin-bottom: 14rpx;
+  margin-bottom: var(--mw-space-3);
 }
 
 .exercise-switcher-label {
-  font-size: 22rpx;
+  font-size: var(--mw-font-strong);
   font-weight: 700;
 }
 
 .exercise-switcher-hint {
-  color: #777a73;
-  font-size: 17rpx;
+  color: var(--mw-color-text-muted);
+  font-size: var(--mw-font-auxiliary);
 }
 
 .exercise-switcher-scroll {
@@ -76,53 +82,43 @@ function select(exerciseId: string) {
 
 .exercise-switcher-track {
   display: inline-flex;
-  gap: 10rpx;
-  padding-right: 24rpx;
+  gap: var(--mw-space-2);
+  padding-right: var(--mw-space-4);
 }
 
 .exercise-switcher-item {
   display: inline-flex;
-  min-width: 176rpx;
-  min-height: 78rpx;
+  min-width: 132px;
+  min-height: 56px;
   flex-direction: column;
   align-items: flex-start;
   justify-content: center;
-  padding: 10rpx 16rpx;
-  border: 1rpx solid #aaa9a2;
-  border-radius: 2rpx;
-  color: #343a35;
-  background: transparent;
+  padding: var(--mw-space-2) var(--mw-space-3);
   line-height: 1.25;
   text-align: left;
-}
-
-.exercise-switcher-item-active {
-  border-color: #176b57;
-  color: #fff;
-  background: #176b57;
 }
 
 .exercise-switcher-name,
 .exercise-switcher-count {
   display: block;
-  max-width: 240rpx;
+  max-width: 180px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .exercise-switcher-name {
-  font-size: 21rpx;
+  font-size: var(--mw-font-body);
   font-weight: 700;
 }
 
 .exercise-switcher-count {
-  margin-top: 5rpx;
-  color: #777a73;
-  font-size: 17rpx;
+  margin-top: var(--mw-space-1);
+  color: var(--mw-color-text-secondary);
+  font-size: var(--mw-font-auxiliary);
 }
 
-.exercise-switcher-item-active .exercise-switcher-count {
-  color: #dbe8e2;
+.exercise-switcher-item[aria-current='page'] .exercise-switcher-count {
+  color: var(--mw-color-on-primary-muted);
 }
 </style>

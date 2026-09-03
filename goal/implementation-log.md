@@ -1042,3 +1042,25 @@
 ### 验证与边界
 - 规则文件、AGENTS 入口、Goal 索引、计划与 Accepted 技术决策已互相链接；本轮只修改文档与治理状态，不修改前端源码、API、数据库或生产服务器。
 - Wot UI/Ant Design 版本将在实际接入任务中固定并完成许可证、构建、体积和平台验证；本轮不把“已选型”误报为“已接入”。
+
+## 2026-09-03 — T-035 Fitness H5 呈现体系重构
+
+### 范围与实现
+- 仅修改 `apps/miniworld-shell` 的 Fitness H5 呈现、共享组件、测试与主题；未修改 Fitness API、Store、后端、数据库、Jobs/Profile/Work 或生产服务器。
+- 固定 `@wot-ui/ui@2.3.2`，采用 unibest 官方 Wot UI 2 resolver 形式；`pages.config.ts` 使用 `^wd-(.*)` easycom，`vite.config.ts` 通过 `WotResolver()` 完成运行时解析，许可证已追加到 `THIRD_PARTY_NOTICES.md`。
+- 新增 `src/style/theme.scss` 作为唯一主题入口：语义颜色、有限间距、字号层级、触控尺寸、圆角、阴影、系统字体、安全区和 H5 `text-size-adjust` 均集中定义；Fitness 页面与组件改为引用令牌，去除页面级裸通用控件、任意 `rpx` 字号、负字距和装饰性渐变背景。
+- 七个页面按列表、详情、任务、统计和设置模板统一使用 `FitnessPageShell`、状态条、Wot UI 按钮/输入/空态/加载态和领域组件；空计划不能开始训练、Active Session 不显示冲突的开始入口、无动作 Active Session 可添加动作继续，结束训练独立为危险区并二次确认。
+- 添加/编辑表单改为明确展开区；训练动作切换、重量/次数输入、增减档位、历史只读记录和趋势图保持既有数据语义，正式训练数据仍只来自 PostgreSQL。
+
+### 类型兼容边界
+- Wot UI 2.3.2 上游 `wd-button.vue` 的微信 `ButtonOpenType` 与当前 uni 类型对 `getRealtimePhoneNumber` 的定义不兼容，`vue-tsc` 会在上游 SFC 内报错。未修改 `node_modules` 或上游包；项目以局部 `GlobalComponents` any 声明承接实际使用组件，并在 `tsconfig.json` 排除自动生成的 `src/types/components.d.ts`，避免类型检查再次深入该上游 SFC。运行时仍由官方 resolver 加载实际组件。
+- 该折中仅解决当前类型检查边界，未来 App/小程序构建必须另行验证；不得将其表述为所有目标平台已兼容。
+
+### 验证证据
+- `pnpm type-check`：通过；`pnpm test:run`：14 个测试文件、65 项测试通过；`pnpm eslint src/pages/fitness src/modules/fitness --ext .ts,.vue`：通过；`pnpm build:h5`：通过；`git diff --check`：通过。
+- Playwright mock API 状态回归覆盖正常首页、空计划、正常计划详情、进行中训练、无动作进行中 Session、动作记录和统计页；截图保存于 `output/playwright/fitness-*-{320,360,390,430,1280,1440}.png` 及对应状态文件。320、360、390、430、1280、1440 CSS px 均满足 `scrollWidth === clientWidth`，控制台无新增 error/warning。
+- 人工审阅 390px 正常首页、计划详情、进行中训练、无动作进行中 Session、动作记录、统计页和 1440px 首页截图；布局层级、危险操作降权、图表可见性和单一主要操作符合当前规则。
+
+### 未完成与发布边界
+- 本轮达到“本地实现完成，等待真实手机视觉验收”；尚未完成真实 iOS/Android 手机、系统字体放大、浏览器底栏收缩、虚拟键盘和实际触控验收，因此 ISS-016 仅缓解，不能标记为移动端最终验证。
+- 未 push、未部署生产；生产仍保持 T-033 固定 SHA。后续发布必须在真实手机证据和用户明确发布授权后另行执行。

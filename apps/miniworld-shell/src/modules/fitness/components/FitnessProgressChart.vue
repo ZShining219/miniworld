@@ -48,7 +48,7 @@ onBeforeUnmount(() => {
 <template>
   <view class="progress-chart-shell">
     <view v-if="!progress?.points.length" class="chart-empty">
-      完成至少一次包含该动作的训练后显示趋势。
+      <wd-empty tip="完成至少一次包含该动作的训练后显示趋势" icon-size="64" />
     </view>
     <view v-else class="progress-chart-canvas">
       <LimeEchart ref="chartRef" custom-style="width:100%;height:100%;" @finished="onChartReady" />
@@ -63,16 +63,12 @@ onBeforeUnmount(() => {
 
 .progress-chart-canvas {
   width: 100%;
-  height: 420rpx;
+  height: 280px;
   min-height: 260px;
   overflow: hidden;
 }
 
 .chart-empty {
-  display: block;
-  padding: 42rpx 0;
-  color: #777a73;
-  font-size: 22rpx;
-  line-height: 1.6;
+  padding: var(--mw-space-5) 0;
 }
 </style>

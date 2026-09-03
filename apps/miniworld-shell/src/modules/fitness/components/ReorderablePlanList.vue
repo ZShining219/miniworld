@@ -230,7 +230,6 @@ defineExpose({ cancelDrag: () => resetDrag(Boolean(draggingId.value)) })
 <style scoped lang="scss">
 .plan-sort-list {
   position: relative;
-  border-bottom: 1rpx solid #d5d3cc;
 }
 
 .plan-sort-list-dragging {
@@ -245,9 +244,9 @@ defineExpose({ cancelDrag: () => resetDrag(Boolean(draggingId.value)) })
 
 .plan-sort-status {
   display: block;
-  padding-top: 14rpx;
-  color: #176b57;
-  font-size: 19rpx;
+  padding-top: var(--mw-space-2);
+  color: var(--mw-color-primary);
+  font-size: var(--mw-font-auxiliary);
   font-weight: 700;
   text-align: right;
 }
