@@ -1139,3 +1139,4 @@
 
 - 在本地移走全部忽略的 H5 生成物后执行 `pnpm init-baseFiles && pnpm build:h5 && pnpm type-check`：通过；React 包内 `bun run build && bun run lint && bun run test`：9 项 Playwright 通过。
 - 修复仅涉及 CI 编排与治理记录，不改变 Fitness Agent、生产容器或用户数据；等待新的 GitHub Actions 运行确认。
+- React 失败的第二个原因是 Radar E2E 依赖被 Git 忽略的 `runtime-data/maps/demo-firenze.pmtiles`；CI 已在 Playwright 前调用现有带 SHA-256 校验的 `scripts/fetch-radar-demo-map.sh`，只引入固定公开 Demo 夹具。

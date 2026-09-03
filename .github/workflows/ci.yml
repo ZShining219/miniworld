@@ -67,6 +67,9 @@ jobs:
         working-directory: frontend
         run: bun x playwright install --with-deps chromium
 
+      - name: Fetch deterministic radar fixture
+        run: scripts/fetch-radar-demo-map.sh
+
       - name: Build, lint and test React dashboard
         working-directory: frontend
         run: |
