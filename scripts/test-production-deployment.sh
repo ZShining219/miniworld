@@ -18,6 +18,7 @@ grep -Fq 'FITNESS_AGENT_API_KEY: ${FITNESS_AGENT_API_KEY:-}' deploy/production/c
 grep -Fq 'FITNESS_AGENT_MODEL: ${FITNESS_AGENT_MODEL:-deepseek-chat}' deploy/production/compose.yml
 grep -Fq 'FITNESS_AGENT_TIMEOUT_SECONDS: ${FITNESS_AGENT_TIMEOUT_SECONDS:-30}' deploy/production/compose.yml
 ! grep -Eq 'ports:.*(5432|8000)' deploy/production/compose.yml
+grep -Fq '+refs/heads/codex/bootstrap-langgraph:refs/remotes/origin/codex/bootstrap-langgraph' scripts/deploy-production.sh
 grep -Fq 'if RELEASE_SHA=$running_sha docker compose --env-file "$env_file"' scripts/deploy-production.sh
 grep -Fq 'RELEASE_SHA=$running_sha PRODUCTION_ENV_FILE=$env_file' scripts/deploy-production.sh
 

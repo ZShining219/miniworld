@@ -33,7 +33,8 @@ if ! "${git_repo[@]}" remote get-url origin >/dev/null 2>&1; then
   "${git_repo[@]}" remote add origin https://github.com/ZShining219/miniworld.git
 fi
 
-"${git_repo[@]}" fetch --prune origin codex/bootstrap-langgraph
+"${git_repo[@]}" fetch --prune origin \
+  "+refs/heads/codex/bootstrap-langgraph:refs/remotes/origin/codex/bootstrap-langgraph"
 "${git_repo[@]}" cat-file -e "${target_sha}^{commit}"
 "${git_repo[@]}" merge-base --is-ancestor "$target_sha" origin/codex/bootstrap-langgraph
 

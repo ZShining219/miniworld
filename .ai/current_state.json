@@ -1,27 +1,14 @@
 {
   "schema_version": 1,
   "project_id": "miniworld",
-  "generated_at": "2026-09-04T00:05:12+08:00",
-  "summary_status": "fitness_coach_verified_pending_api_only_deployment",
+  "generated_at": "2026-09-04T00:13:51+08:00",
+  "summary_status": "fitness_coach_api_only_deployment_complete",
   "review_status": "reviewed",
   "checkpoint_id": null,
   "checkpoint_offsets": null,
-  "active_windows": {
-    "20260903T141722Z-fitness-coach-mvp": {
-      "task_id": "T-036",
-      "status": "verified_pending_deployment"
-    }
-  },
-  "active_locks": [
-    {
-      "task_id": "T-036",
-      "lock_type": "exclusive",
-      "status": "active"
-    }
-  ],
-  "active_tasks": {
-    "T-036": "Fitness Coach Agent verified locally; API-only production deployment pending"
-  },
+  "active_windows": {},
+  "active_locks": [],
+  "active_tasks": {},
   "open_issues": {
     "ISS-016": "Fitness production mobile presentation does not satisfy the new component, state, responsive and physical-device gates"
   },
@@ -79,14 +66,15 @@
     "T-027 refactored all seven Fitness pages around shared presentation components at local commit 755b14de6577ce22911116bf5f87facd9140a9c1; 47 tests and responsive browser verification passed.",
     "T-028 published and deployed the verified Fitness frontend at fixed SHA 3d0e02a9c60d3743c308c91c56e1add431099bce; automatic backup, healthy services, authentication boundaries and unchanged production counts were verified.",
     "T-029 fixes the real-phone Fitness home layout; 360px and 390px browser regressions passed and the change is included in production release 6708dfecc757738976079c81c50fea7213973452.",
-    "T-031 and T-032 add the Fitness weight_step migration, active-workout UX and progress charts; they are included in production release 6708dfecc757738976079c81c50fea7213973452 and await physical-phone acceptance."
+    "T-031 and T-032 add the Fitness weight_step migration, active-workout UX and progress charts; they are included in production release 6708dfecc757738976079c81c50fea7213973452 and await physical-phone acceptance.",
+    "T-036 deployed the server-side Fitness Coach API at 824060dbbe736b63486c8ea5195260b3b9c7b083 while preserving the existing 6095d7a web image; DeepSeek deepseek-chat is selected but no key or real model request is present."
   ],
   "derived_from": {
-    "source": "T-034 created mandatory frontend presentation rules, selected mature component systems, opened ISS-016 for current production mobile quality, and completed documentation linkage and scope checks.",
+    "source": "T-036 completed the server-side Fitness Coach implementation, controlled tests, API-only production deployment and no-key verification; T-037 completed gated GitHub Actions CI.",
     "pools": {
-      "task_pool.ndjson": 227,
-      "issue_pool.ndjson": 35,
-      "logic_pool.ndjson": 28
+      "task_pool.ndjson": 247,
+      "issue_pool.ndjson": 38,
+      "logic_pool.ndjson": 31
     }
   }
 }

@@ -24,6 +24,7 @@
 | Fitness 辅助工具 | Phase 9 H5 已验证 | 首页 `04 健身记录`；独立 Fitness 数据表、后端包、前端模块和六个页面；27 项后端测试与 27 项 Shell 测试通过 |
 | Fitness 生产部署 | Phase 10 已运行 | 临时域名 `103-52-153-212.sslip.io`；T-033 固定 SHA 发布、自动备份、迁移、健康/认证边界和数据计数通过；新增动作切换、重量输入/档位和趋势图等待真实手机复测 |
 | Fitness H5 呈现体系 | T-035 本地完成，待真实手机验收 | `@wot-ui/ui` 2.3.2、官方 resolver、语义主题令牌、七页模板与状态一致性重构已完成；TypeScript、65 项前端测试、scoped ESLint、H5 构建及 320/360/390/430/1280/1440 浏览器预检通过；真实设备与生产发布仍未完成 |
+| Fitness Coach Agent | T-036 后端已部署，真实 Provider 待验证 | 独立 `FitnessCoachGraph`、DeepSeek `deepseek-chat` 配置、只读工具、结构化建议、自动触发、审计与 `20260903_0005` 迁移已在 API-only 生产发布中验证；生产未配置 Key，保持 `awaiting_configuration`，未发起真实模型请求，Web 容器未替换 |
 
 以上状态只陈述仓库事实。“本地 Demo 已验证”不等于“Live 互联网能力已完成”，也不等于已可执行投递或其他外部写入。
 

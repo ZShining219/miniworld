@@ -1093,6 +1093,15 @@
 - 未配置真实 DeepSeek Key，未执行真实模型调用；Provider 具体质量、延迟和成本留待用户明日确认后验证；
 - 本轮未修改前端呈现，建议卡片接入待 Fitness UI 重构任务完成后单独实施；
 
+### 生产 API-only 发布
+
+- 功能提交 `824060dbbe736b63486c8ea5195260b3b9c7b083` 已 push 到 `origin/codex/bootstrap-langgraph`；发布前自动备份为 `fitness-20260903T160852Z-6095d7a08ed3.dump`；
+- 生产仓库检出的 API SHA 与 `/srv/miniworld-api-deployed-sha` 均为 `824060dbbe736b63486c8ea5195260b3b9c7b083`；仅重建并替换 API，Web 容器继续运行 `miniworld-fitness-web:6095d7a08ed3aeb4413b214afcdfd80cb97bfb92`，未触发新的前端发布；
+- API、DB、Web 均 healthy；PostgreSQL migration 为 `20260903_0005 (head)`；Fitness 行数在发布前后保持 plan/exercise/session/set=`4/8/6/32`，Recommendation=0、Fitness Coach Run=0；
+- 生产配置只读核验为 `deepseek|deepseek-chat|key_configured=False|timeout=30.0`；无 Key 的 Provider 状态为 `FITNESS_AGENT_API_KEY is not configured`，未发起真实模型请求；
+- 内部只读 `GET /api/v1/fitness/coach/recommendations` 返回 `200 []`；公开根路径和公开 Coach 查询均继续返回 `401`；
+- 发布时发现 `git fetch origin <branch>` 只更新 `FETCH_HEAD`、未推进远端跟踪引用；`scripts/deploy-production.sh` 已改为显式分支 refspec，并由 `scripts/test-production-deployment.sh` 固化检查。
+
 ## 2026-09-03 — T-037 GitHub Actions CI 与本地链路验证
 
 ### 范围与实现
