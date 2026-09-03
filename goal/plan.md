@@ -4,7 +4,7 @@
 >
 > 当前执行分支：`codex/bootstrap-langgraph`
 >
-> 当前阶段：Phase 1—9 已验证；Phase 10 Fitness 单用户生产部署执行中；微信小程序与 Android/HBuilderX 仍只具备结构兼容性
+> 当前阶段：Phase 1—9 已验证；Phase 10 Fitness 生产栈已发布 T-033，新增交互等待真实手机复测；微信小程序与 Android/HBuilderX 仍只具备结构兼容性
 
 ## 当前阶段事实
 
@@ -18,11 +18,11 @@
 | Compose/ARM64 | 已验证 | 经典 builder 可冷构建；`frontend/api/worker/db` 启动、回环端口、迁移和重启持久性通过 |
 | Live 岗位 | 已验证 | Lever 公开 Job Board GET 以虚构位置和公开地标完成临时库端到端验证；3 条公开职位，无外部写入 |
 | 真实远端模型 | 可选、待授权 | OpenAI Responses Provider 与 schema 已实现；真实调用不是 Demo 门，只有用户选择 Provider、模型和数据类别后才验证 |
-| 公开 push | 未执行 | 必须先完成 secret/PII 扫描并获得用户确认 |
+| 公开 push | 已执行 | 用户授权后完成 secret/PII/文件范围检查；`origin/codex/bootstrap-langgraph` 已包含 T-033 发布提交 |
 | 岗位雷达 | Phase 7 已验证 | `/radar`、本地 PMTiles Range、最小化场景 API、HOME 中心、黄色脉冲、未解析过滤、API/WebGL/缺图状态、三档窗口与 Tauri 2 ARM64 原生悬浮窗均已通过 |
 | 多端系统壳 | Phase 8 Web 已验证 | unibest 4.4.1 已按固定 commit 导入；锁定安装、类型检查、21 项单测、H5 构建及桌面/手机浏览器验收通过，本地服务只绑定 `127.0.0.1:9000` |
 | Fitness 辅助工具 | Phase 9 H5 已验证 | 首页 `04 健身记录`；独立 Fitness 数据表、后端包、前端模块和六个页面；27 项后端测试与 27 项 Shell 测试通过 |
-| Fitness 生产部署 | Phase 10 执行中 | 临时域名 `103-52-153-212.sslip.io`；只公开 Caddy 80/443；固定 SHA、备份、Fitness 四表迁移和手机验收完成后转为已验证 |
+| Fitness 生产部署 | Phase 10 已运行 | 临时域名 `103-52-153-212.sslip.io`；T-033 固定 SHA 发布、自动备份、迁移、健康/认证边界和数据计数通过；新增动作切换、重量输入/档位和趋势图等待真实手机复测 |
 
 以上状态只陈述仓库事实。“本地 Demo 已验证”不等于“Live 互联网能力已完成”，也不等于已可执行投递或其他外部写入。
 

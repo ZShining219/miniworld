@@ -1,28 +1,14 @@
 {
   "schema_version": 1,
   "project_id": "miniworld",
-  "generated_at": "2026-09-03T20:57:04+08:00",
-  "summary_status": "fitness_release_in_progress",
+  "generated_at": "2026-09-03T21:04:29+08:00",
+  "summary_status": "fitness_release_deployed_pending_phone_acceptance",
   "review_status": "reviewed",
   "checkpoint_id": null,
   "checkpoint_offsets": null,
-  "active_windows": {
-    "cb404292-984d-4de2-a451-489093efbc28": {
-      "window_id": "codex-fitness-production-release",
-      "task_id": "T-033",
-      "status": "active"
-    }
-  },
-  "active_locks": [
-    {
-      "task_id": "T-033",
-      "lock_type": "exclusive",
-      "scope": "release records, GitHub push and production deployment"
-    }
-  ],
-  "active_tasks": {
-    "T-033": "Push T-029/T-031/T-032 and deploy the exact verified SHA to Fitness production"
-  },
+  "active_windows": {},
+  "active_locks": [],
+  "active_tasks": {},
   "open_issues": {},
   "key_logic": {
     "D-001": "Three independent demo loops: job distance, profile/resume, and daily/weekly work reports.",
@@ -74,15 +60,15 @@
     "T-026 deployed reusable Fitness plan cards and rollback-safe long-press ordering at fixed SHA 3264bbfb7511dad9787272bb638bf398aa33a9a4; automatic backup, healthy services and unchanged production data counts were verified.",
     "T-027 refactored all seven Fitness pages around shared presentation components at local commit 755b14de6577ce22911116bf5f87facd9140a9c1; 47 tests and responsive browser verification passed.",
     "T-028 published and deployed the verified Fitness frontend at fixed SHA 3d0e02a9c60d3743c308c91c56e1add431099bce; automatic backup, healthy services, authentication boundaries and unchanged production counts were verified.",
-    "T-029 fixes the real-phone Fitness home layout; 360px and 390px browser regressions passed and commit 7ccb86e was created, but production remains on 3d0e02a until explicit release confirmation.",
-    "T-031 adds the Fitness weight_step migration, same-plan action switching, manual weight input, per-action retry drafts and shared workout status at local commit d4d97b00d543530cb68686682c010f70a134cb28; no push or deployment occurred."
+    "T-029 fixes the real-phone Fitness home layout; 360px and 390px browser regressions passed and the change is included in production release 542b15842c2c4e2811bd9e29c532c880e773e2e2.",
+    "T-031 and T-032 add the Fitness weight_step migration, active-workout UX and progress charts; they are included in production release 542b15842c2c4e2811bd9e29c532c880e773e2e2 and await physical-phone acceptance."
   ],
   "derived_from": {
-    "source": "T-033 claimed after explicit user authorization; release preflight passed and production was healthy on 3d0e02a before deployment.",
+    "source": "T-033 completed GitHub publication and production deployment at 542b15842c2c4e2811bd9e29c532c880e773e2e2 with backup, migration, health, authentication and data-count evidence.",
     "pools": {
-      "task_pool.ndjson": 209,
-      "issue_pool.ndjson": 33,
-      "logic_pool.ndjson": 26
+      "task_pool.ndjson": 221,
+      "issue_pool.ndjson": 34,
+      "logic_pool.ndjson": 27
     }
   }
 }

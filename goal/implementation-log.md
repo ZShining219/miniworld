@@ -1018,4 +1018,10 @@
 - 生产部署静态契约、Shell 语法、Git 连通性、`git diff --check`、推送文件类型/体积和凭据候选扫描通过；49 个待推送文件中无数据库、日志、私钥、真实环境文件或超过 1 MiB 的文件。
 
 ### 发布状态
-- GitHub push、生产自动备份、固定 SHA 部署、迁移和发布后只读验证正在执行；最终 SHA 与结果将在本节追加记录。
+- 发布提交 `542b15842c2c4e2811bd9e29c532c880e773e2e2` 已推送到 GitHub `origin/codex/bootstrap-langgraph`。
+- 服务器已完成自动备份 `fitness-20260903T130007Z-3d0e02a9c60d.dump`，备份总数由 13 增至 14；API 与 H5 镜像构建、Compose 切换和 Alembic 迁移均通过。
+- 生产 `/srv/miniworld-deployed-sha`、服务器仓库 HEAD 和已部署镜像均固定为 `542b15842c2c4e2811bd9e29c532c880e773e2e2`。
+- PostgreSQL、FastAPI 和 Caddy/H5 均为 `running/healthy`；API 健康检查返回 `ok`；Alembic 当前为 `20260827_0004 (head)`，`fitness_exercise.weight_step` 为 `numeric NOT NULL DEFAULT 2.50`。
+- 生产 Fitness 只读计数发布前后保持 4 个计划、8 个动作、5 次训练和 32 个训练组；未写入训练数据。
+- 未认证 `/`、`/fg-api/api/v1/fitness/plans`、`/api/v1/health` 和 `/docs` 均返回 `401`；生产备份定时器与 fail2ban 均为 active。
+- 该发布包含 T-029 手机布局修复、T-031 训练交互与 `weight_step` 迁移、T-032 趋势图；Android/微信小程序和真实手机复测仍未验收。
