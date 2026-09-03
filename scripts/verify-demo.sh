@@ -37,6 +37,7 @@ assert_json() {
 require_command curl
 require_command docker-compose
 require_command jq
+require_command grep
 
 health="$(curl -fsS "${API_BASE}/health")"
 assert_json "$health" '.status == "ok" and .execution_mode == "demo" and .database == "postgresql" and .checkpoint_mode == "postgres"' "PostgreSQL demo health"
@@ -211,7 +212,7 @@ if [[ "$checkpoint_count" -lt 1 ]]; then
   echo "verification failed: no persisted LangGraph checkpoints" >&2
   exit 1
 fi
-expected_migration="${EXPECTED_ALEMBIC_VERSION:-$(rg -o 'revision: str = "[^"]+"' backend/app/alembic/versions \
+expected_migration="${EXPECTED_ALEMBIC_VERSION:-$(grep -RhoE 'revision: str = "[^"]+"' backend/app/alembic/versions \
   | sed -E 's/.*"([^"]+)"/\1/' \
   | sort \
   | tail -1)}"
