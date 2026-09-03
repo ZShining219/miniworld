@@ -1075,17 +1075,18 @@
 ### 已完成
 
 - 新增 `backend/app/fitness/coach/`：Provider、工具、Graph、Schema 和 Service；Graph 节点为 `load_fitness_context` → `agent_select_tools` → `execute_read_only_tools` → `agent_recommend`；
-- DeepSeek 使用 OpenAI-compatible Chat Completions JSON 输出，Provider 默认模型为 `deepseek-chat`，密钥只从 `FITNESS_AGENT_API_KEY` 读取，未配置时运行状态为 `awaiting_configuration`；
+- DeepSeek 使用 OpenAI-compatible Chat Completions JSON 输出，Provider 默认模型为 `deepseek-chat`，密钥只从 `FITNESS_AGENT_API_KEY` 读取，请求超时固定为可配置的 30 秒；未配置时运行状态为 `awaiting_configuration`；
 - 训练完成接口后台触发一次 Agent；同时提供 `POST /api/v1/fitness/coach/analyze` 手动入口和 `GET /api/v1/fitness/coach/recommendations` 查询入口；
 - 新增 `fitness_coach_recommendation` 表和 Alembic migration `20260903_0005_fitness_coach.py`；建议只保存结构化动作、原因、证据、置信度、Provider/模型和复核时机；
-- Agent 只能执行 `completed_session` 与 `exercise_history` 两个 Fitness 只读工具；目标动作越界、非法结构化结果或 Provider 配置缺失均不会写入 Recommendation；
+- Agent 只能执行 `completed_session` 与 `exercise_history` 两个 Fitness 只读工具；未完成训练、目标动作越界、引用未执行工具、缺少目标重量/次数、非法结构化结果或 Provider 配置缺失均不会写入 Recommendation；每个 Session 最多保存一条正式建议；
 
 ### 受控验证
 
-- `cd backend && uv run pytest tests/test_fitness_coach.py -q`：3 passed；
-- 测试覆盖自动触发并保存 Agent Run/Recommendation/ModelCallAudit、无 DeepSeek Key 的 `awaiting_configuration`、越界动作建议的安全拒绝；测试 Provider 为明确标记的受控替身，不发起外部网络请求；
-- `cd backend && uv run ruff check app/fitness app/core/config.py tests/test_fitness_coach.py`：通过；`uv run mypy app/fitness app/core/config.py tests/test_fitness_coach.py`：通过；
-- 原有 `tests/test_fitness.py`：6 passed；训练 Session/Set 数量在 Agent 分析前后保持不变；
+- `cd backend && uv run pytest tests/test_fitness_coach.py -q`：7 passed；
+- 测试覆盖自动触发并保存 Agent Run/Recommendation/ModelCallAudit、无 DeepSeek Key 的 `awaiting_configuration`、越界动作建议的安全拒绝、未完成 Session 拒绝、动作数值约束和 DeepSeek OpenAI-compatible 请求/JSON 解析契约；测试 Provider 与 DeepSeek 客户端均为受控内存替身，不发起外部网络请求；
+- `./scripts/test-local.sh`：通过；后端 35 项测试、完整 Ruff/Mypy/Ty、React 构建与 9 项 Playwright 测试均通过，T-037 记录的 ISS-017 已解决；
+- 空 SQLite 数据库执行 `uv run alembic upgrade head` 并读取 `alembic current`：成功升级到 `20260903_0005 (head)`；`scripts/test-production-deployment.sh`：通过；
+- 原有 Fitness 测试包含在完整测试中；训练 Session/Set 数量在 Agent 分析前后保持不变；
 
 ### 未完成与下一步
 

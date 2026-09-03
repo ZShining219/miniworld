@@ -49,6 +49,7 @@
 | T-024 | Accepted | Fitness 动作重量趋势使用 `lime-echart` 2.0.7 runtime + Apache ECharts 5.4.3；统计支持按完成组和按训练日平均两种粒度，并可切换折线/柱状 | 用户确认开始接入已调研组件；uni-app H5 需要成熟 Canvas 适配，ECharts 不把健身数据误称为股票 K 线，时间轴缩放和 Tooltip 保留为交互增强 |
 | T-025 | Accepted | 前端呈现执行硬性门禁：手机端使用 unibest + Wot UI 2，PC 端使用现有 React/Vite + Ant Design/按需 ProComponents；通用 UI 禁止继续手写，真实手机验收不能由桌面视口模拟替代 | 用户认为当前呈现优化反复消耗过多时间，并明确要求把成熟组件体系、页面模板、响应式、状态和验收规则固化为所有后续开发必须参考的规则文件 |
 | T-026 | Accepted | Fitness H5 固定使用 `@wot-ui/ui` 2.3.2 的官方 resolver；由于该版本上游 SFC 类型与当前 uni 微信 `ButtonOpenType` 定义不兼容，类型检查采用项目局部 `GlobalComponents` 声明并排除自动生成的 Wot 组件声明文件，运行时组件解析仍由 resolver 负责 | 这是 Wot UI 2.3.2 在当前 unibest/uni 类型组合下的最小兼容边界；不修改 `node_modules`、不放宽业务类型，不改变 H5 运行时组件或未来 App/小程序构建入口 |
+| T-027 | Accepted | Fitness Coach Agent 作为 Fitness 内部独立服务器 Graph 接入；可复用 LangGraph Runtime、ModelProvider Gateway、Worker、PostgreSQL、策略检查和审计，但不读取或修改 Jobs、Profile/Resume、Work 的业务数据、Graph 状态或模型上下文 | 第一版由训练完成事件触发，Agent 通过受限只读工具选择分析范围，使用 DeepSeek `deepseek-chat` 配置入口输出一条结构化建议；只写入 Agent Run 和 Recommendation，不修改正式训练计划；未配置密钥时明确等待配置 |
 
 ## 尚未锁定但已明确不阻塞 Demo
 

@@ -29,6 +29,14 @@ class Settings(BaseSettings):
     OPENAI_API_KEY: str | None = None
     OPENAI_MODEL: str = "gpt-5.6"
 
+    # Fitness Coach has its own provider selection so it cannot silently
+    # inherit the career/work reporting model configuration.
+    FITNESS_AGENT_PROVIDER: Literal["deepseek", "demo", "disabled"] = "deepseek"
+    FITNESS_AGENT_API_KEY: str | None = None
+    FITNESS_AGENT_MODEL: str = "deepseek-chat"
+    FITNESS_AGENT_BASE_URL: str = "https://api.deepseek.com"
+    FITNESS_AGENT_TIMEOUT_SECONDS: float = Field(default=30, ge=1, le=120)
+
     ALLOW_LIVE_JOB_SEARCH: bool = False
     LIVE_JOB_SOURCE: Literal["lever", "jobspy"] = "lever"
     LEVER_SITES: str = "binance"

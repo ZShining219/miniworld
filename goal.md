@@ -36,7 +36,7 @@
 
 当前阶段以完成一个本机可运行、可验证、可继续扩展的 Demo 为目标，不追求一次性完成完整求职平台。
 
-v0.9 在不改变上述定义和三个 Agent 闭环的前提下，增加一个独立的个人健身训练记录辅助工具。Fitness 不读取或修改 Jobs、Profile/Resume、Work、LangGraph checkpoint 或模型 Provider 数据，只复用本地 FastAPI、PostgreSQL 和 unibest 多端壳。
+v0.9 在不改变上述定义和三个 Agent 闭环的前提下，增加一个独立的个人健身训练记录辅助工具。Fitness 不读取或修改 Jobs、Profile/Resume、Work 的业务数据、Graph 状态或模型上下文；在保持业务隔离的前提下，可以复用本地 FastAPI、PostgreSQL、Worker、LangGraph Runtime、ModelProvider Gateway、策略检查和审计基础设施。Fitness Coach Agent 只使用独立的 Fitness 数据、Graph 状态和建议记录。
 
 Demo 的完成不以“已经安装 LangGraph”或“页面能够打开”为准，而以三个闭环都能从真实的前端/API 操作入口产生可追溯的本地结果、关键隐私规则有自动化测试、冷启动操作可复现为准。默认 `demo` 模式可以使用明确标记的确定性适配器；互联网岗位能力必须另外提供一次 `live` 只读验证，不得用固定数据替代或冒充。截至 v0.7，本地三闭环和 Lever 公开 GET 的 Live 验证均已有可复现证据。真实远端模型调用属于用户授权后的可选增强，不是用户要求的 Demo 完成门。
 
@@ -377,7 +377,7 @@ v0.7 勾选只表示 2026-08-18 已在当前工作树上取得证据，对应命
 ### 10.9 v0.9 Fitness H5 Demo 验收（已通过）
 
 - [x] MiniWorld 首页通过 `04 健身记录` 进入 `/pages/fitness/index`，Fitness 不占用主 TabBar；
-- [x] Fitness 后端封装在独立 `backend/app/fitness/`，只挂载 `/api/v1/fitness/*`，不接入三个 Agent Graph 或模型 Provider；
+- [x] Fitness 后端封装在独立 `backend/app/fitness/`，只挂载 `/api/v1/fitness/*`，不接入 Jobs、Profile/Resume、Work 的业务 Graph；Fitness Coach 可使用独立 Graph 和平台 ModelProvider 基础设施；
 - [x] PostgreSQL 通过四张独立表保存计划、动作、Session 和 Set，历史名称快照、软删除、Active Session 和 Set 幂等规则有自动化测试；
 - [x] 每组立即持久化，Active Session 可恢复，完成后历史、日历和重量趋势同步更新，下一次训练能带出上次数据；
 - [x] H5 production build、桌面/手机浏览器流程和无横向溢出检查通过，控制台无 warning/error；

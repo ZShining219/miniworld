@@ -4,7 +4,7 @@
 
 - 本地优先：业务数据、精确地址、Graph 状态和审计记录保存在本机；
 - 单用户：Demo 不实现注册、租户、角色和远端账号体系；
-- Graph 隔离：三个业务闭环有独立状态、输入和写权限；
+- Graph 隔离：三个求职业务闭环与 Fitness Coach 有独立状态、输入和写权限；
 - 确定性优先：抓取、距离、去重、权限和持久化由普通代码完成，LLM 只处理语义任务；
 - 最小外发：远端模型只接收当前任务必需、已授权且通过策略检查的文本；
 - 可恢复：每次 Agent 运行有状态、checkpoint、幂等键和明确失败原因；
@@ -20,6 +20,7 @@
 | 岗位 Graph | 地标选择、Demo/JobSpy/Lever 适配、本地距离、未解析原因、幂等保存 | 地点解析服务与更多经允许的来源 |
 | 档案 Graph | 本地文件/手动文本导入、出站策略、结构化事实、版本简历 | 经用户授权的真实 Provider 验证、冲突工作台 |
 | 报告 Graph | 主动记录、日报/周报、来源 ID、审计哈希 | 向档案提升的 Approval 操作 |
+| Fitness Coach Graph | 训练完成触发、只读 Fitness 工具、结构化建议和安全失败状态 | 周期分析、建议复核闭环、用户确认后的计划调整 |
 | 确认与恢复 | 本地 Approval 表/API 骨架、PostgreSQL checkpoint、失败状态、同线程安全重试 API | LangGraph interrupt 审批恢复与任何真实外部写入执行器 |
 
 当前没有真实外部写入执行器，因此不会投递、发消息或上传资料。将来增加时必须先实现 interrupt/approval 与重新验收，不得直接复用当前的本地决策 API 作为已授权证明。
@@ -39,6 +40,8 @@ flowchart LR
     J -->|附近地标查询| WEB["公开互联网来源"]
     M -->|授权后的最小文本| LLM["远端 GPT / 其他 AI"]
     P --> FS["受控本地文件区"]
+    FC["Fitness Coach Graph"] --> FD["Fitness 数据与建议"]
+    FC --> M
 ```
 
 Docker Compose 服务：
@@ -48,6 +51,8 @@ Docker Compose 服务：
 - `worker`：使用与 API 相同的后端镜像，运行 APScheduler 并调用 LangGraph；
 - `db`：PostgreSQL，保存业务表、Agent 运行和 checkpoint；
 - `ollama`：不作为 Demo 必需容器；现有本机 Ollama 可用于开发回退或测试 Provider。
+
+Fitness Coach 与 Jobs、Profile/Resume、Work 共享上述运行时、Provider Gateway、Worker、数据库和审计设施，但拥有独立 Graph 名称、checkpoint thread、工具集合、输出 Schema 和 Fitness 建议表。它不得读取其他业务表或模型上下文。
 
 前端和 API 端口只映射到 `127.0.0.1`。数据库不映射到公网；开发时如需宿主机连接，也只绑定回环地址。
 
@@ -67,6 +72,7 @@ v0.7 代码中的实际节点是精简的可运行子集：
 | `JobDiscoveryGraph` | `select_context` → `fetch_jobs` → `calculate_distance_local` → `persist_jobs` |
 | `ProfileIngestionGraph` | `apply_outbound_policy` → `extract_structured_facts` → `persist_profile` |
 | `WorkReportGraph` | `load_work_entries` → `generate_report` → `persist_report` |
+| `FitnessCoachGraph` | `load_fitness_context` → `agent_select_tools` → `execute_read_only_tools` → `agent_recommend` |
 
 下面的更细节点列表是目标分解；v0.7 中有的被合并到上述节点或 Runner，有的仍未实现。是否完成以根 `goal.md` 验收勾选和实现日志为准。
 
@@ -122,6 +128,20 @@ v0.7 代码中的实际节点是精简的可运行子集：
 
 约束：报告不会自动生成个人档案事实。未来“提升为档案事实”必须走独立 Approval。
 
+### 3.4 `FitnessCoachGraph`
+
+状态输入：`run_id`、已完成 `session_id`、触发方式和独立 Fitness Provider 配置。
+
+节点顺序：
+
+1. `load_fitness_context`：读取已完成训练的最小摘要；未完成训练直接安全失败；
+2. `agent_select_tools`：由模型选择最小必要的 Fitness 只读工具；
+3. `execute_read_only_tools`：服务器执行受限的本次训练与动作历史工具，不把数据库访问权交给模型；
+4. `agent_recommend`：由模型结合工具观察输出一条结构化动作级建议；
+5. Runner 校验目标动作、证据、置信度和输出字段后，仅写入 `fitness_coach_recommendation` 与运行审计。
+
+约束：该 Graph 只能读取 Fitness 计划、Session、Set 和动作数据；第一版不修改训练计划或训练记录。Provider 未配置时运行状态为 `awaiting_configuration`，不得用确定性规则结果冒充 Agent 推理。
+
 ## 4. 核心接口
 
 ### 4.1 后端领域接口
@@ -166,6 +186,8 @@ v0.7 已有 `DemoJobAdapter`、`LeverJobAdapter` 与 `JobSpyAdapter`。Live 默�
 - `/api/v1/agent-runs`：统一运行状态、错误和重试；
 - `/api/v1/model-providers`：只返回配置状态和能力，不返回密钥；
 - `/api/v1/approvals`：查看和处理需要确认的外部操作。
+- `/api/v1/fitness/coach/analyze`：对已完成训练手动触发一次 Fitness Coach 分析；训练完成接口也会以后台任务自动触发；
+- `/api/v1/fitness/coach/recommendations`：查看已保存的 Fitness Coach 建议。
 
 长任务由 API 返回 `202 Accepted + run_id`，前端通过轮询或 SSE 查看状态。Demo 优先采用轮询；SSE 仅在不增加实现风险时启用。
 

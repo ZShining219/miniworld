@@ -3,11 +3,13 @@ from datetime import date, datetime
 from decimal import Decimal
 
 from sqlalchemy import (
+    JSON,
     CheckConstraint,
     Column,
     DateTime,
     Index,
     Numeric,
+    Text,
     UniqueConstraint,
     text,
 )
@@ -128,4 +130,34 @@ class FitnessSet(SQLModel, table=True):
     )
     updated_at: datetime = Field(
         default_factory=utc_now, sa_column=Column(DateTime(timezone=True))
+    )
+
+
+class FitnessCoachRecommendation(SQLModel, table=True):
+    """Immutable-by-default, read-only advice produced by Fitness Coach."""
+
+    __tablename__ = "fitness_coach_recommendation"
+    __table_args__ = (
+        UniqueConstraint("run_id", name="uq_fitness_coach_recommendation_run"),
+        UniqueConstraint("session_id", name="uq_fitness_coach_recommendation_session"),
+    )
+
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    run_id: uuid.UUID = Field(foreign_key="agent_run.id", index=True)
+    session_id: uuid.UUID = Field(foreign_key="fitness_session.id", index=True)
+    recommendation_type: str = Field(max_length=40)
+    target_exercise_id: uuid.UUID | None = Field(
+        default=None, foreign_key="fitness_exercise.id", index=True
+    )
+    title: str = Field(max_length=240)
+    action: dict[str, object] = Field(sa_column=Column(JSON, nullable=False))
+    reason: str = Field(sa_column=Column(Text, nullable=False))
+    evidence: list[dict[str, object]] = Field(sa_column=Column(JSON, nullable=False))
+    confidence: float = Field(ge=0, le=1)
+    review_after: str = Field(max_length=80)
+    provider: str = Field(max_length=80)
+    model: str = Field(max_length=120)
+    created_at: datetime = Field(
+        default_factory=utc_now,
+        sa_column=Column(DateTime(timezone=True)),
     )

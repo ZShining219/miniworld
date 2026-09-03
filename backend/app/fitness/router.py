@@ -2,11 +2,26 @@ import uuid
 from collections.abc import Callable
 from datetime import date
 
-from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
+from fastapi import (
+    APIRouter,
+    BackgroundTasks,
+    Depends,
+    HTTPException,
+    Query,
+    Response,
+    status,
+)
 from sqlmodel import Session
 
 from app.core.db import get_session as get_db_session
 from app.fitness import service
+from app.fitness.coach import service as coach_service
+from app.fitness.coach.schemas import (
+    AnalysisRequest,
+    AnalysisResult,
+    RecommendationPublic,
+)
+from app.fitness.models import FitnessSession
 from app.fitness.schemas import (
     CalendarStats,
     ExerciseCreate,
@@ -128,9 +143,20 @@ def get_fitness_session(
 
 @router.post("/sessions/{session_id}/finish", response_model=SessionDetail)
 def finish_session(
-    session_id: uuid.UUID, db: Session = SessionDep
+    session_id: uuid.UUID,
+    background_tasks: BackgroundTasks,
+    db: Session = SessionDep,
 ) -> SessionDetail:
-    return _run(service.finish_session, db, session_id)
+    existing = db.get(FitnessSession, session_id)
+    was_completed = existing is not None and existing.status == "COMPLETED"
+    result = _run(service.finish_session, db, session_id)
+    if not was_completed:
+        background_tasks.add_task(
+            coach_service.run_fitness_coach,
+            session_id,
+            trigger="session_completed",
+        )
+    return result
 
 
 @router.get(
@@ -195,3 +221,32 @@ def get_exercise_progress(
     db: Session = SessionDep,
 ) -> ExerciseProgress | LegacyExerciseProgress:
     return _run(service.exercise_progress, db, exercise_id, mode)
+
+
+@router.post("/coach/analyze", response_model=AnalysisResult, tags=["fitness-coach"])
+def analyze_completed_workout(payload: AnalysisRequest) -> AnalysisResult:
+    try:
+        run = coach_service.run_fitness_coach(
+            payload.session_id,
+            trigger="manual",
+        )
+    except LookupError as error:
+        raise HTTPException(status_code=404, detail=str(error))
+    except ValueError as error:
+        raise HTTPException(status_code=409, detail=str(error))
+    return AnalysisResult(
+        run_id=run.id,
+        status=run.status,
+        recommendation=coach_service.get_recommendation_for_run(run.id),
+    )
+
+
+@router.get(
+    "/coach/recommendations",
+    response_model=list[RecommendationPublic],
+    tags=["fitness-coach"],
+)
+def get_coach_recommendations(
+    limit: int = Query(default=20, ge=1, le=100),
+) -> list[RecommendationPublic]:
+    return coach_service.list_recommendations(limit)

@@ -1,17 +1,29 @@
 {
   "schema_version": 1,
   "project_id": "miniworld",
-  "generated_at": "2026-09-03T23:58:30+08:00",
-  "summary_status": "ci_implemented_pending_t037_t036_ty_fix",
+  "generated_at": "2026-09-04T00:05:12+08:00",
+  "summary_status": "fitness_coach_verified_pending_api_only_deployment",
   "review_status": "reviewed",
   "checkpoint_id": null,
   "checkpoint_offsets": null,
-  "active_windows": {},
-  "active_locks": [],
-  "active_tasks": {},
+  "active_windows": {
+    "20260903T141722Z-fitness-coach-mvp": {
+      "task_id": "T-036",
+      "status": "verified_pending_deployment"
+    }
+  },
+  "active_locks": [
+    {
+      "task_id": "T-036",
+      "lock_type": "exclusive",
+      "status": "active"
+    }
+  ],
+  "active_tasks": {
+    "T-036": "Fitness Coach Agent verified locally; API-only production deployment pending"
+  },
   "open_issues": {
-    "ISS-016": "Fitness production mobile presentation does not satisfy the new component, state, responsive and physical-device gates",
-    "ISS-017": "T-036 Coach dynamic dictionary indexing fails the full Ty CI gate"
+    "ISS-016": "Fitness production mobile presentation does not satisfy the new component, state, responsive and physical-device gates"
   },
   "key_logic": {
     "D-001": "Three independent demo loops: job distance, profile/resume, and daily/weekly work reports.",
@@ -41,14 +53,15 @@
     "D-025": "Extract only stable repeated Fitness presentation contracts while keeping single-use page composition local and API/workflow orchestration in pages and Store.",
     "D-026": "Allow arbitrary switching among exercises in one active Fitness plan, persist a per-exercise 1/2/2.5/5 kg weight step, retain retry IDs per draft, and derive a shared four-state workout banner from existing APIs.",
     "D-027": "Use lime-echart 2.0.7 with Apache ECharts 5.4.3 for Fitness action trends; expose set-level and day-average modes with line/bar presentation and inside time zoom.",
-    "D-028": "Make the frontend presentation rules mandatory; standardize mobile on unibest plus Wot UI 2 and PC on React/Vite plus Ant Design, and require physical-device evidence for applicable mobile releases."
+    "D-028": "Make the frontend presentation rules mandatory; standardize mobile on unibest plus Wot UI 2 and PC on React/Vite plus Ant Design, and require physical-device evidence for applicable mobile releases.",
+    "D-031": "Fitness Coach is an independent non-conversational server Graph; it may reuse shared runtime, Provider, Worker, PostgreSQL and audit infrastructure but reads and writes only Fitness-scoped data. DeepSeek deepseek-chat is the configured provider; missing key yields awaiting_configuration."
   },
   "pending_review": [
-    "Integrate Wot UI 2 and theme tokens before further mobile presentation work, then resolve ISS-016",
     "Physical-phone acceptance of action switching, numeric keyboard, weight-step touch targets, workout status and charts after the presentation refactor",
     "Choose whether origin/codex/bootstrap-langgraph should become or merge into a future remote main branch",
     "Choose whether to create a release tag",
-    "Android, WeChat Mini Program, optional remote Provider and real map/job-data phases"
+    "Android, WeChat Mini Program, optional remote Provider and real map/job-data phases",
+    "Validate DeepSeek deepseek-chat quality, latency and cost only after the user provides a key and authorizes a real request"
   ],
   "assumptions": [
     "Root README is the canonical registry for all supported runtime and validation entry points.",
