@@ -12,7 +12,7 @@
 - T-035 已完成 Fitness 七页、共享组件、主题令牌、Wot UI resolver 和状态一致性重构；未修改 API、数据库或生产服务器。
 
 [Active Locks]
-- No active lock after T-035 local closeout.
+- T-035 lock released; independent T-036 backend Coach task remains active in its declared backend scope.
 
 [Open Issues]
 - ISS-016: `mitigated_pending_physical_validation`；本地多状态浏览器预检通过，真实手机验收仍未完成。
