@@ -1,24 +1,24 @@
 # Last Summary
 
 [Quick Link]
-- TASK: T-033 — Fitness 已验证更新已推送并发布到生产
-- TASK: T-032 — Fitness 动作重量趋势图已本地提交为 `13e8333`
-- TASK: T-031 — Fitness 训练中交互增强已本地提交为 `d4d97b0`
+- TASK: T-034 — 前端呈现硬性规则与 AGENTS 强制入口已完成
+- DECISION: D-028 — 手机 Wot UI 2、PC Ant Design 与真实设备验收门
+- ISSUE: ISS-016 — 当前 Fitness 生产移动端呈现待体系化重构
 
 [Current Focus]
-- T-029、T-031 与 T-032 已通过 T-033 推送到 GitHub；生产最终固定到发布记录 SHA `6708dfecc757738976079c81c50fea7213973452`。
-- 发布前后端 28 项、前端 65 项测试、TypeScript、H5 构建、生产部署静态契约及 secret/PII/文件范围检查通过。
-- 两轮安全发布共生成 2 份备份，迁移、三个服务健康、认证边界和 4/8/5/32 数据计数不变均已验证。
+- `goal/frontend-presentation-rules.md` 已成为所有手机端和 PC 端开发的强制完成门。
+- 手机端选定 unibest + Wot UI 2，PC 端选定现有 React/Vite + Ant Design/按需 ProComponents；两者尚未执行依赖接入。
+- 桌面窄视口模拟只允许作为预检；适用的移动端变更没有真实设备证据时不得再标记为已验证或部署完成。
 
 [Active Locks]
-- None after T-033 handoff.
+- None after T-034 handoff.
 
 [Open Issues]
-- None in deployment; released interactions still need physical-phone acceptance.
+- ISS-016: 当前 Fitness 生产移动端呈现不符合新的组件、状态和真实设备验收规则。
 
 [Pending Review]
-- After release, repeat physical-phone checks for action switching, numeric keyboard, four step touch targets, workout status feedback and the trend chart.
+- Wot UI 2 与主题令牌接入后，按页面模板和状态矩阵重构 Fitness，再进行真实手机验收。
 - Android and WeChat Mini Program remain structure-compatible only and are not acceptance-complete.
 
 [Next Step]
-- On a physical phone, verify action switching, numeric keyboard, weight-step targets, workout status and the trend chart.
+- Start a separately scoped frontend refactor: integrate Wot UI 2 first, then resolve ISS-016 without changing API or production data.

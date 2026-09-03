@@ -25,3 +25,10 @@
 - Add or update tests for behavior changes and record the commands/results.
 - Import upstream code only from a pinned commit, preserve license notices, and do not copy upstream `.git` or agent instruction files.
 - Use `codex/` branch names for implementation work.
+
+## Frontend presentation gate
+
+- Before changing any file under `apps/miniworld-shell/**`, `frontend/**`, or any new user interface, read and follow `goal/frontend-presentation-rules.md`.
+- The presentation rules are a completion gate, not optional design guidance. A frontend task cannot be marked verified, pushed, or deployed until every applicable automated, visual, responsive, state, and real-device requirement has evidence.
+- Mobile UI must use the selected unibest/Wot UI 2 component system; PC UI must use the selected React/Ant Design system. New page-level raw controls or one-off visual systems are prohibited unless the documented exception process has explicit user approval.
+- Desktop viewport emulation does not count as physical-phone acceptance. If real-device evidence is missing, report the task as pending visual review.

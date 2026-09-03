@@ -1,15 +1,17 @@
 {
   "schema_version": 1,
   "project_id": "miniworld",
-  "generated_at": "2026-09-03T21:08:49+08:00",
-  "summary_status": "fitness_release_deployed_pending_phone_acceptance",
+  "generated_at": "2026-09-03T21:31:11+08:00",
+  "summary_status": "frontend_presentation_rules_accepted_refactor_pending",
   "review_status": "reviewed",
   "checkpoint_id": null,
   "checkpoint_offsets": null,
   "active_windows": {},
   "active_locks": [],
   "active_tasks": {},
-  "open_issues": {},
+  "open_issues": {
+    "ISS-016": "Fitness production mobile presentation does not satisfy the new component, state, responsive and physical-device gates"
+  },
   "key_logic": {
     "D-001": "Three independent demo loops: job distance, profile/resume, and daily/weekly work reports.",
     "D-002": "Exact address and home coordinates stay local; rotating nearby landmarks are used externally.",
@@ -37,10 +39,12 @@
     "D-024": "Present Fitness body parts without sequence numbers; use whole-card short tap for entry and 350ms long-press drag ordering on the home page while retaining exercise ordering controls in settings.",
     "D-025": "Extract only stable repeated Fitness presentation contracts while keeping single-use page composition local and API/workflow orchestration in pages and Store.",
     "D-026": "Allow arbitrary switching among exercises in one active Fitness plan, persist a per-exercise 1/2/2.5/5 kg weight step, retain retry IDs per draft, and derive a shared four-state workout banner from existing APIs.",
-    "D-027": "Use lime-echart 2.0.7 with Apache ECharts 5.4.3 for Fitness action trends; expose set-level and day-average modes with line/bar presentation and inside time zoom."
+    "D-027": "Use lime-echart 2.0.7 with Apache ECharts 5.4.3 for Fitness action trends; expose set-level and day-average modes with line/bar presentation and inside time zoom.",
+    "D-028": "Make the frontend presentation rules mandatory; standardize mobile on unibest plus Wot UI 2 and PC on React/Vite plus Ant Design, and require physical-device evidence for applicable mobile releases."
   },
   "pending_review": [
-    "Physical-phone confirmation of action switching, numeric keyboard, weight-step touch targets and workout status after production release",
+    "Integrate Wot UI 2 and theme tokens before further mobile presentation work, then resolve ISS-016",
+    "Physical-phone acceptance of action switching, numeric keyboard, weight-step touch targets, workout status and charts after the presentation refactor",
     "Choose whether origin/codex/bootstrap-langgraph should become or merge into a future remote main branch",
     "Choose whether to create a release tag",
     "Android, WeChat Mini Program, optional remote Provider and real map/job-data phases"
@@ -64,11 +68,11 @@
     "T-031 and T-032 add the Fitness weight_step migration, active-workout UX and progress charts; they are included in production release 6708dfecc757738976079c81c50fea7213973452 and await physical-phone acceptance."
   ],
   "derived_from": {
-    "source": "T-033 completed GitHub publication and production deployment; the server was finally pinned to 6708dfecc757738976079c81c50fea7213973452 with backup, migration, health, authentication and data-count evidence.",
+    "source": "T-034 created mandatory frontend presentation rules, selected mature component systems, opened ISS-016 for current production mobile quality, and completed documentation linkage and scope checks.",
     "pools": {
-      "task_pool.ndjson": 222,
-      "issue_pool.ndjson": 34,
-      "logic_pool.ndjson": 27
+      "task_pool.ndjson": 227,
+      "issue_pool.ndjson": 35,
+      "logic_pool.ndjson": 28
     }
   }
 }

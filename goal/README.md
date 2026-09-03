@@ -25,6 +25,7 @@
 - [`decisions.md`](decisions.md)：用户意图和技术路线的可追溯决策；
 - [`implementation-log.md`](implementation-log.md)：只追加的实现、验证、偏差和后续动作记录。
 - [`intent-audit.md`](intent-audit.md)：把用户对话逐条映射到 Goal、实现证据和延期边界。
+- [`frontend-presentation-rules.md`](frontend-presentation-rules.md)：手机端与 PC 端的强制组件体系、页面模板、响应式、状态、视觉回归和真实设备验收门。
 
 ## 使用方式
 
@@ -32,6 +33,7 @@
 
 1. 阅读根目录 `goal.md`；
 2. 阅读本目录索引和当前任务对应文档；
+   - 任何前端任务还必须完整阅读 `frontend-presentation-rules.md`；
 3. 检查 `.ai/last_summary.md` 与最新事件；
 4. 声明文件范围并取得治理锁；
 5. 只实现 `plan.md` 中当前阶段允许的内容。

@@ -36,6 +36,8 @@
 - 精确住址、个人材料、API 密钥和运行数据不得提交 Git。
 - 所有功能提交和验证记录使用 `REQ-JOB`、`REQ-PROFILE`、`REQ-WORK`、`REQ-PRIVACY`、`REQ-RUNTIME` 中至少一个需求编号；
 - 默认先让无密钥的 `demo` 模式稳定通过，再启用依赖真实来源或远端模型的 `live` 验证。
+- 所有手机端和 PC 端界面变更必须通过 `goal/frontend-presentation-rules.md`；没有真实手机证据时不得宣称移动端已验证。
+- 手机端后续呈现变更先接入 Wot UI 2 和主题令牌，PC 端后续通用页面变更先接入 Ant Design；禁止继续扩散页面级手写通用控件和任意视觉值。
 
 ## Phase 0：文档、Git 与上游基线
 
