@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "project_id": "miniworld",
-  "generated_at": "2026-09-03T21:04:29+08:00",
+  "generated_at": "2026-09-03T21:08:49+08:00",
   "summary_status": "fitness_release_deployed_pending_phone_acceptance",
   "review_status": "reviewed",
   "checkpoint_id": null,
@@ -60,13 +60,13 @@
     "T-026 deployed reusable Fitness plan cards and rollback-safe long-press ordering at fixed SHA 3264bbfb7511dad9787272bb638bf398aa33a9a4; automatic backup, healthy services and unchanged production data counts were verified.",
     "T-027 refactored all seven Fitness pages around shared presentation components at local commit 755b14de6577ce22911116bf5f87facd9140a9c1; 47 tests and responsive browser verification passed.",
     "T-028 published and deployed the verified Fitness frontend at fixed SHA 3d0e02a9c60d3743c308c91c56e1add431099bce; automatic backup, healthy services, authentication boundaries and unchanged production counts were verified.",
-    "T-029 fixes the real-phone Fitness home layout; 360px and 390px browser regressions passed and the change is included in production release 542b15842c2c4e2811bd9e29c532c880e773e2e2.",
-    "T-031 and T-032 add the Fitness weight_step migration, active-workout UX and progress charts; they are included in production release 542b15842c2c4e2811bd9e29c532c880e773e2e2 and await physical-phone acceptance."
+    "T-029 fixes the real-phone Fitness home layout; 360px and 390px browser regressions passed and the change is included in production release 6708dfecc757738976079c81c50fea7213973452.",
+    "T-031 and T-032 add the Fitness weight_step migration, active-workout UX and progress charts; they are included in production release 6708dfecc757738976079c81c50fea7213973452 and await physical-phone acceptance."
   ],
   "derived_from": {
-    "source": "T-033 completed GitHub publication and production deployment at 542b15842c2c4e2811bd9e29c532c880e773e2e2 with backup, migration, health, authentication and data-count evidence.",
+    "source": "T-033 completed GitHub publication and production deployment; the server was finally pinned to 6708dfecc757738976079c81c50fea7213973452 with backup, migration, health, authentication and data-count evidence.",
     "pools": {
-      "task_pool.ndjson": 221,
+      "task_pool.ndjson": 222,
       "issue_pool.ndjson": 34,
       "logic_pool.ndjson": 27
     }
