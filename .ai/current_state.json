@@ -1,14 +1,28 @@
 {
   "schema_version": 1,
   "project_id": "miniworld",
-  "generated_at": "2026-08-28T14:22:06+08:00",
-  "summary_status": "fitness_progress_chart_committed_pending_release",
+  "generated_at": "2026-09-03T20:57:04+08:00",
+  "summary_status": "fitness_release_in_progress",
   "review_status": "reviewed",
   "checkpoint_id": null,
   "checkpoint_offsets": null,
-  "active_windows": {},
-  "active_locks": [],
-  "active_tasks": {},
+  "active_windows": {
+    "cb404292-984d-4de2-a451-489093efbc28": {
+      "window_id": "codex-fitness-production-release",
+      "task_id": "T-033",
+      "status": "active"
+    }
+  },
+  "active_locks": [
+    {
+      "task_id": "T-033",
+      "lock_type": "exclusive",
+      "scope": "release records, GitHub push and production deployment"
+    }
+  ],
+  "active_tasks": {
+    "T-033": "Push T-029/T-031/T-032 and deploy the exact verified SHA to Fitness production"
+  },
   "open_issues": {},
   "key_logic": {
     "D-001": "Three independent demo loops: job distance, profile/resume, and daily/weekly work reports.",
@@ -40,7 +54,6 @@
     "D-027": "Use lime-echart 2.0.7 with Apache ECharts 5.4.3 for Fitness action trends; expose set-level and day-average modes with line/bar presentation and inside time zoom."
   },
   "pending_review": [
-    "User confirmation to push and deploy the committed T-029, T-031 and T-032 Fitness changes, including the weight_step migration",
     "Physical-phone confirmation of action switching, numeric keyboard, weight-step touch targets and workout status after production release",
     "Choose whether origin/codex/bootstrap-langgraph should become or merge into a future remote main branch",
     "Choose whether to create a release tag",
@@ -65,7 +78,7 @@
     "T-031 adds the Fitness weight_step migration, same-plan action switching, manual weight input, per-action retry drafts and shared workout status at local commit d4d97b00d543530cb68686682c010f70a134cb28; no push or deployment occurred."
   ],
   "derived_from": {
-    "source": "T-031 completed local implementation, migration and browser verification at 2026-08-27T21:58:38+08:00; push and production release remain pending explicit confirmation.",
+    "source": "T-033 claimed after explicit user authorization; release preflight passed and production was healthy on 3d0e02a before deployment.",
     "pools": {
       "task_pool.ndjson": 209,
       "issue_pool.ndjson": 33,
