@@ -1127,3 +1127,15 @@
 
 - T-037 仅修改 CI 工作流、CI 辅助脚本、Demo 验收脚本、README、实施日志和治理池；未暂存或提交 T-036 的后端、Goal、生产部署和环境配置改动。
 - 未执行 GitHub push、生产部署或任何外部写入；本地 Compose 临时数据在验证后按 CI 等价流程清理。
+
+## 2026-09-04 — T-038 CI clean-runner follow-up
+
+### 问题与修复
+
+- 最终 CI 提交 `513948a35d05fcad651f18e6dc0424a07e38941b` 的 React Job 从仓库根目录使用 `bun run --filter frontend`，但根 workspace 未注册该包；H5 Job 在干净 Runner 先执行 `vue-tsc`，缺少 unibest 自动生成的 `src/types` 声明。
+- React Job 已切换 `working-directory: frontend` 并执行包内 `bun run build/lint/test`；H5 Job 调整为先 `pnpm build:h5` 生成页面与类型声明，再执行 `pnpm type-check` 和 `pnpm test:run`。
+
+### 受控验证
+
+- 在本地移走全部忽略的 H5 生成物后执行 `pnpm init-baseFiles && pnpm build:h5 && pnpm type-check`：通过；React 包内 `bun run build && bun run lint && bun run test`：9 项 Playwright 通过。
+- 修复仅涉及 CI 编排与治理记录，不改变 Fitness Agent、生产容器或用户数据；等待新的 GitHub Actions 运行确认。
