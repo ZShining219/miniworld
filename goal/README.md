@@ -26,6 +26,7 @@
 - [`implementation-log.md`](implementation-log.md)：只追加的实现、验证、偏差和后续动作记录。
 - [`intent-audit.md`](intent-audit.md)：把用户对话逐条映射到 Goal、实现证据和延期边界。
 - [`frontend-presentation-rules.md`](frontend-presentation-rules.md)：手机端与 PC 端的强制组件体系、页面模板、响应式、状态、视觉回归和真实设备验收门。
+- [`delivery-workflow.md`](delivery-workflow.md)：从 Vibe Coding 到测试、Git、PR/CI、合并、部署请求和生产验收的项目管理流程。
 
 ## 使用方式
 
@@ -37,6 +38,7 @@
 3. 检查 `.ai/last_summary.md` 与最新事件；
 4. 声明文件范围并取得治理锁；
 5. 只实现 `plan.md` 中当前阶段允许的内容。
+6. 对常规代码任务使用 [`scripts/agent-delivery-preflight.sh`](../scripts/agent-delivery-preflight.sh) 完成本地交付前检查。
 
 结束任务前：
 
@@ -45,6 +47,7 @@
 3. 在 `implementation-log.md` 追加事实记录；
 4. 如发生决策变化，先更新 `decisions.md`；
 5. 更新 `.ai/` 交接状态并释放锁。
+6. 若满足生产发布条件，发出部署请求；只有用户批准后才执行服务器发布。
 
 ## 防偏移检查
 

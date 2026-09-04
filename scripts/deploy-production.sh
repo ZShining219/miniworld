@@ -9,6 +9,10 @@ if [[ $# -ne 1 || ! $1 =~ ^[0-9a-f]{40}$ ]]; then
   echo "Usage: $0 <40-character-lowercase-git-sha>" >&2
   exit 2
 fi
+if [[ ${MINIWORLD_DEPLOY_APPROVED:-0} != 1 ]]; then
+  echo "Production deployment requires explicit approval: set MINIWORLD_DEPLOY_APPROVED=1 after the deployment request is approved." >&2
+  exit 3
+fi
 
 target_sha=$1
 repo=${MINIWORLD_REPO_DIR:-/srv/miniworld}
@@ -34,9 +38,9 @@ if ! "${git_repo[@]}" remote get-url origin >/dev/null 2>&1; then
 fi
 
 "${git_repo[@]}" fetch --prune origin \
-  "+refs/heads/codex/bootstrap-langgraph:refs/remotes/origin/codex/bootstrap-langgraph"
+  "+refs/heads/main:refs/remotes/origin/main"
 "${git_repo[@]}" cat-file -e "${target_sha}^{commit}"
-"${git_repo[@]}" merge-base --is-ancestor "$target_sha" origin/codex/bootstrap-langgraph
+"${git_repo[@]}" merge-base --is-ancestor "$target_sha" origin/main
 
 rollback() {
   status=$?
