@@ -277,6 +277,17 @@ Demo 初始化“胸、背、肩、臀腿”四个计划，“胸”包含杠铃
 
 `.github/workflows/ci.yml` 在每个分支 push、Pull Request 和手动触发时运行五道门：后端测试与静态检查、React 构建与 Playwright、unibest H5 类型/单测/构建、敏感文件扫描，以及依赖前四道门的 Docker Compose Demo 验收。所有 Action 均固定到 commit SHA，checkout 不持久化 GitHub 凭据，CI 只使用 `demo` 模式和虚构数据，不调用远端模型、真实个人材料或外部写入。
 
+GitHub 的默认分支为 `main`，且受分支保护约束。后续项目修改使用以下流程：
+
+```bash
+git fetch origin
+git switch -c codex/<task-name> origin/main
+# 修改、验证并提交
+git push -u origin codex/<task-name>
+```
+
+随后在 GitHub 创建 `codex/<task-name> → main` Pull Request。PR 必须保持在最新 `main` 之上，解决所有代码讨论，并通过 `Backend checks`、`React checks`、`H5 shell checks`、`Sensitive file scan`、`Compose demo verification` 五项检查后才能合并。`main` 禁止强制推送和删除；单人仓库不额外要求他人审批，避免无人可审导致死锁。
+
 本地可用同一条链路复现集成门：
 
 ```bash

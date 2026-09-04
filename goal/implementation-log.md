@@ -1144,3 +1144,18 @@
 ### T-038 追加修复
 
 - Compose 验收在 GitHub Runner 的失败步骤退出码为 127；`scripts/verify-demo.sh` 末段隐式调用 `rg` 解析 Alembic 版本。为移除非标准工具依赖，改用系统 `grep -RhoE`，并将 `grep` 纳入显式命令检查。
+
+## 2026-09-04 — T-039 GitHub PR 与必需 CI 配置
+
+### GitHub 配置
+
+- 从已验证提交 `9e3642f986ca38dde185f84f12a40863200d387a` 创建远端 `main`；`main` 首次 push 触发 GitHub Actions 运行 `33827004378`，Backend、React、H5 Shell、Sensitive File Scan 和 Compose Demo Verification 五项均成功。
+- 将 GitHub 仓库默认分支从 `codex/bootstrap-langgraph` 切换为 `main`；GitHub REST 公开仓库信息和远端 symbolic HEAD 均确认默认分支为 `main`。
+- 为 `main` 创建 classic branch protection：必须通过 Pull Request、必须保持分支最新、必须解决讨论，并要求五项 CI 检查全部通过；不允许 force push 或删除。
+- 单人仓库未启用 mandatory approval，避免提交者无法自审导致永久阻塞；分支保护仍阻止绕过 PR 和失败 CI 的常规合并。
+
+### 后续开发流程
+
+- 新任务从 `origin/main` 创建 `codex/<task-name>`，本地验证后 push 到同名远端分支，再创建目标为 `main` 的 Pull Request。
+- push 与 PR 都会运行 `.github/workflows/ci.yml`；PR 只有在最新 `main` 上通过 Backend、React、H5、敏感文件和 Compose 集成五道门后才允许合并。
+- 本次 README/治理提交作为首个真实 PR 链路样例；创建 PR 后追加远端运行与合并门验证证据。
