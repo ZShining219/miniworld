@@ -1,14 +1,14 @@
 # Last Summary
 
 [Quick Link]
-- TASK: T-040 — Agent Vibe Coding 交付流程进行中
+- TASK: T-040 — Agent Vibe Coding 交付流程已完成
 - DECISION: T-028 — 常规代码 push/PR 可在 preflight 后自主完成，合并与生产部署必须确认
 - TASK: T-039 — GitHub main/PR/必需 CI 配置已完成
 - TASK: T-036 — Fitness Coach Agent 已完成 API-only 生产发布
 - TASK: T-037 — GitHub Actions CI 已实现，本地 Compose 链路已跑通
 
 [Current Focus]
-- 固化 Agent 从 Vibe Coding 到测试、Git、PR/CI 和生产请求的项目管理流程；新增 `goal/delivery-workflow.md`、PR 模板与 `scripts/agent-delivery-preflight.sh`，生产脚本现在只接受 `origin/main` 祖先 SHA 和显式批准环境变量。
+- 已固化 Agent 从 Vibe Coding 到测试、Git、PR/CI 和生产请求的项目管理流程；新增 `goal/delivery-workflow.md`、PR 模板与 `scripts/agent-delivery-preflight.sh`，生产脚本现在只接受 `origin/main` 祖先 SHA 和显式批准环境变量。T-040 变更已在 PR #1 的 push/PR CI 中全绿。
 - GitHub 已创建并设定 `main` 为默认分支，且 `main` 已启用 PR、保持最新、解决讨论和五项 CI 必需检查保护；PR #1 已完成真实链路验证并保持打开。
 - T-037 已新增 `.github/workflows/ci.yml`，覆盖后端、React、H5、敏感文件和 Compose 集成五道 CI 门；所有 Action 固定 SHA，生产部署不由 CI 自动触发。
 - T-038 已修复 clean Runner 的 React/H5 工作目录与生成物顺序、Radar 夹具和迁移版本解析依赖；GitHub Actions 运行 `33794008116` 的五个 Job 全部通过。
@@ -21,7 +21,7 @@
 - 生产 API 为 `824060dbbe736b63486c8ea5195260b3b9c7b083`，Web 继续运行 `6095d7a08ed3aeb4413b214afcdfd80cb97bfb92`；迁移、健康、认证、空建议和数据计数均已只读验证。
 
 [Active Locks]
-- T-040 holds an exclusive lock on delivery workflow, preflight, deployment guard, PR template and governance records; T-039/T-036/T-037/T-038 locks are released.
+- T-040 lock released after local preflight and PR #1 push/PR CI verification; T-039/T-036/T-037/T-038 locks are released.
 
 [Open Issues]
 - ISS-016: `mitigated_pending_physical_validation`；本地多状态浏览器预检通过，真实手机验收仍未完成。
@@ -32,4 +32,4 @@
 - DeepSeek 真实 Key、模型质量、延迟与成本验证：用户确认后再执行，今天不发起真实请求。
 
 [Next Step]
-- Commit and push T-040, verify the updated PR with all five CI checks, then release the lock. Future tasks use `goal/delivery-workflow.md` without requiring this setup again.
+- Future Vibe Coding tasks use `goal/delivery-workflow.md` and `scripts/agent-delivery-preflight.sh`; production发布只在满足条件时发出请求并等待用户批准。

@@ -1,28 +1,14 @@
 {
   "schema_version": 1,
   "project_id": "miniworld",
-  "generated_at": "2026-09-04T11:25:00+08:00",
-  "summary_status": "agent_delivery_workflow_in_progress",
+  "generated_at": "2026-09-04T11:40:00+08:00",
+  "summary_status": "agent_delivery_workflow_verified",
   "review_status": "reviewed",
   "checkpoint_id": null,
   "checkpoint_offsets": null,
-  "active_windows": {
-    "3A81A79E-A0EE-4C5D-B0C7-2516BA94082C": {
-      "task_id": "T-040",
-      "status": "in_progress",
-      "scope": ["AGENTS.md", "README.md", "goal/README.md", "goal/plan.md", "goal/decisions.md", "goal/delivery-workflow.md", "goal/implementation-log.md", ".github/pull_request_template.md", "scripts/agent-delivery-preflight.sh", "scripts/deploy-production.sh", "scripts/test-production-deployment.sh", "deploy/production/README.md", ".ai/**"]
-    }
-  },
-  "active_locks": [
-    {
-      "task_id": "T-040",
-      "lock_type": "exclusive",
-      "session_token": "3A81A79E-A0EE-4C5D-B0C7-2516BA94082C"
-    }
-  ],
-  "active_tasks": {
-    "T-040": "in_progress"
-  },
+  "active_windows": {},
+  "active_locks": [],
+  "active_tasks": {},
   "open_issues": {
     "ISS-016": "Fitness production mobile presentation does not satisfy the new component, state, responsive and physical-device gates"
   },
@@ -84,7 +70,7 @@
     "T-036 deployed the server-side Fitness Coach API at 824060dbbe736b63486c8ea5195260b3b9c7b083 while preserving the existing 6095d7a web image; DeepSeek deepseek-chat is selected but no key or real model request is present.",
     "T-038 fixed clean-runner CI assumptions and commit 27b59f76d4dd4b143509dc4c272a203c8a488bd2 passed GitHub Actions run 33794008116 across all five jobs.",
     "T-039 configured main default branch/protection, created PR #1, and verified PR Actions run 33831520550 with all five jobs successful.",
-    "T-040 added the Agent delivery workflow, PR template, preflight script, and explicit main-only production approval guard; local preflight passed."
+    "T-040 added the Agent delivery workflow, PR template, preflight script, and explicit main-only production approval guard; local preflight passed and PR #1 push/PR CI runs 33833414675/33833418213 succeeded."
   ],
   "derived_from": {
     "source": "T-036 completed the server-side Fitness Coach implementation and API-only deployment; T-037/T-038 completed gated GitHub Actions CI; T-039 completed GitHub main protection and real PR validation.",

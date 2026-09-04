@@ -1183,3 +1183,9 @@
 - `scripts/agent-delivery-preflight.sh`：通过；识别治理/部署变更并执行 `scripts/test-production-deployment.sh`，输出 `Production deployment static checks passed.`。
 - `git diff --check` 与 `scripts/ci/check-sensitive-files.sh`：通过；未发现运行数据、私钥或非占位 token。
 - T-040 不修改业务数据、Fitness 功能或生产服务器；该变更只建立 Agent 交付协议和部署批准门。
+
+### 远端链路
+
+- 提交 `2c154c98107210f778ff29e313e989d921d9d911` 已推送到 `codex/bootstrap-langgraph` 并更新 PR #1。
+- 该提交的 push 运行 `33833414675` 和 PR 运行 `33833418213` 均完成成功；Checks 页显示两组五项 Job 全部成功。
+- PR #1 页面显示 `10 / 10 checks OK`、`All checks have passed`、`No conflicts with base branch` 和 `Ready to merge`。T-040 不合并 PR，也不触发生产部署。
