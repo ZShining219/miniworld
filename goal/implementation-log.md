@@ -1158,4 +1158,11 @@
 
 - 新任务从 `origin/main` 创建 `codex/<task-name>`，本地验证后 push 到同名远端分支，再创建目标为 `main` 的 Pull Request。
 - push 与 PR 都会运行 `.github/workflows/ci.yml`；PR 只有在最新 `main` 上通过 Backend、React、H5、敏感文件和 Compose 集成五道门后才允许合并。
-- 本次 README/治理提交作为首个真实 PR 链路样例；创建 PR 后追加远端运行与合并门验证证据。
+- 本次 README/治理提交作为首个真实 PR 链路样例；PR #1（`https://github.com/ZShining219/miniworld/pull/1`）已创建并保持打开。
+
+### 真实 PR 链路验证
+
+- 提交 `b5b47baedbfa7c85cdefb1d698be426c493e8552` 推送到 `codex/bootstrap-langgraph` 后，push 运行 `33831040233` 成功。
+- PR 事件运行 `33831520550` 成功，五个工作流 Job 均为 success：Backend checks、React checks、H5 shell checks、Sensitive file scan、Compose demo verification。
+- PR 页面显示 `10 / 10 checks OK`、`All checks have passed`、`No conflicts with base branch` 和 `Ready to merge`；验证了 PR CI、最新分支和保护分支合并门已连通。
+- 未执行合并或生产部署；后续正常开发按 `origin/main` → `codex/<task-name>` → PR → 五项检查 → 合并执行。
