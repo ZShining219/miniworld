@@ -40,6 +40,7 @@
 - 默认先让无密钥的 `demo` 模式稳定通过，再启用依赖真实来源或远端模型的 `live` 验证。
 - 所有手机端和 PC 端界面变更必须通过 `goal/frontend-presentation-rules.md`；没有真实手机证据时不得宣称移动端已验证。
 - 手机端后续呈现变更先接入 Wot UI 2 和主题令牌，PC 端后续通用页面变更先接入 Ant Design；禁止继续扩散页面级手写通用控件和任意视觉值。
+- 所有 Vibe Coding 任务遵循 `goal/delivery-workflow.md`：Agent 可在 preflight 通过后自主完成代码分支 push、PR 创建和 CI 观察；合并与生产部署仍需用户确认。
 
 ## Phase 0：文档、Git 与上游基线
 
@@ -285,7 +286,9 @@ v0.8 状态：Tauri 2 原生宿主、最小 capability、几何持久化、原�
 
 阶段验收：后端 27 项测试、Fitness Ruff/Mypy/Ty、Shell 27 项测试、TypeScript、限定范围 ESLint 和 H5 production build 均通过；桌面 `1440×900` 与手机 `390×844` 浏览器流程通过，控制台无 warning/error。Android 和微信小程序未构建或验收。
 
-## Git 提交策略
+## Git 与 Agent 交付策略
+
+完整状态机、责任分工、测试选择、PR 门禁和部署请求模板见 [`delivery-workflow.md`](delivery-workflow.md)。
 
 推荐提交边界：
 
@@ -300,4 +303,4 @@ v0.8 状态：Tauri 2 原生宿主、最小 capability、几何持久化、原�
 9. `test: cover privacy and end-to-end demo flows`
 10. `docs: finalize local demo operations`
 
-每次提交必须可构建或明确标记为仅文档/脚手架提交。禁止把真实数据、导入文件、数据库卷、日志、密钥或生成简历提交到任何分支。
+每次提交必须可构建或明确标记为仅文档/脚手架提交。提交前运行 `scripts/agent-delivery-preflight.sh`；禁止把真实数据、导入文件、数据库卷、日志、密钥或生成简历提交到任何分支。生产脚本只接受已合并到 `main` 的 SHA，并要求显式批准环境变量。

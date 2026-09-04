@@ -1166,3 +1166,20 @@
 - PR 事件运行 `33831520550` 成功，五个工作流 Job 均为 success：Backend checks、React checks、H5 shell checks、Sensitive file scan、Compose demo verification。
 - PR 页面显示 `10 / 10 checks OK`、`All checks have passed`、`No conflicts with base branch` 和 `Ready to merge`；验证了 PR CI、最新分支和保护分支合并门已连通。
 - 未执行合并或生产部署；后续正常开发按 `origin/main` → `codex/<task-name>` → PR → 五项检查 → 合并执行。
+
+## 2026-09-04 — T-040 Agent 驱动的项目交付流程
+
+### 固化内容
+
+- 新增 [`goal/delivery-workflow.md`](delivery-workflow.md)，定义产品负责人、Agent、GitHub Actions 和生产脚本的职责边界，以及 `proposed` → `local_verified` → `pr_open` → `ci_verified` → `merged` → `deploy_requested` → `deployed` → `closed` 状态机。
+- 更新 `AGENTS.md`、`goal/README.md`、`goal/plan.md` 和 `goal/decisions.md`：常规无敏感代码在 preflight 通过后可由 Agent 自主测试、commit、push 分支、创建 PR 和观察 CI；合并与生产部署仍要求用户确认。
+- 新增 `.github/pull_request_template.md`，把 scope、Goal 对齐、隐私扫描、本地验证、五项 CI 和生产发布分离为 PR 必填检查项。
+- 新增 `scripts/agent-delivery-preflight.sh`：拒绝直接在 `main` 开发，要求 `origin/main` 基线，执行 `git diff --check`、敏感扫描，并按变更面运行后端、React、H5 或生产静态检查；可用 `MINIWORLD_RUN_INTEGRATION=1` 追加完整 Compose 链路。
+- 生产脚本改为只从 `origin/main` 验证目标 SHA，并要求 `MINIWORLD_DEPLOY_APPROVED=1`；生产 README、静态测试和部署请求模板同步更新。
+
+### 受控验证
+
+- `bash -n scripts/agent-delivery-preflight.sh scripts/deploy-production.sh scripts/test-production-deployment.sh`：通过。
+- `scripts/agent-delivery-preflight.sh`：通过；识别治理/部署变更并执行 `scripts/test-production-deployment.sh`，输出 `Production deployment static checks passed.`。
+- `git diff --check` 与 `scripts/ci/check-sensitive-files.sh`：通过；未发现运行数据、私钥或非占位 token。
+- T-040 不修改业务数据、Fitness 功能或生产服务器；该变更只建立 Agent 交付协议和部署批准门。

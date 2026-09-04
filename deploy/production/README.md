@@ -12,15 +12,20 @@ directory. The real database password and Basic Auth hash must never enter Git.
 
 ## Release
 
-Push a verified commit, then run as root on the server:
+Merge a verified PR into `main`, then prepare a deployment request containing the
+merged SHA, CI evidence, backup plan, and rollback SHA. Only after explicit user
+approval run as root on the server:
 
 ```sh
-/srv/miniworld/scripts/deploy-production.sh <40-character-commit-sha>
+MINIWORLD_DEPLOY_APPROVED=1 \
+  /srv/miniworld/scripts/deploy-production.sh <40-character-main-sha>
 ```
 
-The script fetches the public origin, checks out exactly that SHA, backs up an
-existing database, builds sequentially, starts the stack, verifies internal
-health and the public authentication boundary, and records the deployed SHA.
+The script refuses an unapproved invocation or a SHA that is not an ancestor of
+`origin/main`. It fetches the public origin, checks out exactly that SHA, backs
+up an existing database, builds sequentially, starts the stack, verifies
+internal health and the public authentication boundary, and records the deployed
+SHA.
 After the first deployment, run `scripts/install-production-operations.sh` as
 root to enable the daily backup timer and failed-login banning.
 
