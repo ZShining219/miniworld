@@ -4,7 +4,7 @@
 >
 > 当前执行分支：`codex/bootstrap-langgraph`
 >
-> 当前阶段：Phase 1—9 已验证；Phase 10 Fitness 生产栈已发布 T-033，T-035 H5 呈现体系已在本地完成，等待真实手机复测；T-041 求职雷达主动获取闭环已在本地完成全链路验收并进入交付；微信小程序与 Android/HBuilderX 仍只具备结构兼容性
+> 当前阶段：Phase 1—9 已验证；Phase 10 Fitness 生产栈已发布 T-033，T-035 H5 呈现体系已在本地完成，等待真实手机复测；T-041 求职雷达主动获取闭环已在本地完成全链路验收，PR #2 五项 CI 全绿，待用户合并；微信小程序与 Android/HBuilderX 仍只具备结构兼容性
 
 ## 当前阶段事实
 
@@ -25,7 +25,7 @@
 | Fitness 生产部署 | Phase 10 已运行 | 临时域名 `103-52-153-212.sslip.io`；T-033 固定 SHA 发布、自动备份、迁移、健康/认证边界和数据计数通过；新增动作切换、重量输入/档位和趋势图等待真实手机复测 |
 | Fitness H5 呈现体系 | T-035 本地完成，待真实手机验收 | `@wot-ui/ui` 2.3.2、官方 resolver、语义主题令牌、七页模板与状态一致性重构已完成；TypeScript、65 项前端测试、scoped ESLint、H5 构建及 320/360/390/430/1280/1440 浏览器预检通过；真实设备与生产发布仍未完成 |
 | Fitness Coach Agent | T-036 后端已部署，真实 Provider 待验证 | 独立 `FitnessCoachGraph`、DeepSeek `deepseek-chat` 配置、只读工具、结构化建议、自动触发、审计与 `20260903_0005` 迁移已在 API-only 生产发布中验证；生产未配置 Key，保持 `awaiting_configuration`，未发起真实模型请求，Web 容器未替换 |
-| 雷达主动获取闭环 | T-041 本地已验证 | `codex/radar-active-loop`（基线 `codex/bootstrap-langgraph`，叠在 PR #1 上）：定时抓取→真实 scene→antd 抽屉→面试 pending 推送全链路实跑通过；后端 50 测试、Playwright 11 项、截图与 curl 证据在 `output/acceptance/radar-loop/`；待 PR + 五项 CI |
+| 雷达主动获取闭环 | T-041 本地已验证 | `codex/radar-active-loop`（基线 `codex/bootstrap-langgraph`，叠在 PR #1 上）：定时抓取→真实 scene→antd 抽屉→面试 pending 推送全链路实跑通过；后端 50 测试、Playwright 11 项、截图与 curl 证据在 `output/acceptance/radar-loop/`；PR #2（叠于 PR #1）五项 CI 双跑全绿（run 36923430806/36923516806）；待用户合并决定 |
 
 以上状态只陈述仓库事实。“本地 Demo 已验证”不等于“Live 互联网能力已完成”，也不等于已可执行投递或其他外部写入。
 

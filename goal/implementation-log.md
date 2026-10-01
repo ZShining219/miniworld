@@ -1222,4 +1222,4 @@
 - live 公开抓取（Lever/Greenhouse 真实 GET）本次未执行；demo 链路是验收口径，`EXECUTION_MODE=live` + `ALLOW_LIVE_JOB_SEARCH=true` + `live_enabled` 才会真实联网。
 - DeepSeek `JOB_AGENT_PROVIDER=deepseek` 代码就绪但未发起真实模型调用（未授权）。
 - `styles.css` 8 个 `!important` warning 为历史遗留，不属本任务范围。
-- 不合并、不部署；PR 等待五项 CI。
+- PR #2 已创建（base `codex/bootstrap-langgraph`），五项保护检查在 push/PR 双跑（36923430806/36923516806）全部通过；不合并、不部署，等用户决定。
