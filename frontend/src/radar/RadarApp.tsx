@@ -1,9 +1,23 @@
 import { isTauri } from "@tauri-apps/api/core"
 import { getCurrentWindow } from "@tauri-apps/api/window"
 import {
+  Badge,
+  Button,
+  Descriptions,
+  Drawer,
+  Empty,
+  List,
+  Space,
+  Tabs,
+  Tag,
+  Tooltip,
+  Typography,
+} from "antd"
+import {
   ArrowLeft,
   BriefcaseBusiness,
   Crosshair,
+  ListTodo,
   LocateFixed,
   LockKeyhole,
   Minus,
@@ -11,6 +25,7 @@ import {
   Pin,
   PinOff,
   Plus,
+  RefreshCw,
   RotateCcw,
   X,
 } from "lucide-react"
@@ -18,18 +33,22 @@ import * as maplibregl from "maplibre-gl"
 import { Protocol } from "pmtiles"
 import {
   type MouseEvent as ReactMouseEvent,
+  useCallback,
   useEffect,
   useMemo,
   useRef,
   useState,
 } from "react"
 import { API_ROOT, api } from "../api"
-import type { RadarScene } from "../types"
+import { InterviewHandoffActions } from "../components/InterviewHandoff"
+import type { RadarJobProperties, RadarScene } from "../types"
 import { createRadarStyle } from "./radar-style"
 import "maplibre-gl/dist/maplibre-gl.css"
 import "./radar.css"
 
 let pmtilesProtocolInstalled = false
+
+const SCENE_POLL_MS = 20_000
 
 type RadarErrorKind = "api" | "map" | "webgl"
 
@@ -40,9 +59,25 @@ function installPmtilesProtocol(): void {
   pmtilesProtocolInstalled = true
 }
 
+function formatClock(value: string | null | undefined): string {
+  if (!value) return "—"
+  return new Intl.DateTimeFormat("zh-CN", {
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(new Date(value))
+}
+
+function runStatusColor(status: string | undefined): string {
+  if (status === "succeeded") return "success"
+  if (status === "failed" || status === "blocked_by_policy") return "error"
+  return "warning"
+}
+
 function RadarApp() {
   const mapContainer = useRef<HTMLDivElement>(null)
   const mapRef = useRef<maplibregl.Map | null>(null)
+  const mapReadyRef = useRef(false)
+  const sceneRef = useRef<RadarScene | null>(null)
   const [scene, setScene] = useState<RadarScene | null>(null)
   const [mapAvailability, setMapAvailability] = useState<
     "checking" | "available" | "missing"
@@ -50,21 +85,64 @@ function RadarApp() {
   const [status, setStatus] = useState<"loading" | "ready" | "error">("loading")
   const [error, setError] = useState("")
   const [errorKind, setErrorKind] = useState<RadarErrorKind | null>(null)
+  const [syncError, setSyncError] = useState<string | null>(null)
   const [selectedId, setSelectedId] = useState<string | null>(null)
+  const [drawerOpen, setDrawerOpen] = useState(false)
+  const [drawerTab, setDrawerTab] = useState<"jobs" | "pending">("jobs")
+  const [retryToken, setRetryToken] = useState(0)
   const nativeWindow = useMemo(
     () => (isTauri() ? getCurrentWindow() : null),
     [],
   )
   const [pinned, setPinned] = useState(true)
-  const selectedJob = useMemo(
+  const selectedJob = useMemo<RadarJobProperties | null>(
     () =>
       scene?.jobs.features.find((job) => job.id === selectedId)?.properties ??
-      scene?.jobs.features[0]?.properties ??
       null,
     [scene, selectedId],
   )
-  const center = scene?.center ?? null
+  const pendingJobs = scene?.pending_jobs ?? []
+  const lastRun = scene?.last_run ?? null
+  const newCount = useMemo(
+    () =>
+      scene?.jobs.features.filter((feature) => feature.properties.is_new)
+        .length ?? 0,
+    [scene],
+  )
   const signalCount = scene?.jobs.features.length ?? 0
+
+  const fetchScene = useCallback(async (silent: boolean) => {
+    try {
+      const nextScene = await api.radarScene()
+      if (!nextScene.center) {
+        throw new Error("请先在本地设置用户位置，再打开岗位雷达。")
+      }
+      sceneRef.current = nextScene
+      setScene(nextScene)
+      setSyncError(null)
+      setSelectedId((current) =>
+        current &&
+        nextScene.jobs.features.some((feature) => feature.id === current)
+          ? current
+          : (nextScene.jobs.features[0]?.id ?? null),
+      )
+      return true
+    } catch (reason: unknown) {
+      if (silent && sceneRef.current) {
+        setSyncError(reason instanceof Error ? reason.message : "同步失败")
+        return false
+      }
+      const message = reason instanceof Error ? reason.message : ""
+      setError(
+        message.startsWith("请先在本地设置")
+          ? message
+          : "本地 API 未连接。请先启动 FastAPI 或 Docker Compose，再重新打开岗位雷达。",
+      )
+      setErrorKind("api")
+      setStatus("error")
+      return false
+    }
+  }, [])
 
   useEffect(() => {
     if (!nativeWindow) return
@@ -74,39 +152,34 @@ function RadarApp() {
       .catch(() => undefined)
   }, [nativeWindow])
 
+  const retry = useCallback(() => {
+    setError("")
+    setErrorKind(null)
+    setStatus("loading")
+    setMapAvailability("checking")
+    setRetryToken((value) => value + 1)
+    void fetchScene(false)
+  }, [fetchScene])
+
   useEffect(() => {
     let active = true
-
-    void api
-      .radarScene()
-      .then((nextScene) => {
-        if (!active) return
-        if (!nextScene.center) {
-          throw new Error("请先在本地设置用户位置，再打开岗位雷达。")
-        }
-        setScene(nextScene)
-        setSelectedId(nextScene.jobs.features[0]?.id ?? null)
-      })
-      .catch((reason: unknown) => {
-        if (!active) return
-        const message = reason instanceof Error ? reason.message : ""
-        setError(
-          message.startsWith("请先在本地设置")
-            ? message
-            : "本地 API 未连接。请先启动 FastAPI 或 Docker Compose，再重新打开岗位雷达。",
-        )
-        setErrorKind("api")
-        setStatus("error")
-      })
-
+    void fetchScene(false)
+    const timer = window.setInterval(() => {
+      if (!active) return
+      void fetchScene(true)
+    }, SCENE_POLL_MS)
     return () => {
       active = false
+      window.clearInterval(timer)
     }
-  }, [])
+  }, [fetchScene])
 
+  const mapName = scene?.map_name ?? null
+  const mapAvailableFlag = scene?.map_available ?? null
   useEffect(() => {
-    if (!scene) return
-    if (!scene.map_available) {
+    void retryToken
+    if (!mapName || mapAvailableFlag === null) return
+    if (!mapAvailableFlag) {
       setMapAvailability("missing")
       setError("本地街道地图包不存在或无法读取，请先运行资源准备脚本。")
       setErrorKind("map")
@@ -114,7 +187,7 @@ function RadarApp() {
       return
     }
     const controller = new AbortController()
-    const mapUrl = `${API_ROOT}/radar/maps/${encodeURIComponent(scene.map_name)}`
+    const mapUrl = `${API_ROOT}/radar/maps/${encodeURIComponent(mapName)}`
 
     void fetch(mapUrl, {
       cache: "no-store",
@@ -135,17 +208,19 @@ function RadarApp() {
       })
 
     return () => controller.abort()
-  }, [scene])
+  }, [mapName, mapAvailableFlag, retryToken])
 
   useEffect(() => {
-    if (mapAvailability !== "available" || !scene || !center) return
+    if (mapAvailability !== "available") return
     const container = mapContainer.current
-    if (!container) return
+    const currentScene = sceneRef.current
+    const center = currentScene?.center
+    if (!container || !center) return
 
     let animationFrame = 0
     let disposed = false
-    let mapReady = false
-    const mapUrl = `${API_ROOT}/radar/maps/${encodeURIComponent(scene.map_name)}`
+    mapReadyRef.current = false
+    const mapUrl = `${API_ROOT}/radar/maps/${encodeURIComponent(currentScene.map_name)}`
     const webglProbe = document.createElement("canvas").getContext("webgl2")
     if (!webglProbe) {
       setError("当前设备无法创建 WebGL2 街道地图，请检查图形加速设置。")
@@ -187,10 +262,13 @@ function RadarApp() {
 
     map.on("load", () => {
       if (disposed) return
-      mapReady = true
+      mapReadyRef.current = true
       map.addSource("radar-jobs", {
         type: "geojson",
-        data: scene.jobs,
+        data: sceneRef.current?.jobs ?? {
+          type: "FeatureCollection",
+          features: [],
+        },
       })
       map.addLayer({
         id: "radar-job-glow",
@@ -215,11 +293,28 @@ function RadarApp() {
           "circle-opacity": 1,
         },
       })
+      map.addLayer({
+        id: "radar-job-new",
+        type: "circle",
+        source: "radar-jobs",
+        filter: ["==", ["get", "is_new"], true],
+        paint: {
+          "circle-color": "rgba(0,0,0,0)",
+          "circle-radius": 12,
+          "circle-stroke-color": "#d5ff4f",
+          "circle-stroke-width": 2,
+          "circle-opacity": 0.9,
+        },
+      })
 
       map.on("click", "radar-job-points", (event) => {
         const feature = event.features?.[0]
         const id = feature?.properties?.id
-        if (typeof id === "string") setSelectedId(id)
+        if (typeof id === "string") {
+          setSelectedId(id)
+          setDrawerTab("jobs")
+          setDrawerOpen(true)
+        }
       })
       map.on("mouseenter", "radar-job-points", () => {
         map.getCanvas().style.cursor = "pointer"
@@ -240,6 +335,12 @@ function RadarApp() {
           "circle-opacity",
           0.08 + (1 - phase) * 0.24,
         )
+        map.setPaintProperty("radar-job-new", "circle-radius", 9 + phase * 10)
+        map.setPaintProperty(
+          "radar-job-new",
+          "circle-opacity",
+          0.25 + phase * 0.65,
+        )
         animationFrame = window.requestAnimationFrame(animate)
       }
       animationFrame = window.requestAnimationFrame(animate)
@@ -247,7 +348,7 @@ function RadarApp() {
     })
 
     map.on("error", (event) => {
-      if (disposed || mapReady) return
+      if (disposed || mapReadyRef.current) return
       setError(
         event.error?.message ??
           "本地街道地图未载入。请先运行地图资源准备脚本。",
@@ -263,22 +364,33 @@ function RadarApp() {
       disposed = true
       resizeObserver.disconnect()
       window.cancelAnimationFrame(animationFrame)
+      mapReadyRef.current = false
       mapRef.current = null
       map.remove()
     }
-  }, [center, mapAvailability, scene])
+  }, [mapAvailability])
+
+  useEffect(() => {
+    const map = mapRef.current
+    if (!map || !mapReadyRef.current || !scene) return
+    const source = map.getSource("radar-jobs") as
+      | maplibregl.GeoJSONSource
+      | undefined
+    source?.setData(scene.jobs)
+  }, [scene])
 
   const adjustZoom = (amount: number) => {
     const map = mapRef.current
     if (!map) return
     map.easeTo({
-      center: center ?? undefined,
+      center: scene?.center ?? undefined,
       zoom: Math.min(17, Math.max(12.5, map.getZoom() + amount)),
       duration: 320,
     })
   }
 
   const recenter = () => {
+    const center = scene?.center
     if (!center) return
     mapRef.current?.easeTo({ center, zoom: 14.3, duration: 420 })
   }
@@ -300,7 +412,7 @@ function RadarApp() {
     if (
       !nativeWindow ||
       event.button !== 0 ||
-      (event.target as HTMLElement).closest("button, a")
+      (event.target as HTMLElement).closest("button, a, .ant-drawer")
     ) {
       return
     }
@@ -316,6 +428,11 @@ function RadarApp() {
     window.setTimeout(() => {
       if (!window.closed) window.location.assign("/")
     }, 80)
+  }
+
+  const openJobsDrawer = (tab: "jobs" | "pending") => {
+    setDrawerTab(tab)
+    setDrawerOpen(true)
   }
 
   return (
@@ -348,7 +465,9 @@ function RadarApp() {
         <div className={`radar-runtime ${status}`}>
           <i />
           {status !== "error"
-            ? "OFFLINE"
+            ? syncError
+              ? "SYNC STALE"
+              : "OFFLINE"
             : errorKind === "api"
               ? "API OFFLINE"
               : errorKind === "map"
@@ -400,7 +519,7 @@ function RadarApp() {
         <div className="radar-range range-near" />
         <div className="radar-range range-far" />
 
-        {center && (
+        {scene?.center && (
           <div
             className="radar-home"
             role="img"
@@ -418,13 +537,33 @@ function RadarApp() {
           <span>中心坐标仅在本机内存</span>
         </div>
         <div className="radar-map-meta top-right">
-          <span>
-            {String(signalCount).padStart(2, "0")} SIGNALS
-            {scene && scene.unresolved_count > 0
-              ? ` / ${scene.unresolved_count} PENDING`
-              : ""}
-          </span>
-          <BriefcaseBusiness size={11} />
+          <Badge count={newCount} size="small" offset={[-2, 2]}>
+            <Button
+              size="small"
+              icon={<BriefcaseBusiness size={12} />}
+              onClick={() => openJobsDrawer("jobs")}
+              data-testid="radar-jobs-button"
+            >
+              {String(signalCount).padStart(2, "0")} SIGNALS
+            </Button>
+          </Badge>
+          {newCount > 0 && (
+            <Tag color="lime" data-testid="radar-new-tag">
+              +{newCount} NEW
+            </Tag>
+          )}
+          {pendingJobs.length > 0 && (
+            <Tooltip title="部分岗位地点尚未解析，不会伪造坐标">
+              <Button
+                size="small"
+                icon={<ListTodo size={12} />}
+                onClick={() => openJobsDrawer("pending")}
+                data-testid="radar-pending-button"
+              >
+                {pendingJobs.length} PENDING
+              </Button>
+            </Tooltip>
+          )}
         </div>
 
         <div className="radar-zoom-controls">
@@ -444,6 +583,14 @@ function RadarApp() {
           </button>
           <button type="button" onClick={recenter} aria-label="重新居中">
             <RotateCcw size={13} />
+          </button>
+          <button
+            type="button"
+            onClick={() => void fetchScene(true)}
+            aria-label="立即同步岗位数据"
+            data-testid="radar-refresh"
+          >
+            <RefreshCw size={13} />
           </button>
         </div>
 
@@ -468,6 +615,9 @@ function RadarApp() {
             {errorKind === "map" && (
               <code>./scripts/fetch-radar-demo-map.sh</code>
             )}
+            <Button size="small" onClick={retry}>
+              重新连接
+            </Button>
           </div>
         )}
 
@@ -479,32 +629,14 @@ function RadarApp() {
                 ? `${scene.unresolved_count} 个岗位地点仍待解析，未伪造地图位置。`
                 : "当前没有可显示的岗位坐标。"}
             </span>
-            <button
-              className="radar-state-action"
-              type="button"
+            <Button
+              size="small"
+              icon={<ArrowLeft size={11} />}
               onClick={leaveRadar}
             >
-              <ArrowLeft size={11} /> 返回岗位列表
-            </button>
+              返回岗位列表
+            </Button>
           </div>
-        )}
-
-        {selectedJob && (
-          <article className="radar-signal-card" aria-live="polite">
-            <div className="signal-index">
-              <i />
-              {selectedJob.id.toUpperCase()}
-            </div>
-            <h1>{selectedJob.title}</h1>
-            <p>
-              {selectedJob.company} · {selectedJob.source}
-            </p>
-            <strong>
-              {selectedJob.distance_km === null
-                ? "— km"
-                : `${selectedJob.distance_km.toFixed(1)} km`}
-            </strong>
-          </article>
         )}
 
         <footer className="radar-map-footer">
@@ -513,6 +645,23 @@ function RadarApp() {
               ? "FICTIONAL DEMO DATA"
               : "LOCAL PRIVATE SCENE"}
           </span>
+          <Space size={8} className="radar-run-meta">
+            {lastRun && (
+              <Tag
+                color={runStatusColor(lastRun.status)}
+                data-testid="radar-last-run"
+              >
+                {`上次抓取 ${formatClock(lastRun.finished_at)} · +${lastRun.new_count}/改${lastRun.updated_count}/败${lastRun.failed_count}`}
+              </Tag>
+            )}
+            {scene?.generated_at && (
+              <Tooltip title={`数据生成于 ${scene.generated_at}`}>
+                <span data-testid="radar-update-time">
+                  更新 {formatClock(scene.generated_at)}
+                </span>
+              </Tooltip>
+            )}
+          </Space>
           <a
             href="https://www.openstreetmap.org/copyright"
             target="_blank"
@@ -523,9 +672,219 @@ function RadarApp() {
         </footer>
       </main>
 
-      <button className="radar-back-link" type="button" onClick={leaveRadar}>
-        <ArrowLeft size={13} /> 返回主看板
-      </button>
+      <Button
+        className="radar-back-link"
+        type="text"
+        icon={<ArrowLeft size={13} />}
+        onClick={leaveRadar}
+      >
+        返回主看板
+      </Button>
+
+      <Drawer
+        title={
+          <Space size={8}>
+            <BriefcaseBusiness size={15} />
+            岗位信号
+            {newCount > 0 && <Badge count={newCount} size="small" />}
+          </Space>
+        }
+        placement="right"
+        width={360}
+        open={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+        mask={false}
+        rootClassName="radar-jobs-drawer"
+      >
+        <Tabs
+          activeKey={drawerTab}
+          onChange={(key) => setDrawerTab(key as "jobs" | "pending")}
+          items={[
+            {
+              key: "jobs",
+              label: `已定位 ${signalCount}`,
+              children: (
+                <>
+                  {scene?.jobs.features.length ? (
+                    <List
+                      size="small"
+                      dataSource={scene.jobs.features}
+                      renderItem={(feature) => {
+                        const job = feature.properties
+                        const active = job.id === selectedId
+                        return (
+                          <List.Item
+                            onClick={() => setSelectedId(job.id)}
+                            style={{
+                              cursor: "pointer",
+                              background: active
+                                ? "rgba(213,255,79,0.08)"
+                                : undefined,
+                              borderRadius: 8,
+                              paddingInline: 8,
+                            }}
+                          >
+                            <List.Item.Meta
+                              title={
+                                <Space size={6}>
+                                  <span>{job.title}</span>
+                                  {job.is_new && (
+                                    <Tag color="lime" data-testid="job-new-tag">
+                                      NEW
+                                    </Tag>
+                                  )}
+                                </Space>
+                              }
+                              description={
+                                <Space size={4} wrap>
+                                  <Typography.Text type="secondary">
+                                    {job.company} · {job.location_text || "—"}
+                                  </Typography.Text>
+                                  {job.salary_text && (
+                                    <Tag>{job.salary_text}</Tag>
+                                  )}
+                                </Space>
+                              }
+                            />
+                            <Typography.Text type="secondary">
+                              {job.distance_km === null
+                                ? "—"
+                                : `${job.distance_km.toFixed(1)}km`}
+                            </Typography.Text>
+                          </List.Item>
+                        )
+                      }}
+                    />
+                  ) : (
+                    <Empty description="暂无可定位岗位" />
+                  )}
+                  {selectedJob && (
+                    <>
+                      <Descriptions
+                        column={1}
+                        size="small"
+                        bordered
+                        style={{ marginTop: 16 }}
+                        items={[
+                          {
+                            key: "title",
+                            label: "职位",
+                            children: selectedJob.title,
+                          },
+                          {
+                            key: "company",
+                            label: "公司",
+                            children: selectedJob.company,
+                          },
+                          {
+                            key: "location",
+                            label: "地点",
+                            children: selectedJob.location_text || "—",
+                          },
+                          {
+                            key: "salary",
+                            label: "薪资",
+                            children: selectedJob.salary_text ?? "未标注",
+                          },
+                          {
+                            key: "distance",
+                            label: "直线距离",
+                            children:
+                              selectedJob.distance_km === null
+                                ? "—"
+                                : `${selectedJob.distance_km.toFixed(1)} km`,
+                          },
+                          {
+                            key: "source",
+                            label: "来源",
+                            children: selectedJob.source,
+                          },
+                          {
+                            key: "geocode",
+                            label: "定位方式",
+                            children: selectedJob.geocode_source ?? "来源自带",
+                          },
+                          {
+                            key: "interview",
+                            label: "面试画像",
+                            children:
+                              selectedJob.interview_role_id ||
+                              selectedJob.interview_level
+                                ? `${selectedJob.interview_role_id ?? "?"} · ${selectedJob.interview_level ?? "?"}`
+                                : "未判定",
+                          },
+                          {
+                            key: "observed",
+                            label: "最近抓取",
+                            children: formatClock(
+                              selectedJob.observed_at ??
+                                scene?.generated_at ??
+                                null,
+                            ),
+                          },
+                        ]}
+                      />
+                      {selectedJob.ai_summary && (
+                        <Typography.Paragraph
+                          type="secondary"
+                          style={{ fontSize: 12, marginTop: 12 }}
+                        >
+                          {selectedJob.ai_summary}
+                        </Typography.Paragraph>
+                      )}
+                      <Space style={{ marginTop: 12 }} wrap>
+                        {selectedJob.url ? (
+                          <Button
+                            size="small"
+                            href={selectedJob.url}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            查看原始 JD
+                          </Button>
+                        ) : null}
+                      </Space>
+                      <InterviewHandoffActions
+                        jobId={selectedJob.id}
+                        roleId={selectedJob.interview_role_id}
+                        level={selectedJob.interview_level}
+                      />
+                    </>
+                  )}
+                </>
+              ),
+            },
+            {
+              key: "pending",
+              label: `待解析 ${pendingJobs.length}`,
+              children: pendingJobs.length ? (
+                <>
+                  <Typography.Paragraph
+                    type="secondary"
+                    style={{ fontSize: 12 }}
+                  >
+                    这些岗位缺少可定位的公开地点信息，只计入待解析，不在地图上伪造坐标。
+                  </Typography.Paragraph>
+                  <List
+                    size="small"
+                    dataSource={pendingJobs}
+                    renderItem={(job) => (
+                      <List.Item>
+                        <List.Item.Meta
+                          title={job.title}
+                          description={`${job.company} · ${job.location_text || "未知地点"} · ${job.source}`}
+                        />
+                      </List.Item>
+                    )}
+                  />
+                </>
+              ) : (
+                <Empty description="没有待解析岗位" />
+              ),
+            },
+          ]}
+        />
+      </Drawer>
     </div>
   )
 }

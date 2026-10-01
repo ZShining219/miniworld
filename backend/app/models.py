@@ -51,15 +51,24 @@ class JobPosting(SQLModel, table=True):
     location_text: str = Field(max_length=500)
     latitude: float | None = None
     longitude: float | None = None
+    geocode_source: str | None = Field(default=None, max_length=80)
     distance_km: float | None = Field(default=None, index=True)
     distance_status: str = Field(default="location_unresolved", max_length=40)
     distance_reason: str | None = Field(default=None, sa_column=Column(Text))
     url: str = Field(max_length=1200)
+    salary_text: str | None = Field(default=None, max_length=200)
     job_type: str | None = Field(default=None, max_length=80)
     summary: str | None = Field(default=None, sa_column=Column(Text))
+    ai_summary: str | None = Field(default=None, sa_column=Column(Text))
+    interview_role_id: str | None = Field(default=None, max_length=80)
+    interview_level: str | None = Field(default=None, max_length=40)
     fingerprint: str = Field(index=True, max_length=64)
     published_at: datetime | None = Field(
         default=None, sa_column=Column(DateTime(timezone=True))
+    )
+    first_seen_at: datetime = Field(
+        default_factory=utc_now,
+        sa_column=Column(DateTime(timezone=True)),
     )
     observed_at: datetime = Field(
         default_factory=utc_now,
@@ -210,10 +219,22 @@ class ScheduleConfig(SQLModel, table=True):
     id: int = Field(default=1, primary_key=True)
     job_discovery_enabled: bool = True
     interval_minutes: int = 720
+    live_enabled: bool = False
+    sources: list[str] = Field(default_factory=lambda: ["demo"], sa_column=Column(JSON))
+    query_text: str = Field(default="实习 OR internship", max_length=200)
     last_triggered_at: datetime | None = Field(
         default=None,
         sa_column=Column(DateTime(timezone=True)),
     )
+    last_run_at: datetime | None = Field(
+        default=None,
+        sa_column=Column(DateTime(timezone=True)),
+    )
+    last_run_status: str | None = Field(default=None, max_length=40)
+    last_run_new: int | None = None
+    last_run_updated: int | None = None
+    last_run_failed: int | None = None
+    last_run_message: str | None = Field(default=None, sa_column=Column(Text))
     updated_at: datetime = Field(
         default_factory=utc_now,
         sa_column=Column(DateTime(timezone=True)),

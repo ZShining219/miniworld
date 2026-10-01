@@ -1,4 +1,19 @@
 import {
+  Empty as AntEmpty,
+  Button,
+  Descriptions,
+  Drawer,
+  Input,
+  InputNumber,
+  List,
+  Select,
+  Space,
+  Switch,
+  Tag,
+  Tooltip,
+  Typography,
+} from "antd"
+import {
   Activity,
   Archive,
   ArrowUpRight,
@@ -21,6 +36,7 @@ import {
 } from "lucide-react"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { api } from "./api"
+import { InterviewHandoffActions } from "./components/InterviewHandoff"
 import type {
   AgentRun,
   Artifact,
@@ -368,6 +384,7 @@ function JobsPage({ notify }: { notify: Notify }) {
   const [jobs, setJobs] = useState<Job[]>([])
   const [query, setQuery] = useState("实习 OR internship")
   const [running, setRunning] = useState(false)
+  const [detail, setDetail] = useState<Job | null>(null)
   const load = useCallback(async () => setJobs(await api.jobs()), [])
   useEffect(() => {
     void load().catch((error: Error) => notify(error.message, "bad"))
@@ -399,22 +416,22 @@ function JobsPage({ notify }: { notify: Notify }) {
           <h2>扫描公开岗位信号</h2>
           <p>外部查询只使用附近地标；精确住址只在本地参与距离计算。</p>
         </div>
-        <div className="command-actions">
-          <input
+        <Space.Compact style={{ width: 420 }}>
+          <Input
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             aria-label="岗位关键词"
+            placeholder="实习 OR internship"
           />
-          <button
-            className="primary-button"
-            type="button"
+          <Button
+            type="primary"
+            icon={<Play size={16} />}
             onClick={() => void run()}
-            disabled={running}
+            loading={running}
           >
-            <Play size={16} />
             {running ? "扫描中" : "运行 Demo 扫描"}
-          </button>
-        </div>
+          </Button>
+        </Space.Compact>
       </article>
       <article className="panel table-panel">
         <div className="panel-head">
@@ -427,53 +444,169 @@ function JobsPage({ notify }: { notify: Notify }) {
           </span>
         </div>
         {jobs.length ? (
-          <div className="job-list">
-            {jobs.map((job, index) => (
-              <a
-                className="job-row"
-                href={job.url}
-                target="_blank"
-                rel="noreferrer"
-                key={job.id}
-              >
-                <span className="row-index">
-                  {String(index + 1).padStart(2, "0")}
-                </span>
-                <div className="job-main">
-                  <strong>{job.title}</strong>
-                  <span>
-                    {job.company} · {job.location_text}
-                  </span>
-                  <small>{job.summary}</small>
-                  {job.distance_reason && (
-                    <small className="distance-reason">
-                      距离说明：{job.distance_reason}
-                    </small>
-                  )}
-                </div>
-                <div className="job-meta">
-                  <span className={statusTone(job.distance_status)}>
-                    {job.distance_status}
-                  </span>
-                  <b>
+          <List
+            dataSource={jobs}
+            renderItem={(job, index) => (
+              <List.Item
+                style={{ cursor: "pointer" }}
+                onClick={() => setDetail(job)}
+                actions={[
+                  <Typography.Text
+                    key="distance"
+                    style={{ fontVariantNumeric: "tabular-nums" }}
+                  >
                     {job.distance_km === null
                       ? "—"
-                      : job.distance_km.toFixed(1)}
-                    <small> KM</small>
-                  </b>
-                  <em>{job.source}</em>
-                </div>
-                <ArrowUpRight size={17} />
-              </a>
-            ))}
-          </div>
+                      : `${job.distance_km.toFixed(1)} km`}
+                  </Typography.Text>,
+                  <Button
+                    key="open"
+                    size="small"
+                    type="text"
+                    icon={<ArrowUpRight size={15} />}
+                    aria-label={`查看 ${job.title} 详情`}
+                    onClick={(event) => {
+                      event.stopPropagation()
+                      setDetail(job)
+                    }}
+                  />,
+                ]}
+              >
+                <List.Item.Meta
+                  avatar={
+                    <span className="row-index">
+                      {String(index + 1).padStart(2, "0")}
+                    </span>
+                  }
+                  title={
+                    <Space size={6} wrap>
+                      <span>{job.title}</span>
+                      <Tag>{job.source}</Tag>
+                      {job.salary_text && <Tag>{job.salary_text}</Tag>}
+                      {job.distance_status !== "calculated" && (
+                        <Tag color="orange">地点待解析</Tag>
+                      )}
+                    </Space>
+                  }
+                  description={
+                    <>
+                      {job.company} · {job.location_text}
+                      {job.distance_reason && (
+                        <Typography.Text
+                          type="secondary"
+                          style={{ display: "block", fontSize: 12 }}
+                        >
+                          距离说明：{job.distance_reason}
+                        </Typography.Text>
+                      )}
+                    </>
+                  }
+                />
+              </List.Item>
+            )}
+          />
         ) : (
-          <Empty
-            title="雷达尚未捕获岗位"
-            text="运行一次 Demo 扫描即可验证距离闭环。"
+          <AntEmpty
+            description={
+              <span>
+                雷达尚未捕获岗位 —— 运行一次 Demo 扫描或等待 Worker 定时抓取。
+              </span>
+            }
           />
         )}
       </article>
+      <Drawer
+        title={detail?.title}
+        placement="right"
+        width={420}
+        open={detail !== null}
+        onClose={() => setDetail(null)}
+        rootClassName="job-detail-drawer"
+      >
+        {detail && (
+          <>
+            <Descriptions
+              column={1}
+              size="small"
+              bordered
+              items={[
+                { key: "company", label: "公司", children: detail.company },
+                {
+                  key: "location",
+                  label: "地点",
+                  children: detail.location_text || "—",
+                },
+                {
+                  key: "salary",
+                  label: "薪资",
+                  children: detail.salary_text ?? "未标注",
+                },
+                {
+                  key: "type",
+                  label: "类型",
+                  children: detail.job_type ?? "—",
+                },
+                {
+                  key: "source",
+                  label: "来源",
+                  children: detail.source,
+                },
+                {
+                  key: "distance",
+                  label: "直线距离",
+                  children:
+                    detail.distance_km === null
+                      ? `未计算（${detail.distance_status}）`
+                      : `${detail.distance_km.toFixed(1)} km`,
+                },
+                {
+                  key: "geocode",
+                  label: "定位方式",
+                  children: detail.geocode_source ?? "来源自带",
+                },
+                {
+                  key: "interview",
+                  label: "面试画像",
+                  children:
+                    detail.interview_role_id || detail.interview_level
+                      ? `${detail.interview_role_id ?? "?"} · ${detail.interview_level ?? "?"}`
+                      : "未判定",
+                },
+                {
+                  key: "published",
+                  label: "发布时间",
+                  children: formatTime(detail.published_at),
+                },
+                {
+                  key: "observed",
+                  label: "最近抓取",
+                  children: formatTime(detail.observed_at),
+                },
+              ]}
+            />
+            {(detail.ai_summary ?? detail.summary) && (
+              <Typography.Paragraph
+                type="secondary"
+                style={{ fontSize: 13, marginTop: 14 }}
+              >
+                {detail.ai_summary ?? detail.summary}
+              </Typography.Paragraph>
+            )}
+            <Space style={{ marginTop: 12 }} wrap>
+              {detail.url ? (
+                <Button href={detail.url} target="_blank" rel="noreferrer">
+                  查看原始 JD
+                </Button>
+              ) : null}
+            </Space>
+            <InterviewHandoffActions
+              jobId={detail.id}
+              roleId={detail.interview_role_id}
+              level={detail.interview_level}
+            />
+          </>
+        )}
+      </Drawer>
     </div>
   )
 }
@@ -938,6 +1071,8 @@ function SettingsPage({ notify }: { notify: Notify }) {
   const [lon, setLon] = useState("")
   const [landmarkName, setLandmarkName] = useState("新的附近地标")
   const [landmarkQuery, setLandmarkQuery] = useState("地标附近")
+  const [draftQueryText, setDraftQueryText] = useState<string | null>(null)
+  const [draftInterval, setDraftInterval] = useState<number | null>(null)
   const load = useCallback(async () => {
     const [nextLocation, nextLandmarks, nextSchedule] = await Promise.all([
       api.location(),
@@ -972,15 +1107,34 @@ function SettingsPage({ notify }: { notify: Notify }) {
       notify(error instanceof Error ? error.message : "添加失败", "bad")
     }
   }
-  async function saveSchedule(enabled: boolean) {
+  async function saveSchedule(patch: Partial<Schedule>) {
     if (!schedule) return
     try {
-      await api.updateSchedule(enabled, schedule.interval_minutes)
+      await api.updateSchedule({ ...schedule, ...patch })
       notify("定时读取策略已更新")
       await load()
     } catch (error) {
       notify(error instanceof Error ? error.message : "更新失败", "bad")
     }
+  }
+  function commitQueryText() {
+    const next = draftQueryText?.trim()
+    if (next && schedule && next !== schedule.query_text) {
+      void saveSchedule({ query_text: next })
+    }
+    setDraftQueryText(null)
+  }
+  function commitInterval() {
+    if (
+      draftInterval !== null &&
+      draftInterval >= 15 &&
+      draftInterval <= 10_080 &&
+      schedule &&
+      draftInterval !== schedule.interval_minutes
+    ) {
+      void saveSchedule({ interval_minutes: draftInterval })
+    }
+    setDraftInterval(null)
   }
   async function runOnce() {
     try {
@@ -989,6 +1143,7 @@ function SettingsPage({ notify }: { notify: Notify }) {
         result.triggered ? "已模拟一次 Worker 定时触发" : "调度当前未启用",
         result.triggered ? "good" : "bad",
       )
+      await load()
     } catch (error) {
       notify(error instanceof Error ? error.message : "触发失败", "bad")
     }
@@ -1102,27 +1257,113 @@ function SettingsPage({ notify }: { notify: Notify }) {
       <article className="panel schedule-panel">
         <span className="eyebrow">SCHEDULER / LOCAL WORKER</span>
         <h2>定时公开读取</h2>
-        <div className="big-toggle">
-          <button
-            type="button"
-            className={schedule?.job_discovery_enabled ? "on" : ""}
-            onClick={() => void saveSchedule(!schedule?.job_discovery_enabled)}
-          >
-            <span />
-          </button>
-          <div>
-            <b>{schedule?.job_discovery_enabled ? "已启用" : "已暂停"}</b>
-            <small>间隔 {schedule?.interval_minutes ?? "—"} 分钟</small>
-          </div>
-        </div>
-        <p>Worker 只运行 Demo 岗位读取和限定本地更新。外部写入始终需要确认。</p>
-        <button
-          className="secondary-button"
-          type="button"
-          onClick={() => void runOnce()}
-        >
-          <Play size={16} /> 验证一次定时触发
-        </button>
+        {schedule ? (
+          <Space direction="vertical" size={12} style={{ width: "100%" }}>
+            <Space>
+              <Switch
+                checked={schedule.job_discovery_enabled}
+                onChange={(checked) =>
+                  void saveSchedule({ job_discovery_enabled: checked })
+                }
+                aria-label="启用岗位定时读取"
+              />
+              <b>{schedule.job_discovery_enabled ? "已启用" : "已暂停"}</b>
+              <Typography.Text type="secondary">
+                上次触发 {formatTime(schedule.last_triggered_at)}
+              </Typography.Text>
+            </Space>
+            <Space wrap align="center">
+              <span>间隔</span>
+              <InputNumber
+                min={15}
+                max={10_080}
+                value={draftInterval ?? schedule.interval_minutes}
+                onChange={(value) =>
+                  setDraftInterval(typeof value === "number" ? value : null)
+                }
+                onBlur={commitInterval}
+                onPressEnter={commitInterval}
+                aria-label="抓取间隔分钟数"
+              />
+              <span>分钟</span>
+              <span>来源</span>
+              <Select
+                mode="multiple"
+                style={{ minWidth: 220 }}
+                value={schedule.sources}
+                options={[
+                  { value: "demo", label: "demo（内置样例）" },
+                  { value: "lever", label: "lever（公开 Job Board）" },
+                  {
+                    value: "greenhouse",
+                    label: "greenhouse（公开 Job Board）",
+                  },
+                  { value: "jobspy", label: "jobspy（聚合读取，慎用）" },
+                ]}
+                onChange={(sources) => {
+                  void saveSchedule({
+                    sources: sources.length ? sources : ["demo"],
+                  })
+                }}
+                aria-label="岗位来源"
+              />
+            </Space>
+            <Space align="center">
+              <span>查询</span>
+              <Input
+                style={{ width: 240 }}
+                value={draftQueryText ?? schedule.query_text}
+                onChange={(event) => setDraftQueryText(event.target.value)}
+                onBlur={commitQueryText}
+                onPressEnter={commitQueryText}
+                aria-label="岗位关键词"
+              />
+            </Space>
+            <Space>
+              <Tooltip title="live 模式只对公开职位源发 GET；由 EXECUTION_MODE=live 解锁，界面上不能静默打开">
+                <Switch
+                  checked={schedule.live_enabled}
+                  disabled
+                  checkedChildren="live"
+                  unCheckedChildren="demo"
+                  aria-label="live 抓取开关"
+                />
+              </Tooltip>
+              {schedule.last_run_status && (
+                <Tag
+                  color={
+                    schedule.last_run_status === "succeeded"
+                      ? "success"
+                      : schedule.last_run_status === "failed"
+                        ? "error"
+                        : "warning"
+                  }
+                  data-testid="schedule-last-run"
+                >
+                  上次运行 {schedule.last_run_status} ·{" "}
+                  {formatTime(schedule.last_run_at)} · 新增
+                  {schedule.last_run_new ?? "—"} 更新
+                  {schedule.last_run_updated ?? "—"} 失败
+                  {schedule.last_run_failed ?? "—"}
+                </Tag>
+              )}
+            </Space>
+            {schedule.last_run_message && (
+              <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+                {schedule.last_run_message}
+              </Typography.Text>
+            )}
+            <p>
+              Worker
+              只运行已配置来源的公开读取和本地写入。外部写入始终需要确认。
+            </p>
+            <Button icon={<Play size={16} />} onClick={() => void runOnce()}>
+              验证一次定时触发
+            </Button>
+          </Space>
+        ) : (
+          <Typography.Text type="secondary">调度配置加载中…</Typography.Text>
+        )}
       </article>
     </div>
   )

@@ -1,14 +1,49 @@
 {
   "schema_version": 1,
   "project_id": "miniworld",
-  "generated_at": "2026-09-04T11:40:00+08:00",
-  "summary_status": "agent_delivery_workflow_verified",
+  "generated_at": "2026-10-02T04:37:54+08:00",
+  "summary_status": "radar_active_loop_local_verified",
   "review_status": "reviewed",
   "checkpoint_id": null,
   "checkpoint_offsets": null,
   "active_windows": {},
-  "active_locks": [],
-  "active_tasks": {},
+  "active_locks": [
+    {
+      "task_id": "T-041",
+      "window_id": "codex-radar-active-loop",
+      "session_token": "9B42074D-4541-4614-A2F9-BB8304739A19",
+      "scope": [
+        "backend/app/agent/**",
+        "backend/app/api/**",
+        "backend/app/core/**",
+        "backend/app/models.py",
+        "backend/app/schemas.py",
+        "backend/app/worker.py",
+        "backend/app/interview_handoff.py",
+        "backend/app/alembic/versions/**",
+        "backend/tests/**",
+        "backend/pyproject.toml",
+        "frontend/src/**",
+        "frontend/tests/**",
+        "frontend/package.json",
+        "frontend/bun.lock",
+        "compose.yml",
+        ".env.example",
+        ".gitignore",
+        "scripts/verify-radar-live.py",
+        "docs/**",
+        "goal/**",
+        ".ai/**"
+      ],
+      "acquired_at": "2026-10-02T03:28:11+08:00"
+    }
+  ],
+  "active_tasks": {
+    "T-041": {
+      "status": "local_verified",
+      "window_id": "codex-radar-active-loop"
+    }
+  },
   "open_issues": {
     "ISS-016": "Fitness production mobile presentation does not satisfy the new component, state, responsive and physical-device gates"
   },

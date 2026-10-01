@@ -115,9 +115,32 @@ def _safe_error_message(error: Exception) -> str:
 
 
 def _job_safe_result(value: dict[str, object]) -> dict[str, object]:
+    raw_errors = value.get("source_errors", [])
+    error_items = raw_errors if isinstance(raw_errors, list) else []
+    failed_sources = [
+        {
+            "source": str(item.get("source", "unknown")),
+            "error_type": str(item.get("error_type", "unknown")),
+            "error": str(item.get("error", ""))[:200],
+        }
+        for item in error_items
+        if isinstance(item, dict)
+    ]
+    raw_fingerprints = value.get("new_fingerprints", [])
+    fingerprint_items = (
+        raw_fingerprints if isinstance(raw_fingerprints, list) else []
+    )
     return {
         "persisted": _as_int(value.get("persisted", 0)),
-        "source": str(value.get("source", "unknown")),
+        "new_count": _as_int(value.get("new_count", 0)),
+        "updated_count": _as_int(value.get("updated_count", 0)),
+        "unchanged_count": _as_int(value.get("unchanged_count", 0)),
+        "unresolved_count": _as_int(value.get("unresolved_count", 0)),
+        "failed_count": _as_int(value.get("failed_count", 0)),
+        "failed_sources": failed_sources,
+        "new_fingerprints": [str(item) for item in fingerprint_items if item],
+        "enrichment": str(value.get("enrichment", "demo")),
+        "sources": str(value.get("source", "unknown")),
         "landmark_id": str(_as_dict(value.get("landmark", {})).get("id", "")),
         "landmark_name": str(_as_dict(value.get("landmark", {})).get("name", "")),
     }
@@ -182,7 +205,11 @@ def _invoke(
 
 
 def run_job_discovery(
-    *, query: str, live: bool = False, trigger: str = "manual"
+    *,
+    query: str,
+    live: bool = False,
+    trigger: str = "manual",
+    sources: list[str] | None = None,
 ) -> AgentRun:
     execution_mode = "live" if live else "demo"
     run = _new_run("job_discovery", execution_mode=execution_mode, trigger=trigger)
@@ -201,6 +228,7 @@ def run_job_discovery(
             "run_id": str(run.id),
             "query": query,
             "live": live,
+            "sources": list(sources) if sources else [],
         },
         safe_result=_job_safe_result,
     )

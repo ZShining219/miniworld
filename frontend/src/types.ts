@@ -39,9 +39,16 @@ export type Job = {
   distance_status: string
   distance_reason: string | null
   url: string
+  salary_text: string | null
   job_type: string | null
   summary: string | null
+  ai_summary: string | null
+  geocode_source: string | null
+  interview_role_id: string | null
+  interview_level: string | null
+  fingerprint: string
   published_at: string | null
+  first_seen_at: string
   observed_at: string
 }
 
@@ -52,6 +59,17 @@ export type RadarJobProperties = {
   distance_km: number | null
   source: string
   url: string
+  location_text: string
+  salary_text: string | null
+  job_type: string | null
+  summary: string | null
+  ai_summary: string | null
+  geocode_source: string | null
+  interview_role_id: string | null
+  interview_level: string | null
+  is_new: boolean
+  published_at: string | null
+  observed_at: string | null
 }
 
 export type RadarJobFeature = {
@@ -64,6 +82,24 @@ export type RadarJobFeature = {
   properties: RadarJobProperties
 }
 
+export type RadarPendingJob = {
+  id: string
+  title: string
+  company: string
+  location_text: string
+  source: string
+}
+
+export type RadarRunStatus = {
+  finished_at: string | null
+  status: string
+  trigger: string
+  execution_mode: string
+  new_count: number
+  updated_count: number
+  failed_count: number
+}
+
 export type RadarScene = {
   mode: "fictional_demo" | "local"
   center: [number, number] | null
@@ -73,8 +109,23 @@ export type RadarScene = {
   }
   unresolved_count: number
   total_count: number
+  pending_jobs: RadarPendingJob[]
+  generated_at: string | null
+  last_run: RadarRunStatus | null
   map_name: string
   map_available: boolean
+}
+
+export type InterviewHandoffResult = {
+  job_id: string
+  role_id: string | null
+  level: string | null
+  pushed: boolean
+  push_channel: "none" | "admin_api" | "cli"
+  file: string
+  document_external_id: string
+  detail: string | null
+  push_response: Record<string, unknown> | null
 }
 
 export type Artifact = {
@@ -145,5 +196,14 @@ export type Landmark = {
 export type Schedule = {
   job_discovery_enabled: boolean
   interval_minutes: number
+  live_enabled: boolean
+  sources: string[]
+  query_text: string
   last_triggered_at: string | null
+  last_run_at: string | null
+  last_run_status: string | null
+  last_run_new: number | null
+  last_run_updated: number | null
+  last_run_failed: number | null
+  last_run_message: string | null
 }
