@@ -1,8 +1,20 @@
 import uuid
-from datetime import date, datetime
-from typing import Literal
+from datetime import UTC, date, datetime
+from typing import Annotated, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, HttpUrl, model_validator
+from pydantic.functional_validators import AfterValidator
+
+
+def _as_utc(value: datetime | None) -> datetime | None:
+    # SQLite reloads datetimes as naive; stored values are UTC.
+    if value is not None and value.tzinfo is None:
+        return value.replace(tzinfo=UTC)
+    return value
+
+
+UtcDatetime = Annotated[datetime, AfterValidator(_as_utc)]
+UtcDatetimeOrNone = Annotated[datetime | None, AfterValidator(_as_utc)]
 
 
 class ApiModel(BaseModel):
@@ -43,7 +55,7 @@ class LocationStatus(ApiModel):
     configured: bool
     masked_address: str | None = None
     is_demo: bool = False
-    updated_at: datetime | None = None
+    updated_at: UtcDatetimeOrNone = None
 
 
 class LandmarkInput(ApiModel):
@@ -57,7 +69,7 @@ class LandmarkInput(ApiModel):
 
 class LandmarkPublic(LandmarkInput):
     id: uuid.UUID
-    created_at: datetime
+    created_at: UtcDatetime
 
 
 class JobRunRequest(ApiModel):
@@ -76,10 +88,17 @@ class JobPublic(ApiModel):
     distance_status: str
     distance_reason: str | None
     url: str
+    salary_text: str | None
     job_type: str | None
     summary: str | None
-    published_at: datetime | None
-    observed_at: datetime
+    ai_summary: str | None
+    geocode_source: str | None
+    interview_role_id: str | None
+    interview_level: str | None
+    fingerprint: str
+    published_at: UtcDatetimeOrNone
+    first_seen_at: UtcDatetime
+    observed_at: UtcDatetime
 
 
 class RadarPointGeometry(ApiModel):
@@ -94,6 +113,17 @@ class RadarJobProperties(ApiModel):
     distance_km: float | None
     source: str
     url: str
+    location_text: str = ""
+    salary_text: str | None = None
+    job_type: str | None = None
+    summary: str | None = None
+    ai_summary: str | None = None
+    geocode_source: str | None = None
+    interview_role_id: str | None = None
+    interview_level: str | None = None
+    is_new: bool = False
+    published_at: UtcDatetimeOrNone = None
+    observed_at: UtcDatetimeOrNone = None
 
 
 class RadarJobFeature(ApiModel):
@@ -108,12 +138,33 @@ class RadarFeatureCollection(ApiModel):
     features: list[RadarJobFeature]
 
 
+class RadarPendingJob(ApiModel):
+    id: str
+    title: str
+    company: str
+    location_text: str
+    source: str
+
+
+class RadarRunStatus(ApiModel):
+    finished_at: UtcDatetimeOrNone
+    status: str
+    trigger: str
+    execution_mode: str
+    new_count: int
+    updated_count: int
+    failed_count: int
+
+
 class RadarSceneResponse(ApiModel):
     mode: Literal["fictional_demo", "local"]
     center: tuple[float, float] | None
     jobs: RadarFeatureCollection
     unresolved_count: int
     total_count: int
+    pending_jobs: list[RadarPendingJob] = []
+    generated_at: UtcDatetimeOrNone = None
+    last_run: RadarRunStatus | None = None
     map_name: str
     map_available: bool
 
@@ -130,8 +181,8 @@ class ImportPublic(ApiModel):
     source_label: str
     content_sha256: str
     status: str
-    created_at: datetime
-    processed_at: datetime | None
+    created_at: UtcDatetime
+    processed_at: UtcDatetimeOrNone
 
 
 class ProfileFactPublic(ApiModel):
@@ -141,7 +192,7 @@ class ProfileFactPublic(ApiModel):
     status: str
     confidence: float
     evidence_artifact_id: uuid.UUID
-    created_at: datetime
+    created_at: UtcDatetime
 
 
 class FactStatusInput(ApiModel):
@@ -152,7 +203,7 @@ class ResumeDraftPublic(ApiModel):
     id: uuid.UUID
     version: int
     content_json: dict[str, object]
-    created_at: datetime
+    created_at: UtcDatetime
 
 
 class WorkEntryInput(ApiModel):
@@ -163,8 +214,8 @@ class WorkEntryInput(ApiModel):
 
 class WorkEntryPublic(WorkEntryInput):
     id: uuid.UUID
-    created_at: datetime
-    updated_at: datetime
+    created_at: UtcDatetime
+    updated_at: UtcDatetime
 
 
 class ReportRequest(ApiModel):
@@ -189,7 +240,7 @@ class WorkReportPublic(ApiModel):
     content: str
     source_entry_ids: list[str]
     provider: str
-    created_at: datetime
+    created_at: UtcDatetime
 
 
 class AgentRunPublic(ApiModel):
@@ -203,8 +254,8 @@ class AgentRunPublic(ApiModel):
     result_json: dict[str, object] | None
     retry_count: int
     error_history: list[dict[str, object]]
-    started_at: datetime
-    finished_at: datetime | None
+    started_at: UtcDatetime
+    finished_at: UtcDatetimeOrNone
 
 
 class ApprovalPublic(ApiModel):
@@ -213,8 +264,8 @@ class ApprovalPublic(ApiModel):
     target: str
     data_class: str
     status: str
-    created_at: datetime
-    decided_at: datetime | None
+    created_at: UtcDatetime
+    decided_at: UtcDatetimeOrNone
 
 
 class ApprovalDecision(ApiModel):
@@ -228,9 +279,39 @@ class ExternalUrlInput(ApiModel):
 class SchedulePublic(ApiModel):
     job_discovery_enabled: bool
     interval_minutes: int
-    last_triggered_at: datetime | None
+    live_enabled: bool = False
+    sources: list[str] = ["demo"]
+    query_text: str = "实习 OR internship"
+    last_triggered_at: UtcDatetimeOrNone
+    last_run_at: UtcDatetimeOrNone = None
+    last_run_status: str | None = None
+    last_run_new: int | None = None
+    last_run_updated: int | None = None
+    last_run_failed: int | None = None
+    last_run_message: str | None = None
 
 
 class ScheduleInput(ApiModel):
     job_discovery_enabled: bool
     interval_minutes: int = Field(ge=15, le=10_080)
+    live_enabled: bool = False
+    sources: list[str] = Field(default_factory=lambda: ["demo"], min_length=1, max_length=6)
+    query_text: str = Field(default="实习 OR internship", min_length=1, max_length=200)
+
+
+class InterviewHandoffInput(ApiModel):
+    push: bool = True
+    role_id: str | None = Field(default=None, max_length=80)
+    level: str | None = Field(default=None, max_length=40)
+
+
+class InterviewHandoffResult(ApiModel):
+    job_id: uuid.UUID
+    role_id: str | None
+    level: str | None
+    pushed: bool
+    push_channel: str
+    file: str
+    document_external_id: str
+    detail: str | None
+    push_response: dict[str, object] | None = None

@@ -4,7 +4,7 @@
 >
 > 当前执行分支：`codex/bootstrap-langgraph`
 >
-> 当前阶段：Phase 1—9 已验证；Phase 10 Fitness 生产栈已发布 T-033，T-035 H5 呈现体系已在本地完成，等待真实手机复测；微信小程序与 Android/HBuilderX 仍只具备结构兼容性
+> 当前阶段：Phase 1—9 已验证；Phase 10 Fitness 生产栈已发布 T-033，T-035 H5 呈现体系已在本地完成，等待真实手机复测；T-041 求职雷达主动获取闭环已在本地完成全链路验收，PR #2 五项 CI 全绿，待用户合并；微信小程序与 Android/HBuilderX 仍只具备结构兼容性
 
 ## 当前阶段事实
 
@@ -25,6 +25,7 @@
 | Fitness 生产部署 | Phase 10 已运行 | 临时域名 `103-52-153-212.sslip.io`；T-033 固定 SHA 发布、自动备份、迁移、健康/认证边界和数据计数通过；新增动作切换、重量输入/档位和趋势图等待真实手机复测 |
 | Fitness H5 呈现体系 | T-035 本地完成，待真实手机验收 | `@wot-ui/ui` 2.3.2、官方 resolver、语义主题令牌、七页模板与状态一致性重构已完成；TypeScript、65 项前端测试、scoped ESLint、H5 构建及 320/360/390/430/1280/1440 浏览器预检通过；真实设备与生产发布仍未完成 |
 | Fitness Coach Agent | T-036 后端已部署，真实 Provider 待验证 | 独立 `FitnessCoachGraph`、DeepSeek `deepseek-chat` 配置、只读工具、结构化建议、自动触发、审计与 `20260903_0005` 迁移已在 API-only 生产发布中验证；生产未配置 Key，保持 `awaiting_configuration`，未发起真实模型请求，Web 容器未替换 |
+| 雷达主动获取闭环 | T-041 本地已验证 | `codex/radar-active-loop`（基线 `codex/bootstrap-langgraph`，叠在 PR #1 上）：定时抓取→真实 scene→antd 抽屉→面试 pending 推送全链路实跑通过；后端 50 测试、Playwright 11 项、截图与 curl 证据在 `output/acceptance/radar-loop/`；PR #2（叠于 PR #1）五项 CI 双跑全绿（run 36923430806/36923516806）；待用户合并决定 |
 
 以上状态只陈述仓库事实。“本地 Demo 已验证”不等于“Live 互联网能力已完成”，也不等于已可执行投递或其他外部写入。
 
@@ -285,6 +286,18 @@ v0.8 状态：Tauri 2 原生宿主、最小 capability、几何持久化、原�
 6. 用自动化与实际浏览器流程验证卧推 `80×8、80×8、75×10` 和上斜卧推两组，确认历史、日历、进度与下次默认值。
 
 阶段验收：后端 27 项测试、Fitness Ruff/Mypy/Ty、Shell 27 项测试、TypeScript、限定范围 ESLint 和 H5 production build 均通过；桌面 `1440×900` 与手机 `390×844` 浏览器流程通过，控制台无 warning/error。Android 和微信小程序未构建或验收。
+
+## Phase 11：求职雷达「主动获取」闭环（T-041）
+
+1. Worker `run_schedule_tick` 按 `ScheduleConfig`（开关/间隔/来源/查询/live 开关）周期性触发 LangGraph `job_discovery`，回写 `last_run_*` 计数与消息；
+2. 抓取层为 `JOB_ADAPTER_FACTORIES` 注册表：`demo`（确定性）、`lever`（公开 GET，live 才允许）、`greenhouse`（公开 GET，live 才允许）；非 live 执行模式下 live 源被拒且不冒充结果；
+3. 地理编码纯本地：内置公开地名 gazetteer + `ExternalLandmark` 词边界匹配；解析失败岗位保留为 `pending_jobs`，不进 GeoJSON 空间层；
+4. `JobPosting` 扩展 `salary_text/geocode_source/ai_summary/interview_role_id/interview_level/first_seen_at`（迁移 `20261002_0007`）；指纹去重，复跑 `updated` 不计 `new`；
+5. 岗位摘要经独立 `JOB_AGENT_PROVIDER`（demo/deepseek/disabled）最小化材料调用；`GET /api/v1/radar/scene` 返回真实岗位 + `last_run` + `pending_jobs`；
+6. `POST /api/v1/jobs/{id}/interview-handoff`：始终导出 `runtime-data/interview-handoff/` 对接包；`push=true` 时经面试项目 admin import（或 CLI 回退）进 pending 队列，保留其审核语义；
+7. 前端接入 Ant Design 5（darkAlgorithm + `@ant-design/v5-patch-for-react-19`）：雷达窗轮询/上次抓取计数/新岗位徽标/`Drawer` 岗位列表与详情/`待解析` 空态/「去练面试」`Popconfirm`；设置页调度面板迁移 antd（Switch/InputNumber/Select/Tag）。
+
+阶段验收：后端 pytest 50 项、ruff/mypy/ty、前端 tsc+vite build、biome（0 error，8 个历史 `!important` warning）、Playwright 11 项、真机 worker 连续 tick 日志与真实推送面试项目 pending 记录均已验证；截图见 `output/acceptance/radar-loop/`。实跑修复：SQLite naive datetime（worker due 比较 + schema 出口时区）、httpx `trust_env` 系统代理拦截回环请求。
 
 ## Git 与 Agent 交付策略
 

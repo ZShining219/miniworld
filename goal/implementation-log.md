@@ -1189,3 +1189,37 @@
 - 提交 `2c154c98107210f778ff29e313e989d921d9d911` 已推送到 `codex/bootstrap-langgraph` 并更新 PR #1。
 - 该提交的 push 运行 `33833414675` 和 PR 运行 `33833418213` 均完成成功；Checks 页显示两组五项 Job 全部成功。
 - PR #1 页面显示 `10 / 10 checks OK`、`All checks have passed`、`No conflicts with base branch` 和 `Ready to merge`。T-040 不合并 PR，也不触发生产部署。
+
+## 2026-10-02 — T-041 求职雷达「主动获取」闭环
+
+### 固化内容
+
+- `backend/app/agent/`：新增 `gazetteer.py`（内置公开地名 + ExternalLandmark 词边界匹配）、`geocode.py`（本地解析 + 距离）、`jobs_enrich.py`（`JOB_AGENT_PROVIDER` demo/deepseek/disabled 网关，最小化材料）、`interview_mapping.py`（岗位→面试项目 role/level）；`adapters.py` 扩展 `JOB_ADAPTER_FACTORIES`（demo/lever/greenhouse），live 源在非 live 执行模式下拒绝。
+- `graphs.py`/`runner.py`：`job_discovery` 图多源抓取→本地解析→富化→指纹去重持久化，结果含 `new/updated/failed` 计数与 `new_fingerprints`、`failed_sources`。
+- `worker.py`：`run_schedule_tick` 按持久化调度到期触发并回写 `last_run_*`；`schedule/run-once` 手动触发。
+- `miniworld.py`：scene 返回真实岗位 GeoJSON + `pending_jobs` + `last_run`；新增 `POST /jobs/{id}/interview-handoff`；`interview_handoff.py` 导出对接包并可推送对方面试项目 pending 语料。
+- 前端接入 Ant Design 5.29.3 + `@ant-design/v5-patch-for-react-19`（darkAlgorithm 深色令牌贴合既有设计系统）；雷达窗轮询 scene、新岗位徽标、上次抓取计数、antd Drawer 岗位列表/详情/待解析页签、「去练面试」Popconfirm；共享 `components/InterviewHandoff.tsx`；设置页调度面板迁移 antd。
+- `schemas.py` 新增 `UtcDatetime`/`UtcDatetimeOrNone` 注解统一出口时区；迁移 `20261002_0007_radar_loop`。
+- 交接文档 `docs/radar-live-loop.md`。
+
+### 验证命令与结果
+
+- `uv run --package app pytest backend/tests -q`：50 passed（新增 `test_radar_loop.py` 15 项：调度计数/部分源失败/幂等/间隔回归/scene/pending/隐私/handoff 导出与推送/mock 通道）。
+- `ruff check` / `mypy` / `ty check`：全部通过，48 源文件无问题。
+- `bun run build`（tsc + vite）：通过；`bun run lint`（biome）：0 error，8 个 `styles.css` 历史 `!important` a11y warning（本分支未触碰该文件）。
+- `bun run test`（Playwright）：11/11 通过，无应用层 console error/warning（仅 WebGL 驱动 ReadPixels 性能提示）。
+- 实跑（临时 SQLite + SCHEDULER_POLL_SECONDS=4 + JOB_SCHEDULE_MINUTES=0）：worker 连续 tick `new=3 → updated=3 → 0/0/0`；`/radar/scene` 回真实 3 岗位含距离/薪资/last_run；`interview-handoff {"push":true}` → `pushed=true channel=admin_api`，对方面试项目 `knowledge.db` pending 队列新增 `miniworld_radar` 记录 1 条（前端开发实习生 @ 星轨工作室，frontend/intern），审核语义保留。
+- 截图证据：`output/acceptance/radar-loop/radar-live.png`（真实信号+底部计数）、`radar-live-drawer.png`（抽屉列表+详情+去练面试）。
+
+### 实跑中抓到并修复的缺陷
+
+- SQLite 回读 `last_triggered_at` 为 naive datetime → 第二轮 tick `due_at > now` 抛 TypeError；worker 归一化 + 新增 `test_tick_respects_interval_after_first_run` 回归。
+- naive `expires_at`/`finished_at`/`observed_at` 序列化无时区 → 前端把 UTC 值当本地时间显示；schema 层 `UtcDatetime` 统一归一。
+- httpx `trust_env` 默认拾取 macOS 系统代理 → 127.0.0.1 回环被代理拦成 HTML 页；handoff 客户端改 `trust_env=False`（同时是本机流量隐私加固）。
+
+### 未完成/边界
+
+- live 公开抓取（Lever/Greenhouse 真实 GET）本次未执行；demo 链路是验收口径，`EXECUTION_MODE=live` + `ALLOW_LIVE_JOB_SEARCH=true` + `live_enabled` 才会真实联网。
+- DeepSeek `JOB_AGENT_PROVIDER=deepseek` 代码就绪但未发起真实模型调用（未授权）。
+- `styles.css` 8 个 `!important` warning 为历史遗留，不属本任务范围。
+- PR #2 已创建（base `codex/bootstrap-langgraph`），五项保护检查在 push/PR 双跑（36923430806/36923516806）全部通过；不合并、不部署，等用户决定。

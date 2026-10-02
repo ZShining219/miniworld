@@ -16,6 +16,7 @@ from fastapi import (
 from fastapi.responses import FileResponse
 from sqlmodel import Session, col, func, select
 
+from app.agent.adapters import known_job_sources
 from app.agent.artifacts import convert_uploaded_bytes
 from app.agent.runner import (
     retry_agent_run,
@@ -25,6 +26,7 @@ from app.agent.runner import (
 )
 from app.core.config import settings
 from app.core.db import get_session
+from app.interview_handoff import HandoffError, deliver_handoff
 from app.models import (
     AgentRun,
     ApprovalRequest,
@@ -45,6 +47,8 @@ from app.schemas import (
     FactStatusInput,
     ImportPublic,
     ImportTextRequest,
+    InterviewHandoffInput,
+    InterviewHandoffResult,
     JobPublic,
     JobRunRequest,
     LandmarkInput,
@@ -56,7 +60,9 @@ from app.schemas import (
     RadarFeatureCollection,
     RadarJobFeature,
     RadarJobProperties,
+    RadarPendingJob,
     RadarPointGeometry,
+    RadarRunStatus,
     RadarSceneResponse,
     ReportRequest,
     ResumeDraftPublic,
@@ -118,6 +124,17 @@ def _radar_feature(
     url: str,
     longitude: float,
     latitude: float,
+    location_text: str = "",
+    salary_text: str | None = None,
+    job_type: str | None = None,
+    summary: str | None = None,
+    ai_summary: str | None = None,
+    geocode_source: str | None = None,
+    interview_role_id: str | None = None,
+    interview_level: str | None = None,
+    is_new: bool = False,
+    published_at: datetime | None = None,
+    observed_at: datetime | None = None,
 ) -> RadarJobFeature:
     return RadarJobFeature(
         id=job_id,
@@ -129,7 +146,48 @@ def _radar_feature(
             distance_km=distance_km,
             source=source,
             url=url,
+            location_text=location_text,
+            salary_text=salary_text,
+            job_type=job_type,
+            summary=summary,
+            ai_summary=ai_summary,
+            geocode_source=geocode_source,
+            interview_role_id=interview_role_id,
+            interview_level=interview_level,
+            is_new=is_new,
+            published_at=published_at,
+            observed_at=observed_at,
         ),
+    )
+
+
+def _latest_job_run(session: Session) -> AgentRun | None:
+    return session.exec(
+        select(AgentRun)
+        .where(AgentRun.graph_name == "job_discovery")
+        .where(col(AgentRun.finished_at).is_not(None))
+        .order_by(col(AgentRun.finished_at).desc())
+        .limit(1)
+    ).first()
+
+
+def _run_status(run: AgentRun | None) -> RadarRunStatus | None:
+    if run is None:
+        return None
+    result = run.result_json or {}
+
+    def _count(key: str) -> int:
+        value = result.get(key)
+        return int(value) if isinstance(value, (int, float)) else 0
+
+    return RadarRunStatus(
+        finished_at=run.finished_at,
+        status=run.status,
+        trigger=run.trigger,
+        execution_mode=run.execution_mode,
+        new_count=_count("new_count"),
+        updated_count=_count("updated_count"),
+        failed_count=_count("failed_count"),
     )
 
 
@@ -140,38 +198,77 @@ def get_radar_scene(
     response.headers["Cache-Control"] = "no-store"
     map_available = (settings.RADAR_MAP_DIR.resolve() / RADAR_MAP_NAME).is_file()
 
-    if settings.EXECUTION_MODE == "demo":
-        features = [
-            _radar_feature(
-                job_id=job_id,
-                title=title,
-                company=company,
-                distance_km=distance_km,
-                source="fictional-demo",
-                url="",
-                longitude=longitude,
-                latitude=latitude,
+    jobs = list(
+        session.exec(
+            select(JobPosting)
+            .order_by(col(JobPosting.observed_at).desc())
+            .limit(settings.RADAR_SCENE_MAX_JOBS)
+        ).all()
+    )
+    last_run = _latest_job_run(session)
+    last_status = _run_status(last_run)
+    raw_fingerprints = (
+        (last_run.result_json or {}).get("new_fingerprints", [])
+        if last_run is not None and last_run.status == "succeeded"
+        else []
+    )
+    new_fingerprints = (
+        {str(item) for item in raw_fingerprints}
+        if isinstance(raw_fingerprints, list)
+        else set()
+    )
+
+    if not jobs:
+        if settings.EXECUTION_MODE == "demo":
+            features = [
+                _radar_feature(
+                    job_id=job_id,
+                    title=title,
+                    company=company,
+                    distance_km=distance_km,
+                    source="fictional-demo",
+                    url="",
+                    longitude=longitude,
+                    latitude=latitude,
+                )
+                for job_id, title, company, distance_km, longitude, latitude in DEMO_RADAR_JOBS
+            ]
+            return RadarSceneResponse(
+                mode="fictional_demo",
+                center=DEMO_RADAR_CENTER,
+                jobs=RadarFeatureCollection(features=features),
+                unresolved_count=0,
+                total_count=len(features),
+                pending_jobs=[],
+                generated_at=datetime.now(UTC),
+                last_run=last_status,
+                map_name=RADAR_MAP_NAME,
+                map_available=map_available,
             )
-            for job_id, title, company, distance_km, longitude, latitude in DEMO_RADAR_JOBS
-        ]
+        location = session.get(PrivateLocation, 1)
+        center = (
+            None
+            if location is None
+            else (location.longitude, location.latitude)
+        )
         return RadarSceneResponse(
-            mode="fictional_demo",
-            center=DEMO_RADAR_CENTER,
-            jobs=RadarFeatureCollection(features=features),
+            mode="local",
+            center=center,
+            jobs=RadarFeatureCollection(features=[]),
             unresolved_count=0,
-            total_count=len(features),
+            total_count=0,
+            pending_jobs=[],
+            generated_at=datetime.now(UTC),
+            last_run=last_status,
             map_name=RADAR_MAP_NAME,
             map_available=map_available,
         )
 
     location = session.get(PrivateLocation, 1)
-    jobs = list(session.exec(select(JobPosting)).all())
     mapped_jobs = [
         job
         for job in jobs
-        if job.distance_status == "calculated"
-        and job.latitude is not None
-        and job.longitude is not None
+        if job.latitude is not None and job.longitude is not None
     ]
     features = [
         _radar_feature(
@@ -183,10 +280,32 @@ def get_radar_scene(
             url=job.url,
             longitude=job.longitude,
             latitude=job.latitude,
+            location_text=job.location_text,
+            salary_text=job.salary_text,
+            job_type=job.job_type,
+            summary=job.summary,
+            ai_summary=job.ai_summary,
+            geocode_source=job.geocode_source,
+            interview_role_id=job.interview_role_id,
+            interview_level=job.interview_level,
+            is_new=job.fingerprint in new_fingerprints,
+            published_at=job.published_at,
+            observed_at=job.observed_at,
         )
         for job in mapped_jobs
         if job.longitude is not None and job.latitude is not None
     ]
+    pending = [
+        RadarPendingJob(
+            id=str(job.id),
+            title=job.title,
+            company=job.company,
+            location_text=job.location_text,
+            source=job.source,
+        )
+        for job in jobs
+        if job.latitude is None or job.longitude is None
+    ][:60]
     center = None if location is None else (location.longitude, location.latitude)
     return RadarSceneResponse(
         mode="local",
@@ -194,6 +313,9 @@ def get_radar_scene(
         jobs=RadarFeatureCollection(features=features),
         unresolved_count=len(jobs) - len(features),
         total_count=len(jobs),
+        pending_jobs=pending,
+        generated_at=datetime.now(UTC),
+        last_run=last_status,
         map_name=RADAR_MAP_NAME,
         map_available=map_available,
     )
@@ -582,9 +704,25 @@ def get_schedule(session: Session = SessionDep) -> ScheduleConfig:
 def put_schedule(
     payload: ScheduleInput, session: Session = SessionDep
 ) -> ScheduleConfig:
+    known = set(known_job_sources())
+    sources = [source.strip().lower() for source in payload.sources if source.strip()]
+    unknown = [source for source in sources if source not in known]
+    if unknown:
+        raise HTTPException(
+            status_code=422,
+            detail=f"未知岗位来源: {', '.join(unknown)}（可用: {', '.join(sorted(known))}）",
+        )
+    if payload.live_enabled and settings.EXECUTION_MODE != "live":
+        raise HTTPException(
+            status_code=409,
+            detail="EXECUTION_MODE 仍为 demo；调度器不会替你打开 live 抓取。",
+        )
     schedule = session.get(ScheduleConfig, 1) or ScheduleConfig()
     schedule.job_discovery_enabled = payload.job_discovery_enabled
     schedule.interval_minutes = payload.interval_minutes
+    schedule.live_enabled = payload.live_enabled
+    schedule.sources = sources or ["demo"]
+    schedule.query_text = payload.query_text
     schedule.updated_at = datetime.now(UTC)
     session.add(schedule)
     session.commit()
@@ -595,3 +733,26 @@ def put_schedule(
 @router.post("/schedule/run-once", tags=["settings", "agents"])
 def trigger_schedule_once() -> dict[str, bool]:
     return {"triggered": run_schedule_tick(force=True)}
+
+
+@router.post(
+    "/jobs/{job_id}/interview-handoff",
+    response_model=InterviewHandoffResult,
+    tags=["jobs"],
+)
+def create_interview_handoff(
+    job_id: uuid.UUID,
+    payload: InterviewHandoffInput,
+    session: Session = SessionDep,
+) -> InterviewHandoffResult:
+    job = _get_or_404(session, JobPosting, job_id)
+    try:
+        result = deliver_handoff(
+            job,
+            push=payload.push,
+            role_id=payload.role_id,
+            level=payload.level,
+        )
+    except HandoffError as error:
+        raise HTTPException(status_code=422, detail=str(error)) from error
+    return InterviewHandoffResult.model_validate(result)

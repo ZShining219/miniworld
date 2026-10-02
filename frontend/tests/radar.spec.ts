@@ -13,43 +13,91 @@ const captureDir = resolve(
   dirname(fileURLToPath(import.meta.url)),
   "../../output/playwright/radar-qa",
 )
-const demoScene = {
-  mode: "fictional_demo",
-  center: [11.2543435, 43.7672134],
-  jobs: {
-    type: "FeatureCollection",
-    features: [
-      ["signal-01", "AI 产品实习生", "Arno Research", 0.7, 11.2604, 43.7708],
-      ["signal-02", "前端工程实习生", "Studio Nodo", 1.1, 11.2478, 43.7639],
-      ["signal-03", "数据分析助理", "Campo Labs", 1.4, 11.2659, 43.7631],
-      ["signal-04", "研究工程师", "Forma Systems", 1.8, 11.242, 43.7752],
-    ].map(([id, title, company, distance_km, longitude, latitude]) => ({
-      type: "Feature",
-      id,
-      geometry: { type: "Point", coordinates: [longitude, latitude] },
-      properties: {
-        id,
-        title,
-        company,
-        distance_km,
-        source: "fictional-demo",
-        url: "",
-      },
-    })),
+
+type SceneOverrides = {
+  features?: unknown[][]
+  unresolved?: Array<Record<string, unknown>>
+  lastRun?: Record<string, unknown> | null
+}
+
+function buildScene({
+  features,
+  unresolved = [],
+  lastRun = {
+    finished_at: "2026-10-02T08:55:00Z",
+    status: "succeeded",
+    trigger: "scheduler",
+    execution_mode: "demo",
+    new_count: 2,
+    updated_count: 1,
+    failed_count: 0,
   },
-  unresolved_count: 0,
-  total_count: 4,
-  map_name: "demo-firenze.pmtiles",
-  map_available: true,
+}: SceneOverrides = {}) {
+  const rows = features ?? [
+    [
+      "signal-01",
+      "AI 产品实习生",
+      "Arno Research",
+      0.7,
+      11.2604,
+      43.7708,
+      true,
+    ],
+    ["signal-02", "前端工程实习生", "Studio Nodo", 1.1, 11.2478, 43.7639, true],
+    ["signal-03", "数据分析助理", "Campo Labs", 1.4, 11.2659, 43.7631, false],
+    ["signal-04", "研究工程师", "Forma Systems", 1.8, 11.242, 43.7752, false],
+  ]
+  return {
+    mode: "fictional_demo",
+    center: [11.2543435, 43.7672134],
+    jobs: {
+      type: "FeatureCollection",
+      features: rows.map(
+        ([id, title, company, distance_km, longitude, latitude, is_new]) => ({
+          type: "Feature",
+          id,
+          geometry: { type: "Point", coordinates: [longitude, latitude] },
+          properties: {
+            id,
+            title,
+            company,
+            distance_km,
+            source: "fictional-demo",
+            url: "https://example.com/jobs/" + String(id),
+            location_text: "Firenze Centro",
+            salary_text: "EUR 1200–1600/月",
+            job_type: "intern",
+            summary: "公开岗位摘要",
+            ai_summary: "AI 摘要：公开岗位要点",
+            geocode_source: "gazetteer:firenze",
+            interview_role_id: "frontend",
+            interview_level: "intern",
+            is_new: Boolean(is_new),
+            published_at: "2026-10-02T08:00:00Z",
+            observed_at: "2026-10-02T08:55:00Z",
+          },
+        }),
+      ),
+    },
+    unresolved_count: unresolved.length,
+    total_count: rows.length + unresolved.length,
+    pending_jobs: unresolved,
+    generated_at: "2026-10-02T09:00:00Z",
+    last_run: lastRun,
+    map_name: "demo-firenze.pmtiles",
+    map_available: true,
+  }
 }
 
 async function routeRadarScene(
   page: Page,
-  scene: typeof demoScene = demoScene,
+  scene: Record<string, unknown> | ((call: number) => Record<string, unknown>),
 ): Promise<void> {
+  let calls = 0
   await page.route(`${apiOrigin}/api/v1/radar/scene`, async (route) => {
+    calls += 1
     await route.fulfill({
-      json: scene,
+      json: typeof scene === "function" ? scene(calls) : scene,
       headers: { "Cache-Control": "no-store" },
     })
   })
@@ -106,7 +154,7 @@ async function routeLocalMap(page: Page, missing = false): Promise<void> {
   })
 }
 
-test("renders a centered HOME and yellow local job signals at floating-window sizes", async ({
+test("renders a centered HOME, new-job badges and opens the job drawer", async ({
   page,
 }) => {
   const outsideRequests: string[] = []
@@ -116,7 +164,7 @@ test("renders a centered HOME and yellow local job signals at floating-window si
       outsideRequests.push(request.url())
     }
   })
-  await routeRadarScene(page)
+  await routeRadarScene(page, buildScene())
   await routeLocalMap(page)
 
   for (const viewport of [
@@ -132,6 +180,9 @@ test("renders a centered HOME and yellow local job signals at floating-window si
     await expect(radar).toHaveAttribute("data-signal-count", "4")
     await expect(page.getByTestId("radar-map").locator("canvas")).toBeVisible()
     await expect(page.getByText("04 SIGNALS")).toBeVisible()
+    await expect(page.getByTestId("radar-new-tag")).toContainText("+2 NEW")
+    await expect(page.getByTestId("radar-last-run")).toContainText("上次抓取")
+    await expect(page.getByTestId("radar-update-time")).toContainText("更新")
     await expect(page.locator("body")).not.toContainText("11.2543435")
     await expect(page.locator("body")).not.toContainText("43.7672134")
 
@@ -152,11 +203,6 @@ test("renders a centered HOME and yellow local job signals at floating-window si
       0,
     )
 
-    const signalColor = await page
-      .locator(".signal-index i")
-      .evaluate((node) => getComputedStyle(node).backgroundColor)
-    expect(signalColor).toBe("rgb(255, 225, 79)")
-
     if (process.env.RADAR_CAPTURE === "1") {
       await page.screenshot({
         path: resolve(
@@ -171,31 +217,164 @@ test("renders a centered HOME and yellow local job signals at floating-window si
   expect(stageBox).not.toBeNull()
   const signal = projectToViewport(
     [11.2659, 43.7631],
-    demoScene.center as [number, number],
+    [11.2543435, 43.7672134],
     14.3,
   )
   await page.mouse.click(
     stageBox!.x + stageBox!.width / 2 + signal.x,
     stageBox!.y + stageBox!.height / 2 + signal.y,
   )
-  await expect(
-    page.getByRole("heading", { name: "数据分析助理" }),
-  ).toBeVisible()
-  await expect(page.getByText("Campo Labs · fictional-demo")).toBeVisible()
-  await expect(page.getByText("1.4 km")).toBeVisible()
 
+  const drawer = page.locator(".ant-drawer-open .ant-drawer-content")
+  await expect(drawer).toBeVisible()
+  await expect(drawer).toContainText("数据分析助理")
+  await expect(drawer).toContainText("Campo Labs")
+  await expect(drawer).toContainText("1.4 km")
+  await expect(drawer).toContainText("EUR 1200–1600/月")
+  await expect(drawer).toContainText("fictional-demo")
+  await expect(drawer.getByRole("button", { name: "去练面试" })).toBeVisible()
+  if (process.env.RADAR_CAPTURE === "1") {
+    await page.screenshot({
+      path: resolve(captureDir, "radar-drawer.png"),
+    })
+  }
+  await expect(page.locator("body")).not.toContainText("11.2543435")
   expect(outsideRequests).toEqual([])
+})
+
+test("refresh picks up scene changes from scheduled fetches", async ({
+  page,
+}) => {
+  await routeRadarScene(page, buildScene())
+  await routeLocalMap(page)
+  await page.goto("/radar")
+
+  await expect(page.locator(".radar-window")).toHaveAttribute(
+    "data-radar-status",
+    "ready",
+  )
+  await expect(page.getByTestId("radar-last-run")).toContainText("+2/改1/败0")
+
+  await routeRadarScene(
+    page,
+    buildScene({
+      features: [
+        [
+          "signal-01",
+          "AI 产品实习生",
+          "Arno Research",
+          0.7,
+          11.2604,
+          43.7708,
+          false,
+        ],
+        [
+          "signal-02",
+          "前端工程实习生",
+          "Studio Nodo",
+          1.1,
+          11.2478,
+          43.7639,
+          false,
+        ],
+        [
+          "signal-03",
+          "数据分析助理",
+          "Campo Labs",
+          1.4,
+          11.2659,
+          43.7631,
+          false,
+        ],
+        [
+          "signal-04",
+          "研究工程师",
+          "Forma Systems",
+          1.8,
+          11.242,
+          43.7752,
+          false,
+        ],
+      ],
+      lastRun: {
+        finished_at: "2026-10-02T09:30:00Z",
+        status: "succeeded",
+        trigger: "scheduler",
+        execution_mode: "demo",
+        new_count: 0,
+        updated_count: 4,
+        failed_count: 0,
+      },
+    }),
+  )
+  await page.getByTestId("radar-refresh").click()
+  await expect(page.getByTestId("radar-last-run")).toContainText("+0/改4/败0")
+  await expect(page.getByTestId("radar-new-tag")).toHaveCount(0)
+})
+
+test("handoff pushes a job to the interview project pending queue", async ({
+  page,
+}) => {
+  let pushedBody: Record<string, unknown> | null = null
+  await page.route(
+    `${apiOrigin}/api/v1/jobs/signal-01/interview-handoff`,
+    async (route) => {
+      pushedBody = route.request().postDataJSON()
+      await route.fulfill({
+        json: {
+          job_id: "signal-01",
+          role_id: "frontend",
+          level: "intern",
+          pushed: true,
+          push_channel: "admin_api",
+          file: "/tmp/handoff.json",
+          document_external_id: "jd-lever-signal-01",
+          detail: null,
+          push_response: { imported: 1 },
+        },
+      })
+    },
+  )
+  await routeRadarScene(page, buildScene())
+  await routeLocalMap(page)
+  await page.goto("/radar")
+
+  await expect(page.locator(".radar-window")).toHaveAttribute(
+    "data-radar-status",
+    "ready",
+  )
+  await page.getByTestId("radar-jobs-button").click()
+  const drawer = page.locator(".ant-drawer-open .ant-drawer-content")
+  await expect(drawer).toBeVisible()
+  await drawer.getByRole("list").getByText("AI 产品实习生").click()
+  await drawer.getByRole("button", { name: "去练面试" }).click()
+  await page.locator(".ant-popconfirm .ant-btn-primary").click()
+  await expect(drawer).toContainText("已通过 admin_api 推送为 pending 语料")
+  expect(pushedBody).toEqual({
+    push: true,
+    role_id: "frontend",
+    level: "intern",
+  })
 })
 
 test("keeps unresolved jobs out of the spatial layer and shows an empty state", async ({
   page,
 }) => {
-  await routeRadarScene(page, {
-    ...demoScene,
-    jobs: { type: "FeatureCollection", features: [] },
-    unresolved_count: 3,
-    total_count: 3,
-  })
+  await routeRadarScene(
+    page,
+    buildScene({
+      features: [],
+      unresolved: [
+        {
+          id: "pending-1",
+          title: "远程算法实习",
+          company: "Remote Co",
+          location_text: "Remote",
+          source: "lever:remote",
+        },
+      ],
+    }),
+  )
   await routeLocalMap(page)
   await page.goto("/radar")
 
@@ -208,9 +387,13 @@ test("keeps unresolved jobs out of the spatial layer and shows an empty state", 
     "0",
   )
   await expect(page.getByRole("status")).toContainText("NO MAPPED SIGNALS")
-  await expect(page.getByRole("status")).toContainText("3 个岗位地点仍待解析")
+  await expect(page.getByRole("status")).toContainText("1 个岗位地点仍待解析")
   await expect(page.getByRole("button", { name: "返回岗位列表" })).toBeVisible()
-  await expect(page.getByText("00 SIGNALS / 3 PENDING")).toBeVisible()
+  await expect(page.getByText("00 SIGNALS")).toBeVisible()
+  await page.getByTestId("radar-pending-button").click()
+  const drawer = page.locator(".ant-drawer-open .ant-drawer-content")
+  await expect(drawer).toContainText("远程算法实习")
+  await expect(drawer).toContainText("不在地图上伪造坐标")
 })
 
 test("shows a local error instead of crashing when WebGL is unavailable", async ({
@@ -222,7 +405,7 @@ test("shows a local error instead of crashing when WebGL is unavailable", async 
       value: () => null,
     })
   })
-  await routeRadarScene(page)
+  await routeRadarScene(page, buildScene())
   await routeLocalMap(page)
   await page.goto("/radar")
 
@@ -252,6 +435,7 @@ test("shows local startup guidance when the scene API is unavailable", async ({
   )
   await expect(alert).toContainText("docker-compose up -d")
   await expect(alert).not.toContainText("HTTP 503")
+  await expect(alert.getByRole("button", { name: "重新连接" })).toBeVisible()
   await expect(page.locator(".radar-window")).toHaveAttribute(
     "data-radar-status",
     "error",
@@ -276,7 +460,7 @@ test("native surface exposes only the approved floating-window controls", async 
       },
     })
   })
-  await routeRadarScene(page)
+  await routeRadarScene(page, buildScene())
   await routeLocalMap(page)
   await page.goto("/?surface=radar")
   await expect(page.locator(".radar-window")).toHaveAttribute(
@@ -308,7 +492,7 @@ test("native surface exposes only the approved floating-window controls", async 
 test("shows an actionable local-only state when the map package is missing", async ({
   page,
 }) => {
-  await routeRadarScene(page)
+  await routeRadarScene(page, buildScene())
   await routeLocalMap(page, true)
   await page.goto("/radar")
 

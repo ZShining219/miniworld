@@ -170,9 +170,13 @@ def test_radar_local_scene_filters_unresolved_jobs_and_minimizes_properties(
     assert payload["unresolved_count"] == 1
     assert len(features) == 1
     assert features[0]["properties"]["title"] == "Mapped role"
-    assert "location_text" not in features[0]["properties"]
-    assert "Unresolved role" not in response.text
+    assert features[0]["properties"]["location_text"] == "Public office"
+    pending = payload["pending_jobs"]
+    assert len(pending) == 1
+    assert pending[0]["title"] == "Unresolved role"
+    assert "geometry" not in pending[0]
     assert "虚构演示住址" not in response.text
+    assert "exact_address" not in response.text
 
 
 def test_radar_native_origin_has_only_local_cors_read_access(

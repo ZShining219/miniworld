@@ -49,7 +49,16 @@ test.beforeEach(async ({ page }) => {
         json: {
           job_discovery_enabled: true,
           interval_minutes: 720,
+          live_enabled: false,
+          sources: ["demo"],
+          query_text: "实习 OR internship",
           last_triggered_at: null,
+          last_run_at: "2026-10-02T08:55:00Z",
+          last_run_status: "succeeded",
+          last_run_new: 3,
+          last_run_updated: 0,
+          last_run_failed: 0,
+          last_run_message: null,
         },
       })
       return
@@ -103,9 +112,16 @@ test("shows unresolved distance reason and checkpoint retry", async ({
             distance_reason:
               "公开职位来源未提供可验证坐标；职位已保留，未伪造距离",
             url: "https://jobs.lever.co/example/public-1",
+            salary_text: null,
             job_type: "Internship",
             summary: "Public fixture",
+            ai_summary: null,
+            geocode_source: null,
+            interview_role_id: null,
+            interview_level: null,
+            fingerprint: "f".repeat(64),
             published_at: null,
+            first_seen_at: new Date().toISOString(),
             observed_at: new Date().toISOString(),
           },
         ],

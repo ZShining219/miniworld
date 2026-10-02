@@ -1,6 +1,7 @@
 import type {
   AgentRun,
   Artifact,
+  InterviewHandoffResult,
   Job,
   Landmark,
   LocationStatus,
@@ -122,14 +123,25 @@ export const api = {
       }),
     }),
   schedule: () => request<Schedule>("/schedule"),
-  updateSchedule: (enabled: boolean, minutes: number) =>
+  updateSchedule: (payload: {
+    job_discovery_enabled: boolean
+    interval_minutes: number
+    live_enabled: boolean
+    sources: string[]
+    query_text: string
+  }) =>
     request<Schedule>("/schedule", {
       method: "PUT",
-      body: JSON.stringify({
-        job_discovery_enabled: enabled,
-        interval_minutes: minutes,
-      }),
+      body: JSON.stringify(payload),
     }),
   runScheduleOnce: () =>
     request<{ triggered: boolean }>("/schedule/run-once", { method: "POST" }),
+  interviewHandoff: (
+    jobId: string,
+    payload: { push: boolean; role_id?: string; level?: string },
+  ) =>
+    request<InterviewHandoffResult>(`/jobs/${jobId}/interview-handoff`, {
+      method: "POST",
+      body: JSON.stringify(payload),
+    }),
 }
