@@ -1144,3 +1144,48 @@
 ### T-038 追加修复
 
 - Compose 验收在 GitHub Runner 的失败步骤退出码为 127；`scripts/verify-demo.sh` 末段隐式调用 `rg` 解析 Alembic 版本。为移除非标准工具依赖，改用系统 `grep -RhoE`，并将 `grep` 纳入显式命令检查。
+
+## 2026-09-04 — T-039 GitHub PR 与必需 CI 配置
+
+### GitHub 配置
+
+- 从已验证提交 `9e3642f986ca38dde185f84f12a40863200d387a` 创建远端 `main`；`main` 首次 push 触发 GitHub Actions 运行 `33827004378`，Backend、React、H5 Shell、Sensitive File Scan 和 Compose Demo Verification 五项均成功。
+- 将 GitHub 仓库默认分支从 `codex/bootstrap-langgraph` 切换为 `main`；GitHub REST 公开仓库信息和远端 symbolic HEAD 均确认默认分支为 `main`。
+- 为 `main` 创建 classic branch protection：必须通过 Pull Request、必须保持分支最新、必须解决讨论，并要求五项 CI 检查全部通过；不允许 force push 或删除。
+- 单人仓库未启用 mandatory approval，避免提交者无法自审导致永久阻塞；分支保护仍阻止绕过 PR 和失败 CI 的常规合并。
+
+### 后续开发流程
+
+- 新任务从 `origin/main` 创建 `codex/<task-name>`，本地验证后 push 到同名远端分支，再创建目标为 `main` 的 Pull Request。
+- push 与 PR 都会运行 `.github/workflows/ci.yml`；PR 只有在最新 `main` 上通过 Backend、React、H5、敏感文件和 Compose 集成五道门后才允许合并。
+- 本次 README/治理提交作为首个真实 PR 链路样例；PR #1（`https://github.com/ZShining219/miniworld/pull/1`）已创建并保持打开。
+
+### 真实 PR 链路验证
+
+- 提交 `b5b47baedbfa7c85cdefb1d698be426c493e8552` 推送到 `codex/bootstrap-langgraph` 后，push 运行 `33831040233` 成功。
+- PR 事件运行 `33831520550` 成功，五个工作流 Job 均为 success：Backend checks、React checks、H5 shell checks、Sensitive file scan、Compose demo verification。
+- PR 页面显示 `10 / 10 checks OK`、`All checks have passed`、`No conflicts with base branch` 和 `Ready to merge`；验证了 PR CI、最新分支和保护分支合并门已连通。
+- 未执行合并或生产部署；后续正常开发按 `origin/main` → `codex/<task-name>` → PR → 五项检查 → 合并执行。
+
+## 2026-09-04 — T-040 Agent 驱动的项目交付流程
+
+### 固化内容
+
+- 新增 [`goal/delivery-workflow.md`](delivery-workflow.md)，定义产品负责人、Agent、GitHub Actions 和生产脚本的职责边界，以及 `proposed` → `local_verified` → `pr_open` → `ci_verified` → `merged` → `deploy_requested` → `deployed` → `closed` 状态机。
+- 更新 `AGENTS.md`、`goal/README.md`、`goal/plan.md` 和 `goal/decisions.md`：常规无敏感代码在 preflight 通过后可由 Agent 自主测试、commit、push 分支、创建 PR 和观察 CI；合并与生产部署仍要求用户确认。
+- 新增 `.github/pull_request_template.md`，把 scope、Goal 对齐、隐私扫描、本地验证、五项 CI 和生产发布分离为 PR 必填检查项。
+- 新增 `scripts/agent-delivery-preflight.sh`：拒绝直接在 `main` 开发，要求 `origin/main` 基线，执行 `git diff --check`、敏感扫描，并按变更面运行后端、React、H5 或生产静态检查；可用 `MINIWORLD_RUN_INTEGRATION=1` 追加完整 Compose 链路。
+- 生产脚本改为只从 `origin/main` 验证目标 SHA，并要求 `MINIWORLD_DEPLOY_APPROVED=1`；生产 README、静态测试和部署请求模板同步更新。
+
+### 受控验证
+
+- `bash -n scripts/agent-delivery-preflight.sh scripts/deploy-production.sh scripts/test-production-deployment.sh`：通过。
+- `scripts/agent-delivery-preflight.sh`：通过；识别治理/部署变更并执行 `scripts/test-production-deployment.sh`，输出 `Production deployment static checks passed.`。
+- `git diff --check` 与 `scripts/ci/check-sensitive-files.sh`：通过；未发现运行数据、私钥或非占位 token。
+- T-040 不修改业务数据、Fitness 功能或生产服务器；该变更只建立 Agent 交付协议和部署批准门。
+
+### 远端链路
+
+- 提交 `2c154c98107210f778ff29e313e989d921d9d911` 已推送到 `codex/bootstrap-langgraph` 并更新 PR #1。
+- 该提交的 push 运行 `33833414675` 和 PR 运行 `33833418213` 均完成成功；Checks 页显示两组五项 Job 全部成功。
+- PR #1 页面显示 `10 / 10 checks OK`、`All checks have passed`、`No conflicts with base branch` 和 `Ready to merge`。T-040 不合并 PR，也不触发生产部署。

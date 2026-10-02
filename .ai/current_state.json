@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "project_id": "miniworld",
-  "generated_at": "2026-09-04T03:06:00+08:00",
-  "summary_status": "fitness_coach_api_only_deployment_and_ci_verified",
+  "generated_at": "2026-09-04T11:40:00+08:00",
+  "summary_status": "agent_delivery_workflow_verified",
   "review_status": "reviewed",
   "checkpoint_id": null,
   "checkpoint_offsets": null,
@@ -45,7 +45,7 @@
   },
   "pending_review": [
     "Physical-phone acceptance of action switching, numeric keyboard, weight-step touch targets, workout status and charts after the presentation refactor",
-    "Choose whether origin/codex/bootstrap-langgraph should become or merge into a future remote main branch",
+    "PR #1 is intentionally left open as the first verified CI/PR example; merge only when repository cleanup policy requires it",
     "Choose whether to create a release tag",
     "Android, WeChat Mini Program, optional remote Provider and real map/job-data phases",
     "Validate DeepSeek deepseek-chat quality, latency and cost only after the user provides a key and authorizes a real request"
@@ -68,12 +68,14 @@
     "T-029 fixes the real-phone Fitness home layout; 360px and 390px browser regressions passed and the change is included in production release 6708dfecc757738976079c81c50fea7213973452.",
     "T-031 and T-032 add the Fitness weight_step migration, active-workout UX and progress charts; they are included in production release 6708dfecc757738976079c81c50fea7213973452 and await physical-phone acceptance.",
     "T-036 deployed the server-side Fitness Coach API at 824060dbbe736b63486c8ea5195260b3b9c7b083 while preserving the existing 6095d7a web image; DeepSeek deepseek-chat is selected but no key or real model request is present.",
-    "T-038 fixed clean-runner CI assumptions and commit 27b59f76d4dd4b143509dc4c272a203c8a488bd2 passed GitHub Actions run 33794008116 across all five jobs."
+    "T-038 fixed clean-runner CI assumptions and commit 27b59f76d4dd4b143509dc4c272a203c8a488bd2 passed GitHub Actions run 33794008116 across all five jobs.",
+    "T-039 configured main default branch/protection, created PR #1, and verified PR Actions run 33831520550 with all five jobs successful.",
+    "T-040 added the Agent delivery workflow, PR template, preflight script, and explicit main-only production approval guard; local preflight passed and PR #1 push/PR CI runs 33833414675/33833418213 succeeded."
   ],
   "derived_from": {
-    "source": "T-036 completed the server-side Fitness Coach implementation, controlled tests, API-only production deployment and no-key verification; T-037 completed gated GitHub Actions CI.",
+    "source": "T-036 completed the server-side Fitness Coach implementation and API-only deployment; T-037/T-038 completed gated GitHub Actions CI; T-039 completed GitHub main protection and real PR validation.",
     "pools": {
-      "task_pool.ndjson": 247,
+      "task_pool.ndjson": 257,
       "issue_pool.ndjson": 38,
       "logic_pool.ndjson": 31
     }

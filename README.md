@@ -277,6 +277,35 @@ Demo 初始化“胸、背、肩、臀腿”四个计划，“胸”包含杠铃
 
 `.github/workflows/ci.yml` 在每个分支 push、Pull Request 和手动触发时运行五道门：后端测试与静态检查、React 构建与 Playwright、unibest H5 类型/单测/构建、敏感文件扫描，以及依赖前四道门的 Docker Compose Demo 验收。所有 Action 均固定到 commit SHA，checkout 不持久化 GitHub 凭据，CI 只使用 `demo` 模式和虚构数据，不调用远端模型、真实个人材料或外部写入。
 
+GitHub 的默认分支为 `main`，且受分支保护约束。后续项目修改使用以下流程：
+
+```bash
+git fetch origin
+git switch -c codex/<task-name> origin/main
+# 修改、验证并提交
+git push -u origin codex/<task-name>
+```
+
+随后在 GitHub 创建 `codex/<task-name> → main` Pull Request。PR 必须保持在最新 `main` 之上，解决所有代码讨论，并通过 `Backend checks`、`React checks`、`H5 shell checks`、`Sensitive file scan`、`Compose demo verification` 五项检查后才能合并。`main` 禁止强制推送和删除；单人仓库不额外要求他人审批，避免无人可审导致死锁。
+
+## Agent 交付流程
+
+Vibe Coding 任务统一遵循 [`goal/delivery-workflow.md`](goal/delivery-workflow.md)。Agent 会在声明治理 scope 后运行：
+
+```bash
+scripts/agent-delivery-preflight.sh
+```
+
+该检查根据变更面运行后端、React、H5、敏感文件和生产脚本静态检查；通过后 Agent 可以自主创建可读 commit、推送 `codex/*` 分支、创建 PR 并等待 CI。合并 `main` 仍需用户确认。
+
+只有在 PR 已合并、五项 CI 全绿、发布范围允许、备份/回滚方案齐全且移动端真实设备门已满足时，Agent 才会主动发出结构化生产部署请求。用户批准后服务器命令必须显式带 `MINIWORLD_DEPLOY_APPROVED=1`，且目标 SHA 必须来自 `origin/main`：
+
+```bash
+MINIWORLD_DEPLOY_APPROVED=1 /srv/miniworld/scripts/deploy-production.sh <40-character-main-sha>
+```
+
+文档变更、测试工具变更、未完成真实设备验收、未授权 Provider 或存在隐私/迁移阻塞时，不自动部署。
+
 本地可用同一条链路复现集成门：
 
 ```bash

@@ -50,6 +50,7 @@
 | T-025 | Accepted | 前端呈现执行硬性门禁：手机端使用 unibest + Wot UI 2，PC 端使用现有 React/Vite + Ant Design/按需 ProComponents；通用 UI 禁止继续手写，真实手机验收不能由桌面视口模拟替代 | 用户认为当前呈现优化反复消耗过多时间，并明确要求把成熟组件体系、页面模板、响应式、状态和验收规则固化为所有后续开发必须参考的规则文件 |
 | T-026 | Accepted | Fitness H5 固定使用 `@wot-ui/ui` 2.3.2 的官方 resolver；由于该版本上游 SFC 类型与当前 uni 微信 `ButtonOpenType` 定义不兼容，类型检查采用项目局部 `GlobalComponents` 声明并排除自动生成的 Wot 组件声明文件，运行时组件解析仍由 resolver 负责 | 这是 Wot UI 2.3.2 在当前 unibest/uni 类型组合下的最小兼容边界；不修改 `node_modules`、不放宽业务类型，不改变 H5 运行时组件或未来 App/小程序构建入口 |
 | T-027 | Accepted | Fitness Coach Agent 作为 Fitness 内部独立服务器 Graph 接入；可复用 LangGraph Runtime、ModelProvider Gateway、Worker、PostgreSQL、策略检查和审计，但不读取或修改 Jobs、Profile/Resume、Work 的业务数据、Graph 状态或模型上下文 | 第一版由训练完成事件触发，Agent 通过受限只读工具选择分析范围，使用 DeepSeek `deepseek-chat` 配置入口输出一条结构化建议；只写入 Agent Run 和 Recommendation，不修改正式训练计划；未配置密钥时明确等待配置 |
+| T-028 | Accepted | 固化 Agent 驱动的项目交付状态机：常规无敏感代码可在 preflight 后自主测试、commit、push 分支、创建 PR 和观察 CI；合并与生产部署必须显式请求用户确认，生产脚本只接受 `origin/main` 祖先 SHA 并要求批准环境变量 | 用户 2026-09-04 明确要求以项目管理视角固定 Vibe Coding 后的测试、Git、推送、CI 验证和适时服务器发布流程；该授权不扩大到个人数据、密钥、外部平台写入或远端模型数据外发 |
 
 ## 尚未锁定但已明确不阻塞 Demo
 

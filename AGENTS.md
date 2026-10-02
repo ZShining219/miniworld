@@ -25,6 +25,9 @@
 - Add or update tests for behavior changes and record the commands/results.
 - Import upstream code only from a pinned commit, preserve license notices, and do not copy upstream `.git` or agent instruction files.
 - Use `codex/` branch names for implementation work.
+- Follow [`goal/delivery-workflow.md`](goal/delivery-workflow.md) for every Vibe Coding task: claim scope, run `scripts/agent-delivery-preflight.sh`, commit only allowlisted files, push the `codex/*` branch, open a PR, and wait for all protected CI checks.
+- Routine code-only branch pushes and PR creation are autonomous after preflight. Merging to `main` and production deployment always require an explicit user confirmation; production deployment must use `MINIWORLD_DEPLOY_APPROVED=1` and a SHA descended from `origin/main`.
+- When release conditions are met, proactively send a structured deployment request with the merged SHA, CI evidence, backup plan, rollback SHA, and post-deploy checks. Do not silently deploy when any release gate is pending.
 
 ## Frontend presentation gate
 
